@@ -111,7 +111,7 @@ This skill is **auto-generated from the dashboardbase backend**. Widget schemas 
 ## Related
 
 - **[Dashboardbase](https://dashboardbase.com)** — the product. Build, host, and share dashboards from your APIs.
-- **[Documentation](https://dashboardbase.com/documentation)** — widget reference, JSON contract, webhook setup.
+- **[Documentation](https://app.dashboardbase.com/documentation)** — widget reference, JSON contract, webhook setup.
 - **Dashboardbase MCP server** _(coming soon)_ — lets an agent talk to your dashboardbase workspace directly, rather than just scaffold endpoints.
 
 ## Contributing
