@@ -1,0 +1,313 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://api.dashboardbase.com/setup-file/schema/v1.json",
+  "title": "Dashboardbase Setup File v1",
+  "description": "Setup file format for wiring, importing, exporting, and planning Dashboardbase dashboards.",
+  "type": "object",
+  "required": [
+    "mappings"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema reference. Should be \u0027https://api.dashboardbase.com/setup-file/schema/v1.json\u0027."
+    },
+    "version": {
+      "type": "integer",
+      "enum": [
+        1
+      ],
+      "description": "Schema version. Currently only 1 is supported. Omit to default to 1."
+    },
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Dashboard UUID. If present, operations target this dashboard. If absent, a new dashboard is created on import."
+    },
+    "baseUrl": {
+      "type": "string",
+      "format": "uri",
+      "description": "Default base URL for mappings without a datasourceId and without an absolute path.",
+      "examples": [
+        "https://api.example.com"
+      ]
+    },
+    "datasources": {
+      "type": "array",
+      "description": "Named datasources with their own baseUrl. Credentials are never included here.",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "baseUrl"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for this datasource within the file.",
+            "examples": [
+              "stripe",
+              "posthog",
+              "internal-api"
+            ]
+          },
+          "baseUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "Base URL for this datasource.",
+            "examples": [
+              "https://api.stripe.com"
+            ]
+          }
+        }
+      }
+    },
+    "refreshInterval": {
+      "type": "string",
+      "enum": [
+        "1m",
+        "5m",
+        "10m",
+        "30m"
+      ],
+      "description": "Default refresh interval for all widgets in the dashboard."
+    },
+    "mappings": {
+      "type": "array",
+      "description": "Widget mappings. Each entry is in one of three states: A (wire existing), B (create wired), or C (create plan).",
+      "items": {
+        "oneOf": [
+          {
+            "title": "State A \u2014 Wire existing widget",
+            "description": "Connect an existing widget in the dashboard to an endpoint. Requires widgetId and path.",
+            "type": "object",
+            "required": [
+              "widgetId",
+              "path"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "type"
+                  ]
+                },
+                {
+                  "required": [
+                    "plan"
+                  ]
+                }
+              ]
+            },
+            "properties": {
+              "widgetId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "UUID of an existing widget in the dashboard."
+              },
+              "path": {
+                "type": "string",
+                "description": "Endpoint path (relative to baseUrl or datasource) or absolute URL.",
+                "examples": [
+                  "/metrics/mrr",
+                  "https://api.example.com/metrics/mrr"
+                ]
+              },
+              "datasourceId": {
+                "type": "string",
+                "description": "References a datasource declared in the top-level \u0027datasources\u0027 array."
+              }
+            }
+          },
+          {
+            "title": "State B \u2014 Create new wired widget",
+            "description": "Create a new widget connected to a real endpoint. Requires type and path.",
+            "type": "object",
+            "required": [
+              "type",
+              "path"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "widgetId"
+                  ]
+                },
+                {
+                  "required": [
+                    "plan"
+                  ]
+                }
+              ]
+            },
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "kpi",
+                  "status",
+                  "table",
+                  "line",
+                  "bar",
+                  "pie",
+                  "donut",
+                  "gauge"
+                ],
+                "description": "Widget type."
+              },
+              "path": {
+                "type": "string",
+                "description": "Endpoint path (relative to baseUrl or datasource) or absolute URL.",
+                "examples": [
+                  "/metrics/mrr",
+                  "https://api.stripe.com/v1/metrics/mrr"
+                ]
+              },
+              "datasourceId": {
+                "type": "string",
+                "description": "References a datasource declared in the top-level \u0027datasources\u0027 array."
+              },
+              "size": {
+                "type": "object",
+                "properties": {
+                  "w": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "h": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              },
+              "position": {
+                "type": "object",
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
+              }
+            }
+          },
+          {
+            "title": "State C \u2014 Plan widget",
+            "description": "A conceptual widget with a goal but no endpoint yet. Used for sharing a dashboard spec.",
+            "type": "object",
+            "required": [
+              "type",
+              "plan"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "widgetId"
+                  ]
+                },
+                {
+                  "required": [
+                    "path"
+                  ]
+                }
+              ]
+            },
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "kpi",
+                  "status",
+                  "table",
+                  "line",
+                  "bar",
+                  "pie",
+                  "donut",
+                  "gauge"
+                ],
+                "description": "Widget type."
+              },
+              "plan": {
+                "type": "object",
+                "required": [
+                  "goal"
+                ],
+                "description": "Plan metadata describing what this widget should show.",
+                "properties": {
+                  "goal": {
+                    "type": "string",
+                    "description": "What this widget should display. Required.",
+                    "examples": [
+                      "Monthly recurring revenue",
+                      "Active users today"
+                    ]
+                  },
+                  "dateRange": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Date range for the data, e.g. \u0027current month\u0027, \u0027last 30 days\u0027."
+                  },
+                  "groupBy": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Dimension to group by, e.g. \u0027country\u0027, \u0027plan\u0027."
+                  },
+                  "dataSource": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Conceptual data source (e.g. \u0027stripe\u0027, \u0027database\u0027). Not a configured datasource reference.",
+                    "examples": [
+                      "stripe",
+                      "auth0",
+                      "database",
+                      "posthog"
+                    ]
+                  }
+                }
+              },
+              "size": {
+                "type": "object",
+                "properties": {
+                  "w": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "h": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              },
+              "position": {
+                "type": "object",
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}
