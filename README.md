@@ -1,15 +1,8 @@
-<!--
-  Logo files: drop logo-light.svg and logo-dark.svg into the repo-root assets/ folder.
-  - logo-light.svg  -> shown on GitHub dark theme (use a light/white logo)
-  - logo-dark.svg   -> shown on GitHub light theme (use a dark logo)
-  A single logo that reads on a transparent background works for both; if so,
-  point both srcset and src at the same file.
-  assets/ is at the repo root (hand-written zone) so the skill generator never overwrites it.
--->
+
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/logo-light.svg">
-    <img src="assets/logo-dark.svg" width="180" alt="Dashboardbase">
+    <source media="(prefers-color-scheme: dark)" srcset="logo-light.png">
+    <img src="logo-dark.png" width="180" alt="Dashboardbase">
   </picture>
 </p>
 
