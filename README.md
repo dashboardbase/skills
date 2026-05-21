@@ -6,7 +6,7 @@
   </picture>
 </p>
 
-<h1 align="center">dashboardbase Skill</h1>
+<h1 align="center">dashboardbase SKILL</h1>
 
 <p align="center">
   <strong>Turn any REST API into a live dashboard — without writing frontend code.</strong>
