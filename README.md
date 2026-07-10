@@ -47,9 +47,17 @@ Ask your agent _"build a dashboardbase KPI endpoint for monthly revenue in Node"
 
 ## Install
 
+### Recommended: one command
+
+```bash
+npx skillls add dashboardbase
+```
+
+This installs the skill into the correct directory for your agent (Claude Code, Cursor, etc.) and keeps it up to date. See [skillls](https://www.npmjs.com/package/skillls) for details.
+
 > The skill lives in the [`dashboardbase/`](dashboardbase/) folder of this repo. The folder name matches the skill's `name:` field, as required by the Agent Skills spec.
 
-### Claude Code
+### Claude Code (manual)
 
 Clone the repo and copy the skill into your skills directory:
 
