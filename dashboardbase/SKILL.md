@@ -4,7 +4,7 @@ description: Use when creating a Dashboardbase dashboard end-to-end, or when bui
 license: MIT
 metadata:
   source-repo: dashboardbase-api
-  generated-at: "2026-07-11T06:48:01Z"
+  generated-at: "2026-07-14T15:00:51Z"
   api-version: "1.0.0"
   spec-version: "1.0"
 ---
@@ -51,13 +51,17 @@ Every widget endpoint returns this shape:
   "actions": [
     { "title": "View Details", "type": "link", "url": "https://example.com/details" }
   ],
-  "data": {}
+  "data": {},
+  "alert": { "active": true, "level": "critical", "message": "Error rate above the 5% threshold" }
 }
 ```
 
 - `title` (optional string) overrides the widget title configured in Dashboardbase.
 - `actions` (optional array) renders link actions in the widget header. `type` is currently always `"link"`. `url` must be an absolute `https://` URL.
 - `data` (required) is the widget-type-specific payload — see `references/<widget>.md` for each widget's exact shape.
+- `alert` (optional object) renders an alert banner on the widget and feeds alert notifications. Shape: `active` (boolean — `true` shows the banner, `false` clears it), `level` (one of `info`, `success`, `warning`, or `critical` — note these are lowercase, unlike the styling enums), and `message` (string; truncated beyond 200 characters). Works the same on every widget type.
+
+These four keys are the only ones allowed at the envelope level; `additionalProperties: false` applies to the `data` payload (see gotcha 2 below).
 
 ## Request: the `dateRange` query parameter
 
@@ -148,7 +152,7 @@ The widget reference filenames are: `bar-chart.md`, `donut-chart.md`, `gauge-cha
 - **Respond within 5 seconds.** Dashboardbase treats slow responses as failures.
 - **Return `200 OK` with valid JSON** on success. `204 No Content` renders the widget as empty, and `304 Not Modified` keeps previous data — both are valid non-error responses (see `references/hosting-and-http.md`). Any `4xx` / `5xx` status renders the widget in an error state.
 - **Refresh intervals** are limited to `1m`, `5m`, `10m`, `30m`.
-- **Enums are case-sensitive.** Use `"Success"`, not `"success"`. See the styling tables below.
+- **Enums are case-sensitive.** Use `"Success"`, not `"success"`. See the styling tables below. (The one lowercase enum is the envelope's `alert.level`: `"critical"`, not `"Critical"`.)
 - **`additionalProperties: false`.** Extra fields not in the schema cause render failures. Strip them before responding.
 - **Idempotent `GET`.** The same request should yield the same data (modulo time). Do not mutate state.
 - **Recommended auth:** API key via the `x-api-key` header. See `references/authentication.md` for alternatives.
@@ -163,7 +167,7 @@ The widget reference filenames are: `bar-chart.md`, `donut-chart.md`, `gauge-cha
 ## Top 5 gotchas (full list: `references/gotchas.md`)
 
 1. **Enum casing.** `"color": "success"` is invalid — use `"Success"`.
-2. **Extra fields fail silently.** `additionalProperties: false` means an unrecognised key turns the render off. Strip them.
+2. **Extra fields fail silently.** `additionalProperties: false` applies to the `data` payload — an unrecognised key inside `data` turns the render off. Strip them. The envelope level allows exactly `title`, `actions`, `data`, and `alert`.
 3. **Action URLs must be absolute HTTPS.** Relative URLs and `http://` are rejected.
 4. **`datasets` is always an array.** Even single-series charts use `"datasets": [{ ... }]`. Multi-series is just multiple entries — see each chart widget's "Multiple series" section.
 5. **`null` ≠ missing.** Most optional fields should be omitted rather than set to `null`. Returning `"color": null` may render differently from omitting `color`.
@@ -225,6 +229,17 @@ These tables are reflected from the source — every value listed here is accept
 | --- |
 | `link` |
 
+### `WidgetAlertLevel` (envelope `alert.level`)
+
+Unlike the styling enums above, alert levels are **lowercase**:
+
+| `WidgetAlertLevel` value |
+| --- |
+| `info` |
+| `success` |
+| `warning` |
+| `critical` |
+
 ## Supported widgets
 
 - BarChart
@@ -240,4 +255,4 @@ Each has its own reference file under `references/` — see the filename list ab
 
 ---
 
-*Skill generated at `2026-07-11T06:48:01Z` from the Dashboardbase API contract.*
+*Skill generated at `2026-07-14T15:00:51Z` from the Dashboardbase API contract.*

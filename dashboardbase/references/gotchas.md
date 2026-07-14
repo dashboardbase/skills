@@ -10,7 +10,7 @@ These are the environment-specific facts that defy reasonable assumptions — th
 
 ## 2. `additionalProperties: false` — extra fields cause silent render failures
 
-Each widget schema has `additionalProperties: false`. If your response contains a key not in the schema (a typo, an extra debug field, a wrapper from your serialiser), Dashboardbase rejects the response. Strip unknown fields before responding.
+Each widget schema has `additionalProperties: false` — it applies to the `data` payload. If `data` contains a key not in the schema (a typo, an extra debug field, a wrapper from your serialiser), Dashboardbase rejects the response. Strip unknown fields before responding. At the envelope level the allowed fields are exactly `title`, `actions`, `data`, and `alert` (see the response-envelope section in `SKILL.md`).
 
 Common offenders:
 - `_id`, `__v` from MongoDB
@@ -45,7 +45,7 @@ For PieChart and DonutChart datasets, `color` is `List<WidgetDataColor>` (one pe
 
 ## 8. Empty arrays are different from missing arrays
 
-For `Table`, `Rows: []` is a validation error (must contain at least one row). For chart datasets, an empty `data: []` is also rejected. If you have no data to show, return `204 No Content` instead.
+For `Table`, `"rows": []` is a validation error (must contain at least one row, and every row must contain at least one cell). For charts, an empty `"datasets": []` is likewise rejected. A dataset whose `data` is `[]` passes validation but draws an empty series. If you have no data to show, return `204 No Content` instead.
 
 ## 9. Non-finite numbers fail JSON
 
@@ -61,7 +61,7 @@ If your auth layer redirects unauthenticated requests to a login page, Dashboard
 
 ## 12. Non-deterministic sort order causes flicker
 
-If `Rows` in a Table change order between polls (because your query sorts by `created_at` and two rows share a timestamp), the table flickers as Dashboardbase re-renders. Sort by a stable, unique field.
+If `rows` in a Table change order between polls (because your query sorts by `created_at` and two rows share a timestamp), the table flickers as Dashboardbase re-renders. Sort by a stable, unique field.
 
 ## 13. Ignoring the `dateRange` query parameter
 

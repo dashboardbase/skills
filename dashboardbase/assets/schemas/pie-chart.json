@@ -109,6 +109,7 @@
       "nullable": true
     },
     "datasets": {
+      "minItems": 1,
       "type": "array",
       "items": {
         "required": [

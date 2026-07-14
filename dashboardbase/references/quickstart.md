@@ -85,7 +85,7 @@ Both widgets should render within a few seconds.
 
 ## Step 4 — Ship as a setup file
 
-To let users reproduce the same dashboard with one click, export a setup file:
+To let users reproduce the same dashboard with one click, export a setup file. The `position` / `size` values are copied from the *Spotlight* layout in `references/setup-files.md` → "Recommended layouts" (the table takes the `Primary` slot, the KPI the `Kpi` slot) — don't invent grid values:
 
 ```json
 {
@@ -97,14 +97,14 @@ To let users reproduce the same dashboard with one click, export a setup file:
     {
       "type": "kpi",
       "path": "/widgets/mrr",
-      "size": { "w": 3, "h": 2 },
-      "position": { "x": 0, "y": 0 }
+      "size": { "w": 4, "h": 1 },
+      "position": { "x": 8, "y": 0 }
     },
     {
       "type": "table",
       "path": "/widgets/top-customers",
-      "size": { "w": 9, "h": 4 },
-      "position": { "x": 3, "y": 0 }
+      "size": { "w": 8, "h": 6 },
+      "position": { "x": 0, "y": 0 }
     }
   ]
 }
