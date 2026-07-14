@@ -66,6 +66,8 @@ git clone https://github.com/dashboardbase/dashboardbase-skill
 cp -r dashboardbase-skill/dashboardbase ~/.claude/skills/
 ```
 
+To share the skill with a team instead, copy it into a project's `.claude/skills/` directory — it then ships with the repo and is picked up by everyone working in it.
+
 The skill activates automatically when you ask Claude Code to build a dashboardbase endpoint.
 
 > Skills directory paths can change between releases — check the [Claude Code skills docs](https://docs.claude.com) for the current location if the above doesn't pick it up.
@@ -104,12 +106,12 @@ https://raw.githubusercontent.com/dashboardbase/dashboardbase-skill/main/dashboa
 dashboardbase-skill/
 ├── dashboardbase/              # The skill itself (auto-generated)
 │   ├── SKILL.md                # Metadata + core instructions
-│   ├── references/             # Per-widget schemas, auth, errors, webhooks
-│   └── assets/                 # Setup-file JSON schema
-├── assets/                     # Repo branding (logo)
+│   ├── references/             # Per-widget guides, setup files, auth, events, gotchas
+│   └── assets/                 # JSON schemas (per-widget + setup file)
+├── logo-dark.png               # Repo branding
+├── logo-light.png
 ├── README.md
-├── LICENSE
-└── .gitignore
+└── LICENSE
 ```
 
 ## Keeping it current
