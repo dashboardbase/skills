@@ -6,9 +6,11 @@
 
 Show a single numeric value as a dial filling from 0 to `maxValue` — ideal for utilization, progress toward a quota, or health scores.
 
+In a setup file, this widget's `type` is `gauge` (see `references/setup-files.md`).
+
 ## Resolved JSON schema
 
-The `data` field of the response envelope must match this schema (all `$ref`s are inlined here, so this is the complete contract):
+The `data` field of the response envelope must match this schema (all `$ref`s are inlined here, so this is the complete contract). A standalone copy is bundled at `assets/schemas/gauge-chart.json` for use with a JSON Schema validator:
 
 ```json
 {
@@ -36,7 +38,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "Right"
           ],
           "type": "string",
-          "format": "int32",
           "nullable": true
         },
         "badge": {
@@ -55,7 +56,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "ArrowDown"
               ],
               "type": "string",
-              "format": "int32",
               "nullable": true
             },
             "color": {
@@ -72,7 +72,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "Dark"
               ],
               "type": "string",
-              "format": "int32",
               "nullable": true
             },
             "fill": {
@@ -82,7 +81,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "Outline"
               ],
               "type": "string",
-              "format": "int32",
               "nullable": true
             }
           },
@@ -103,7 +101,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "Dark"
           ],
           "type": "string",
-          "format": "int32",
           "nullable": true
         },
         "size": {
@@ -114,7 +111,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "XL"
           ],
           "type": "string",
-          "format": "int32",
           "nullable": true
         }
       },
@@ -157,7 +153,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "Dark"
           ],
           "type": "string",
-          "format": "int32",
           "nullable": true
         }
       },
@@ -200,11 +195,124 @@ curl -X GET 'https://api.dashboardbase.com/example/basic-auth/gaugechart' \
 -u "test:test"
 ```
 
+## Header — headline, subtitle, and colored badge
 
+The `header` block is optional in the schema — **include it anyway**. Without it the widget renders as a bare plot; the header is what makes it read well at a glance. Use the three parts together:
+
+- `title` — the headline number or aggregate of the series (e.g. `"1,010"` total).
+- `subtitle` — the plain-text context line. Best use: state the time window (`"Last 7 days"`), and when your endpoint handles `?dateRange=`, echo the selected range here so users can see the filter is applied.
+- `badge` — the colored element: `{ "text": "+8%", "icon": "ArrowUp", "color": "Success" }`. Color and icon render **only** on the badge — a trend placed in `subtitle` shows as plain text.
+
+```json
+{
+  "header": {
+    "title": "1,010",
+    "subtitle": "Last 7 days",
+    "badge": { "text": "+8%", "icon": "ArrowUp", "color": "Success" }
+  }
+}
+```
+
+
+
+## Variations
+
+Other shapes and styling for this widget — pick the one closest to your data:
+
+### Percentage with unit + coloured header
+
+A health/SLA percentage where the value carries a unit and the header signals status.
+
+```json
+{
+  "title": "Uptime",
+  "actions": [
+    {
+      "title": "View Status",
+      "type": "link",
+      "url": "https://example.com/status"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "99.9%",
+      "subtitle": "Last 30 days",
+      "color": "Success"
+    },
+    "value": {
+      "value": 99.9,
+      "postfix": "%"
+    },
+    "maxValue": 100
+  }
+}
+```
+
+### Progress toward a quota
+
+Progress toward a goal where the value can sit anywhere from 0 to the target.
+
+```json
+{
+  "title": "Quarterly target",
+  "actions": [
+    {
+      "title": "View Goals",
+      "type": "link",
+      "url": "https://example.com/goals"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "62 / 100",
+      "subtitle": "Q2 new customers",
+      "color": "Warning"
+    },
+    "value": {
+      "value": 62
+    },
+    "maxValue": 100
+  }
+}
+```
+
+### Utilisation with a warning alert
+
+A utilisation dial nearing its ceiling — raise a warning alert before it maxes out.
+
+```json
+{
+  "title": "Server Load",
+  "actions": [
+    {
+      "title": "View Metrics",
+      "type": "link",
+      "url": "https://example.com/metrics"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "87%",
+      "subtitle": "Current",
+      "color": "Warning"
+    },
+    "value": {
+      "value": 87,
+      "postfix": "%"
+    },
+    "maxValue": 100
+  },
+  "alert": {
+    "active": true,
+    "level": "warning",
+    "message": "Server load above 80%"
+  }
+}
+```
 
 ## Validation
 
-The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. JSON-validate your response against the resolved schema before declaring done.
+The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate your response's `data` field against `assets/schemas/gauge-chart.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
 
 ## Styling
 

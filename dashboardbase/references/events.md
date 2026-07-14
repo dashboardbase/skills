@@ -1,13 +1,13 @@
-# Reactions
+# Events
 
-> **Load this file when:** you need to push a real-time reaction, notification, sound, or alert to a Dashboardbase dashboard from your own backend.
+> **Load this file when:** you need to push a real-time event, notification, sound, or alert to a Dashboardbase dashboard from your own backend.
 
-Reactions are real-time events your backend pushes **to** Dashboardbase (the inverse of widget polling). A reaction can play a sound, show a notification, and render an emoji on dashboards subscribed to the webhook.
+Events are real-time signals your backend pushes **to** Dashboardbase (the inverse of widget polling). An event can play a sound, show a notification, and render an emoji on dashboards subscribed to the webhook.
 
 ## Endpoint
 
 ```http
-POST /webhook/reactions/{webhookId}
+POST /webhook/events/{webhookId}
 Content-Type: application/json
 
 {
@@ -23,7 +23,7 @@ Content-Type: application/json
 
 ### Fields
 
-- `secret` (required) — the shared secret. Reactions with a mismatched secret are discarded silently.
+- `secret` (required) — the shared secret. Events with a mismatched secret are discarded silently.
 - `message` (required) — short human-readable text.
 - `emoji` (optional) — either a literal emoji character (e.g. `"🎉"`) **or** a short name from the table below (e.g. `"tada"`). Names are case-insensitive. Anything unrecognised is passed through as-is, so plain Unicode always works.
 - `sound` (optional, default `false`) — play a sound for connected dashboard viewers.
@@ -95,11 +95,11 @@ You can pass the literal Unicode character, or use one of these short names. The
 
 ### Response
 
-`200 OK` if the secret matches and the reaction was queued. `4xx` otherwise.
+`200 OK` if the secret matches and the event was queued. `4xx` otherwise.
 
-## When to send reactions
+## When to send events
 
-These are good triggers for a reaction:
+These are good triggers for an event:
 
 | Trigger | Example payload |
 |---|---|
@@ -112,8 +112,8 @@ These are good triggers for a reaction:
 ## Implementation pattern (Node.js)
 
 ```js
-async function react(payload) {
-  await fetch(`https://api.dashboardbase.com/webhook/reactions/${process.env.WEBHOOK_ID}`, {
+async function sendEvent(payload) {
+  await fetch(`https://api.dashboardbase.com/webhook/events/${process.env.WEBHOOK_ID}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -124,16 +124,16 @@ async function react(payload) {
 }
 
 // In your deploy pipeline:
-await react({ message: "Deploy succeeded", emoji: "🚀", sound: true });
+await sendEvent({ message: "Deploy succeeded", emoji: "🚀", sound: true });
 ```
 
 ## Idempotency
 
-Reactions are fire-and-forget; the same reaction sent twice will appear twice. If your trigger source can fire repeatedly (e.g. a retried CI job), dedupe upstream — there is no built-in deduplication.
+Events are fire-and-forget; the same event sent twice will appear twice. If your trigger source can fire repeatedly (e.g. a retried CI job), dedupe upstream — there is no built-in deduplication.
 
 ## Common mistakes
 
 - **Hardcoding the secret in client-side code.** The secret authenticates the *sender*; it must stay server-side.
-- **Reacting on every event.** Reserve reactions for events humans care about in real time; routine logs belong in a Status or Table widget, not a reaction.
-- **Long `message`.** Keep it under ~100 characters; reactions are designed for glance-able notifications.
-- **Sending reactions before the user has configured a webhook.** Reactions with no matching webhook are dropped silently — verify the webhook exists during onboarding.
+- **Sending an event on every signal.** Reserve events for things humans care about in real time; routine logs belong in a Status or Table widget, not an event.
+- **Long `message`.** Keep it under ~100 characters; events are designed for glance-able notifications.
+- **Sending events before the user has configured a webhook.** Events with no matching webhook are dropped silently — verify the webhook exists during onboarding.

@@ -43,6 +43,8 @@ Treat the values as windows ending "now":
 | `NinetyDays` | now − 90 days → now |
 | _(absent)_ | Your sensible default — typically `ThirtyDays` for trend widgets, "all-time" or "today" for counters |
 
+Whichever window you resolve, echo it in the response's `header.subtitle` (e.g. `"Last 7 days"`) — it's the only way viewers can see the date filter was applied.
+
 ### Example (Node.js / SQL)
 
 ```js

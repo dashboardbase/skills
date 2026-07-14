@@ -66,3 +66,7 @@ If `Rows` in a Table change order between polls (because your query sorts by `cr
 ## 13. Ignoring the `dateRange` query parameter
 
 When a dashboard has a date selector, Dashboardbase appends `?dateRange=<value>` to every poll, where `<value>` is one of `Today`, `SevenDays`, `ThirtyDays`, `SixtyDays`, or `NinetyDays`. If your endpoint ignores it, the widget never responds to the user's date selection — the data looks frozen. Read the parameter and map it to a time window (see `references/hosting-and-http.md`). Also make sure your **cache key includes `dateRange`** — otherwise `Today` and `NinetyDays` collide and you serve the wrong data.
+
+## 14. Handling `dateRange` correctly, but not showing it
+
+Even when your endpoint filters by `dateRange` correctly, nothing on the widget tells the viewer which window they're looking at — it can look like the selector was ignored even when it wasn't. Echo the active window in `header.subtitle` (e.g. `"Last 7 days"`), and remember the subtitle is plain text: colored accents belong on `header.badge`, not in the subtitle string.

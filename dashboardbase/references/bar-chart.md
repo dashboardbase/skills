@@ -6,9 +6,11 @@
 
 Render one or more series of vertical bars across a shared label axis — ideal for 'X by Y' comparisons (monthly sales, items per category, multi-region comparison).
 
+In a setup file, this widget's `type` is `bar` (see `references/setup-files.md`).
+
 ## Resolved JSON schema
 
-The `data` field of the response envelope must match this schema (all `$ref`s are inlined here, so this is the complete contract):
+The `data` field of the response envelope must match this schema (all `$ref`s are inlined here, so this is the complete contract). A standalone copy is bundled at `assets/schemas/bar-chart.json` for use with a JSON Schema validator:
 
 ```json
 {
@@ -35,7 +37,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "Right"
           ],
           "type": "string",
-          "format": "int32",
           "nullable": true
         },
         "badge": {
@@ -54,7 +55,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "ArrowDown"
               ],
               "type": "string",
-              "format": "int32",
               "nullable": true
             },
             "color": {
@@ -71,7 +71,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "Dark"
               ],
               "type": "string",
-              "format": "int32",
               "nullable": true
             },
             "fill": {
@@ -81,7 +80,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "Outline"
               ],
               "type": "string",
-              "format": "int32",
               "nullable": true
             }
           },
@@ -102,7 +100,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "Dark"
           ],
           "type": "string",
-          "format": "int32",
           "nullable": true
         },
         "size": {
@@ -113,7 +110,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "XL"
           ],
           "type": "string",
-          "format": "int32",
           "nullable": true
         }
       },
@@ -173,7 +169,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                     "Dark"
                   ],
                   "type": "string",
-                  "format": "int32",
                   "nullable": true
                 }
               },
@@ -199,7 +194,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "Dark"
             ],
             "type": "string",
-            "format": "int32",
             "nullable": true
           }
         },
@@ -232,6 +226,15 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
     }
   ],
   "data": {
+    "header": {
+      "title": "644",
+      "subtitle": "Last 6 months",
+      "badge": {
+        "text": "-42%",
+        "icon": "ArrowDown",
+        "color": "Danger"
+      }
+    },
     "labels": [
       "Jan",
       "Feb",
@@ -299,6 +302,24 @@ curl -X GET 'https://api.dashboardbase.com/example/basic-auth/barchart' \
 -u "test:test"
 ```
 
+## Header — headline, subtitle, and colored badge
+
+The `header` block is optional in the schema — **include it anyway**. Without it the widget renders as a bare plot; the header is what makes it read well at a glance. Use the three parts together:
+
+- `title` — the headline number or aggregate of the series (e.g. `"1,010"` total).
+- `subtitle` — the plain-text context line. Best use: state the time window (`"Last 7 days"`), and when your endpoint handles `?dateRange=`, echo the selected range here so users can see the filter is applied.
+- `badge` — the colored element: `{ "text": "+8%", "icon": "ArrowUp", "color": "Success" }`. Color and icon render **only** on the badge — a trend placed in `subtitle` shows as plain text.
+
+```json
+{
+  "header": {
+    "title": "1,010",
+    "subtitle": "Last 7 days",
+    "badge": { "text": "+8%", "icon": "ArrowUp", "color": "Success" }
+  }
+}
+```
+
 ## Multiple series
 
 The canonical example shows two datasets ("Series A" and "Series B") with no explicit colors — colors are optional and the default palette renders well. To color a series explicitly, set `color` on the dataset; to recolor an individual bar, set `color` on a single `WidgetDataValue` inside `data`. The `labels` array is shared and should match the length of each dataset's `data` array.
@@ -313,9 +334,204 @@ The canonical example shows two datasets ("Series A" and "Series B") with no exp
 }
 ```
 
+## Variations
+
+Other shapes and styling for this widget — pick the one closest to your data:
+
+### Single coloured series
+
+A single metric broken down by category (revenue per category, signups per plan).
+
+```json
+{
+  "title": "Revenue by category",
+  "actions": [
+    {
+      "title": "View Details",
+      "type": "link",
+      "url": "https://example.com/revenue-by-category"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "$48,200",
+      "subtitle": "Last 30 days",
+      "badge": {
+        "text": "+$3,100",
+        "icon": "ArrowUp",
+        "color": "Success"
+      }
+    },
+    "labels": [
+      "Electronics",
+      "Clothing",
+      "Home",
+      "Books",
+      "Toys"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 18200
+          },
+          {
+            "value": 12400
+          },
+          {
+            "value": 9100
+          },
+          {
+            "value": 5300
+          },
+          {
+            "value": 3200
+          }
+        ],
+        "label": "Revenue",
+        "color": "Blue"
+      }
+    ]
+  }
+}
+```
+
+### Explicitly coloured series
+
+You want brand/semantic colours on each series rather than the default palette.
+
+```json
+{
+  "title": "New vs returning",
+  "actions": [
+    {
+      "title": "View Details",
+      "type": "link",
+      "url": "https://example.com/new-vs-returning"
+    }
+  ],
+  "data": {
+    "labels": [
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 40
+          },
+          {
+            "value": 52
+          },
+          {
+            "value": 48
+          },
+          {
+            "value": 61
+          },
+          {
+            "value": 55
+          }
+        ],
+        "label": "New",
+        "color": "Blue"
+      },
+      {
+        "data": [
+          {
+            "value": 22
+          },
+          {
+            "value": 28
+          },
+          {
+            "value": 31
+          },
+          {
+            "value": 26
+          },
+          {
+            "value": 35
+          }
+        ],
+        "label": "Returning",
+        "color": "Green"
+      }
+    ]
+  }
+}
+```
+
+### Comparison with a success alert
+
+A breakdown where every category beat its goal — celebrate it with a success alert.
+
+```json
+{
+  "title": "Revenue by category",
+  "actions": [
+    {
+      "title": "View Details",
+      "type": "link",
+      "url": "https://example.com/revenue-by-category"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "$52,800",
+      "subtitle": "Last 30 days",
+      "badge": {
+        "text": "+$7,700",
+        "icon": "ArrowUp",
+        "color": "Success"
+      }
+    },
+    "labels": [
+      "Electronics",
+      "Clothing",
+      "Home",
+      "Books",
+      "Toys"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 19800
+          },
+          {
+            "value": 13100
+          },
+          {
+            "value": 9600
+          },
+          {
+            "value": 6300
+          },
+          {
+            "value": 4000
+          }
+        ],
+        "label": "Revenue",
+        "color": "Green"
+      }
+    ]
+  },
+  "alert": {
+    "active": true,
+    "level": "success",
+    "message": "Every category beat last month's revenue"
+  }
+}
+```
+
 ## Validation
 
-The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. JSON-validate your response against the resolved schema before declaring done.
+The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate your response's `data` field against `assets/schemas/bar-chart.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
 
 ## Styling
 

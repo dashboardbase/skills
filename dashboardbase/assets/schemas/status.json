@@ -1,0 +1,113 @@
+{
+  "required": [
+    "status"
+  ],
+  "type": "object",
+  "properties": {
+    "header": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "nullable": true
+        },
+        "subtitle": {
+          "type": "string",
+          "nullable": true
+        },
+        "align": {
+          "enum": [
+            "Left",
+            "Center",
+            "Right"
+          ],
+          "type": "string",
+          "nullable": true
+        },
+        "badge": {
+          "required": [
+            "text"
+          ],
+          "type": "object",
+          "properties": {
+            "text": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "icon": {
+              "enum": [
+                "ArrowUp",
+                "ArrowDown"
+              ],
+              "type": "string",
+              "nullable": true
+            },
+            "color": {
+              "enum": [
+                "Success",
+                "Warning",
+                "Danger",
+                "Blue",
+                "Green",
+                "Red",
+                "Yellow",
+                "Orange",
+                "Light",
+                "Dark"
+              ],
+              "type": "string",
+              "nullable": true
+            },
+            "fill": {
+              "enum": [
+                "Solid",
+                "Clear",
+                "Outline"
+              ],
+              "type": "string",
+              "nullable": true
+            }
+          },
+          "additionalProperties": false,
+          "nullable": true
+        },
+        "color": {
+          "enum": [
+            "Success",
+            "Warning",
+            "Danger",
+            "Blue",
+            "Green",
+            "Red",
+            "Yellow",
+            "Orange",
+            "Light",
+            "Dark"
+          ],
+          "type": "string",
+          "nullable": true
+        },
+        "size": {
+          "enum": [
+            "S",
+            "M",
+            "L",
+            "XL"
+          ],
+          "type": "string",
+          "nullable": true
+        }
+      },
+      "additionalProperties": false,
+      "nullable": true
+    },
+    "status": {
+      "enum": [
+        "Ok",
+        "Error"
+      ],
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

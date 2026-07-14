@@ -6,9 +6,11 @@
 
 Show a binary health indicator (Ok / Error) with optional header context — ideal for service status, deploy state, alert summaries.
 
+In a setup file, this widget's `type` is `status` (see `references/setup-files.md`).
+
 ## Resolved JSON schema
 
-The `data` field of the response envelope must match this schema (all `$ref`s are inlined here, so this is the complete contract):
+The `data` field of the response envelope must match this schema (all `$ref`s are inlined here, so this is the complete contract). A standalone copy is bundled at `assets/schemas/status.json` for use with a JSON Schema validator:
 
 ```json
 {
@@ -35,7 +37,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "Right"
           ],
           "type": "string",
-          "format": "int32",
           "nullable": true
         },
         "badge": {
@@ -54,7 +55,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "ArrowDown"
               ],
               "type": "string",
-              "format": "int32",
               "nullable": true
             },
             "color": {
@@ -71,7 +71,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "Dark"
               ],
               "type": "string",
-              "format": "int32",
               "nullable": true
             },
             "fill": {
@@ -81,7 +80,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "Outline"
               ],
               "type": "string",
-              "format": "int32",
               "nullable": true
             }
           },
@@ -102,7 +100,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "Dark"
           ],
           "type": "string",
-          "format": "int32",
           "nullable": true
         },
         "size": {
@@ -113,7 +110,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "XL"
           ],
           "type": "string",
-          "format": "int32",
           "nullable": true
         }
       },
@@ -125,8 +121,7 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
         "Ok",
         "Error"
       ],
-      "type": "string",
-      "format": "int32"
+      "type": "string"
     }
   },
   "additionalProperties": false
@@ -157,11 +152,88 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
 curl -X GET 'https://api.dashboardbase.com/example/statuschart'
 ```
 
+## Header — headline, subtitle, and colored badge
 
+The `header` block is optional in the schema — **include it anyway**. Without it the widget renders as a bare plot; the header is what makes it read well at a glance. Use the three parts together:
+
+- `title` — the headline number or aggregate of the series (e.g. `"1,010"` total).
+- `subtitle` — the plain-text context line. Best use: state the time window (`"Last 7 days"`), and when your endpoint handles `?dateRange=`, echo the selected range here so users can see the filter is applied.
+- `badge` — the colored element: `{ "text": "+8%", "icon": "ArrowUp", "color": "Success" }`. Color and icon render **only** on the badge — a trend placed in `subtitle` shows as plain text.
+
+```json
+{
+  "header": {
+    "title": "1,010",
+    "subtitle": "Last 7 days",
+    "badge": { "text": "+8%", "icon": "ArrowUp", "color": "Success" }
+  }
+}
+```
+
+
+
+## Variations
+
+Other shapes and styling for this widget — pick the one closest to your data:
+
+### Failing (with header context)
+
+A service is down/erroring — pair the Error indicator with a header naming the service.
+
+```json
+{
+  "title": "Payments API",
+  "actions": [
+    {
+      "title": "Check Logs",
+      "type": "link",
+      "url": "https://example.com/status-logs"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "Degraded",
+      "subtitle": "3 failing checks",
+      "color": "Danger"
+    },
+    "status": "Error"
+  }
+}
+```
+
+### Outage with a critical alert
+
+A service is fully down — pair the Error indicator with a critical alert spelling out the impact.
+
+```json
+{
+  "title": "Payments API",
+  "actions": [
+    {
+      "title": "Open Incident",
+      "type": "link",
+      "url": "https://example.com/incident"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "Down",
+      "subtitle": "All checks failing",
+      "color": "Danger"
+    },
+    "status": "Error"
+  },
+  "alert": {
+    "active": true,
+    "level": "critical",
+    "message": "Payments API has been down for 8 minutes"
+  }
+}
+```
 
 ## Validation
 
-The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. JSON-validate your response against the resolved schema before declaring done.
+The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate your response's `data` field against `assets/schemas/status.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
 
 ## Styling
 

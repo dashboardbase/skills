@@ -25,6 +25,13 @@
       "format": "uuid",
       "description": "Dashboard UUID. If present, operations target this dashboard. If absent, a new dashboard is created on import."
     },
+    "name": {
+      "type": "string",
+      "description": "Human-readable dashboard name. Saved alongside the config so each file on disk carries the dashboard it configures.",
+      "examples": [
+        "MRR Overview"
+      ]
+    },
     "baseUrl": {
       "type": "string",
       "format": "uri",
@@ -75,7 +82,7 @@
     },
     "mappings": {
       "type": "array",
-      "description": "Widget mappings. Each entry is in one of three states: A (wire existing), B (create wired), or C (create plan).",
+      "description": "Widget mappings. Each entry is in one of four states: A (wire existing), B (create wired), C (create plan), or D (recreate existing widget with its full spec, as produced by export).",
       "items": {
         "oneOf": [
           {
@@ -277,6 +284,124 @@
                     ]
                   }
                 }
+              },
+              "size": {
+                "type": "object",
+                "properties": {
+                  "w": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "h": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              },
+              "position": {
+                "type": "object",
+                "properties": {
+                  "x": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "y": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
+              }
+            }
+          },
+          {
+            "title": "State D \u2014 Recreate existing widget",
+            "description": "An existing widget exported with its full spec so the dashboard can be recreated: widgetId plus type/size/position, and either a path (wired) or a plan. This is the shape produced by export-setup-file.",
+            "type": "object",
+            "required": [
+              "widgetId",
+              "type"
+            ],
+            "not": {
+              "required": [
+                "path",
+                "plan"
+              ]
+            },
+            "properties": {
+              "widgetId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "UUID of an existing widget in the dashboard."
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "kpi",
+                  "status",
+                  "table",
+                  "line",
+                  "bar",
+                  "pie",
+                  "donut",
+                  "gauge"
+                ],
+                "description": "Widget type."
+              },
+              "path": {
+                "type": "string",
+                "description": "Endpoint path (relative to baseUrl or datasource) or absolute URL. Present for wired widgets.",
+                "examples": [
+                  "/metrics/mrr",
+                  "https://api.example.com/metrics/mrr"
+                ]
+              },
+              "plan": {
+                "type": "object",
+                "required": [
+                  "goal"
+                ],
+                "description": "Plan metadata describing what this widget should show. Present for plan widgets.",
+                "properties": {
+                  "goal": {
+                    "type": "string",
+                    "description": "What this widget should display. Required.",
+                    "examples": [
+                      "Monthly recurring revenue",
+                      "Active users today"
+                    ]
+                  },
+                  "dateRange": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Date range for the data, e.g. \u0027current month\u0027, \u0027last 30 days\u0027."
+                  },
+                  "groupBy": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Dimension to group by, e.g. \u0027country\u0027, \u0027plan\u0027."
+                  },
+                  "dataSource": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Conceptual data source (e.g. \u0027stripe\u0027, \u0027database\u0027). Not a configured datasource reference.",
+                    "examples": [
+                      "stripe",
+                      "auth0",
+                      "database",
+                      "posthog"
+                    ]
+                  }
+                }
+              },
+              "datasourceId": {
+                "type": "string",
+                "description": "References a datasource declared in the top-level \u0027datasources\u0027 array."
               },
               "size": {
                 "type": "object",
