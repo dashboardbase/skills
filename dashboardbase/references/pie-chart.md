@@ -6,9 +6,11 @@
 
 Render a circular share-of-total visualization where each slice is one entry in the dataset — ideal for market share, traffic source breakdown, category split.
 
+In a setup file, this widget's `type` is `pie` (see `references/setup-files.md`).
+
 ## Resolved JSON schema
 
-The `data` field of the response envelope must match this schema (all `$ref`s are inlined here, so this is the complete contract):
+The `data` field of the response envelope must match this schema (all `$ref`s are inlined here, so this is the complete contract). A standalone copy is bundled at `assets/schemas/pie-chart.json` for use with a JSON Schema validator:
 
 ```json
 {
@@ -35,7 +37,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "Right"
           ],
           "type": "string",
-          "format": "int32",
           "nullable": true
         },
         "badge": {
@@ -54,7 +55,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "ArrowDown"
               ],
               "type": "string",
-              "format": "int32",
               "nullable": true
             },
             "color": {
@@ -71,7 +71,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "Dark"
               ],
               "type": "string",
-              "format": "int32",
               "nullable": true
             },
             "fill": {
@@ -81,7 +80,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "Outline"
               ],
               "type": "string",
-              "format": "int32",
               "nullable": true
             }
           },
@@ -102,7 +100,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "Dark"
           ],
           "type": "string",
-          "format": "int32",
           "nullable": true
         },
         "size": {
@@ -113,7 +110,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "XL"
           ],
           "type": "string",
-          "format": "int32",
           "nullable": true
         }
       },
@@ -174,7 +170,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                     "Dark"
                   ],
                   "type": "string",
-                  "format": "int32",
                   "nullable": true
                 }
               },
@@ -200,8 +195,7 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "Light",
                 "Dark"
               ],
-              "type": "string",
-              "format": "int32"
+              "type": "string"
             },
             "nullable": true
           }
@@ -259,6 +253,24 @@ curl -X GET 'https://api.dashboardbase.com/example/api-key/piechart' \
 -H "x-api-key: test"
 ```
 
+## Header — headline, subtitle, and colored badge
+
+The `header` block is optional in the schema — **include it anyway**. Without it the widget renders as a bare plot; the header is what makes it read well at a glance. Use the three parts together:
+
+- `title` — the headline number or aggregate of the series (e.g. `"1,010"` total).
+- `subtitle` — the plain-text context line. Best use: state the time window (`"Last 7 days"`), and when your endpoint handles `?dateRange=`, echo the selected range here so users can see the filter is applied.
+- `badge` — the colored element: `{ "text": "+8%", "icon": "ArrowUp", "color": "Success" }`. Color and icon render **only** on the badge — a trend placed in `subtitle` shows as plain text.
+
+```json
+{
+  "header": {
+    "title": "1,010",
+    "subtitle": "Last 7 days",
+    "badge": { "text": "+8%", "icon": "ArrowUp", "color": "Success" }
+  }
+}
+```
+
 ## Multiple series
 
 The canonical example omits `color` because the default palette renders well without one — colors are optional. To color each slice explicitly, pass `color` as a **list** of `WidgetDataColor` values, one per slice, matching the order of `data`.
@@ -278,9 +290,153 @@ The canonical example omits `color` because the default palette renders well wit
 
 Pie charts typically use a single dataset; `datasets` is still an array for shape consistency with Bar/Line.
 
+## Variations
+
+Other shapes and styling for this widget — pick the one closest to your data:
+
+### Explicitly coloured slices
+
+You want each slice in a specific colour rather than the default palette.
+
+```json
+{
+  "title": "Market Share",
+  "actions": [
+    {
+      "title": "View Details",
+      "type": "link",
+      "url": "https://example.com/piechart-details"
+    }
+  ],
+  "data": {
+    "labels": [
+      "Product A",
+      "Product B",
+      "Product C"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 30
+          },
+          {
+            "value": 50
+          },
+          {
+            "value": 20
+          }
+        ],
+        "label": "Share",
+        "color": [
+          "Blue",
+          "Green",
+          "Yellow"
+        ]
+      }
+    ]
+  }
+}
+```
+
+### Platform breakdown
+
+Distribution of users/sessions across platforms or segments.
+
+```json
+{
+  "title": "OS usage",
+  "actions": [
+    {
+      "title": "View Details",
+      "type": "link",
+      "url": "https://example.com/os-usage"
+    }
+  ],
+  "data": {
+    "labels": [
+      "iOS",
+      "Android",
+      "Web"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 58
+          },
+          {
+            "value": 34
+          },
+          {
+            "value": 8
+          }
+        ],
+        "label": "Sessions",
+        "color": [
+          "Blue",
+          "Green",
+          "Orange"
+        ]
+      }
+    ]
+  }
+}
+```
+
+### Share of total with an info alert
+
+A breakdown drawn from a sample or estimate — add an info alert so viewers read it with the right caveat.
+
+```json
+{
+  "title": "Market Share",
+  "actions": [
+    {
+      "title": "View Details",
+      "type": "link",
+      "url": "https://example.com/piechart-details"
+    }
+  ],
+  "data": {
+    "labels": [
+      "Product A",
+      "Product B",
+      "Product C"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 30
+          },
+          {
+            "value": 50
+          },
+          {
+            "value": 20
+          }
+        ],
+        "label": "Share",
+        "color": [
+          "Blue",
+          "Green",
+          "Yellow"
+        ]
+      }
+    ]
+  },
+  "alert": {
+    "active": true,
+    "level": "info",
+    "message": "Shares are based on a 7-day sample"
+  }
+}
+```
+
 ## Validation
 
-The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. JSON-validate your response against the resolved schema before declaring done.
+The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate your response's `data` field against `assets/schemas/pie-chart.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
 
 ## Styling
 

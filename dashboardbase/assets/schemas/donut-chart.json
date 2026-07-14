@@ -1,0 +1,190 @@
+{
+  "required": [
+    "datasets"
+  ],
+  "type": "object",
+  "properties": {
+    "header": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "nullable": true
+        },
+        "subtitle": {
+          "type": "string",
+          "nullable": true
+        },
+        "align": {
+          "enum": [
+            "Left",
+            "Center",
+            "Right"
+          ],
+          "type": "string",
+          "nullable": true
+        },
+        "badge": {
+          "required": [
+            "text"
+          ],
+          "type": "object",
+          "properties": {
+            "text": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "icon": {
+              "enum": [
+                "ArrowUp",
+                "ArrowDown"
+              ],
+              "type": "string",
+              "nullable": true
+            },
+            "color": {
+              "enum": [
+                "Success",
+                "Warning",
+                "Danger",
+                "Blue",
+                "Green",
+                "Red",
+                "Yellow",
+                "Orange",
+                "Light",
+                "Dark"
+              ],
+              "type": "string",
+              "nullable": true
+            },
+            "fill": {
+              "enum": [
+                "Solid",
+                "Clear",
+                "Outline"
+              ],
+              "type": "string",
+              "nullable": true
+            }
+          },
+          "additionalProperties": false,
+          "nullable": true
+        },
+        "color": {
+          "enum": [
+            "Success",
+            "Warning",
+            "Danger",
+            "Blue",
+            "Green",
+            "Red",
+            "Yellow",
+            "Orange",
+            "Light",
+            "Dark"
+          ],
+          "type": "string",
+          "nullable": true
+        },
+        "size": {
+          "enum": [
+            "S",
+            "M",
+            "L",
+            "XL"
+          ],
+          "type": "string",
+          "nullable": true
+        }
+      },
+      "additionalProperties": false,
+      "nullable": true
+    },
+    "labels": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "nullable": true
+    },
+    "datasets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "required": [
+                "value"
+              ],
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "prefix": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "postfix": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "note": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "color": {
+                  "enum": [
+                    "Success",
+                    "Warning",
+                    "Danger",
+                    "Blue",
+                    "Green",
+                    "Red",
+                    "Yellow",
+                    "Orange",
+                    "Light",
+                    "Dark"
+                  ],
+                  "type": "string",
+                  "nullable": true
+                }
+              },
+              "additionalProperties": false
+            },
+            "nullable": true
+          },
+          "label": {
+            "type": "string",
+            "nullable": true
+          },
+          "color": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "Success",
+                "Warning",
+                "Danger",
+                "Blue",
+                "Green",
+                "Red",
+                "Yellow",
+                "Orange",
+                "Light",
+                "Dark"
+              ],
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -6,9 +6,11 @@
 
 Render rows of structured data with optional column headers — ideal for top-N lists, ranked items, status grids, recent activity.
 
+In a setup file, this widget's `type` is `table` (see `references/setup-files.md`).
+
 ## Resolved JSON schema
 
-The `data` field of the response envelope must match this schema (all `$ref`s are inlined here, so this is the complete contract):
+The `data` field of the response envelope must match this schema (all `$ref`s are inlined here, so this is the complete contract). A standalone copy is bundled at `assets/schemas/table.json` for use with a JSON Schema validator:
 
 ```json
 {
@@ -35,7 +37,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "Right"
           ],
           "type": "string",
-          "format": "int32",
           "nullable": true
         },
         "badge": {
@@ -54,7 +55,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "ArrowDown"
               ],
               "type": "string",
-              "format": "int32",
               "nullable": true
             },
             "color": {
@@ -71,7 +71,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "Dark"
               ],
               "type": "string",
-              "format": "int32",
               "nullable": true
             },
             "fill": {
@@ -81,7 +80,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "Outline"
               ],
               "type": "string",
-              "format": "int32",
               "nullable": true
             }
           },
@@ -102,7 +100,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "Dark"
           ],
           "type": "string",
-          "format": "int32",
           "nullable": true
         },
         "size": {
@@ -113,7 +110,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "XL"
           ],
           "type": "string",
-          "format": "int32",
           "nullable": true
         }
       },
@@ -170,7 +166,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                     "ArrowDown"
                   ],
                   "type": "string",
-                  "format": "int32",
                   "nullable": true
                 },
                 "color": {
@@ -187,7 +182,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                     "Dark"
                   ],
                   "type": "string",
-                  "format": "int32",
                   "nullable": true
                 },
                 "fill": {
@@ -197,7 +191,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                     "Outline"
                   ],
                   "type": "string",
-                  "format": "int32",
                   "nullable": true
                 }
               },
@@ -222,92 +215,95 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
 
 ```json
 {
-  "title": "Tasks",
+  "title": "Products",
   "actions": [
     {
-      "title": "View All Tasks",
+      "title": "View All Products",
       "type": "link",
-      "url": "https://example.com/all-tasks"
+      "url": "https://example.com/products"
     }
   ],
   "data": {
     "headers": [
       {
-        "text": "Name",
-        "width": 30
+        "text": "Product",
+        "width": 40
       },
       {
         "text": "Status",
-        "width": 30
+        "width": 25
       },
       {
-        "text": "Progress",
-        "width": 40
+        "text": "Price",
+        "width": 20
+      },
+      {
+        "text": "Link",
+        "width": 15
       }
     ],
     "rows": [
       [
         {
-          "text": "Task A"
+          "text": "Graphic T-Shirt",
+          "imageUrl": "https://app.dashboardbase.com/assets/example/product1.jpeg"
         },
         {
-          "text": "Completed",
+          "text": "In Stock",
           "badge": {
-            "text": "Done",
+            "text": "Available",
             "icon": "ArrowUp",
             "color": "Success"
           }
         },
         {
-          "text": "100%"
+          "text": "$29"
+        },
+        {
+          "text": "View",
+          "link": "https://example.com/products/graphic-t-shirt"
         }
       ],
       [
         {
-          "text": "Task B"
+          "text": "Slim Fit Pants",
+          "imageUrl": "https://app.dashboardbase.com/assets/example/product2.jpeg"
         },
         {
-          "text": "In Progress",
+          "text": "Low Stock",
           "badge": {
-            "text": "Working",
+            "text": "Few left",
             "color": "Warning"
           }
         },
         {
-          "text": "50%"
+          "text": "$59"
+        },
+        {
+          "text": "View",
+          "link": "https://example.com/products/slim-fit-pants"
         }
       ],
       [
         {
-          "text": "Task C"
+          "text": "Zip-Up Hoodie",
+          "imageUrl": "https://app.dashboardbase.com/assets/example/product3.jpeg"
         },
         {
-          "text": "Failed",
+          "text": "Out of Stock",
           "badge": {
-            "text": "Done",
+            "text": "Sold out",
             "icon": "ArrowDown",
             "color": "Danger",
             "fill": "Solid"
           }
         },
         {
-          "text": "0%"
-        }
-      ],
-      [
-        {
-          "text": "Task D"
+          "text": "$79"
         },
         {
-          "text": "Completed",
-          "badge": {
-            "text": "Done",
-            "color": "Success",
-            "fill": "Outline"
-          }
-        },
-        {
-          "text": "100%"
+          "text": "View",
+          "link": "https://example.com/products/zip-up-hoodie"
         }
       ]
     ]
@@ -321,11 +317,254 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
 curl -X GET 'https://api.dashboardbase.com/example/tablechart'
 ```
 
+## Header — headline, subtitle, and colored badge
 
+The `header` block is optional in the schema — **include it anyway**. Without it the widget renders as a bare plot; the header is what makes it read well at a glance. Use the three parts together:
+
+- `title` — the headline number or aggregate of the series (e.g. `"1,010"` total).
+- `subtitle` — the plain-text context line. Best use: state the time window (`"Last 7 days"`), and when your endpoint handles `?dateRange=`, echo the selected range here so users can see the filter is applied.
+- `badge` — the colored element: `{ "text": "+8%", "icon": "ArrowUp", "color": "Success" }`. Color and icon render **only** on the badge — a trend placed in `subtitle` shows as plain text.
+
+```json
+{
+  "header": {
+    "title": "1,010",
+    "subtitle": "Last 7 days",
+    "badge": { "text": "+8%", "icon": "ArrowUp", "color": "Success" }
+  }
+}
+```
+
+
+
+## Variations
+
+Other shapes and styling for this widget — pick the one closest to your data:
+
+### Ranked top-N list
+
+A leaderboard / top-N list of text values with one badge column for a status or tier.
+
+```json
+{
+  "title": "Top customers",
+  "actions": [
+    {
+      "title": "View All",
+      "type": "link",
+      "url": "https://example.com/customers"
+    }
+  ],
+  "data": {
+    "headers": [
+      {
+        "text": "Customer",
+        "width": 45
+      },
+      {
+        "text": "Plan",
+        "width": 30
+      },
+      {
+        "text": "MRR",
+        "width": 25
+      }
+    ],
+    "rows": [
+      [
+        {
+          "text": "Acme Corp",
+          "link": "https://example.com/customers/acme"
+        },
+        {
+          "text": "Enterprise",
+          "badge": {
+            "text": "Enterprise",
+            "color": "Dark"
+          }
+        },
+        {
+          "text": "$1,200"
+        }
+      ],
+      [
+        {
+          "text": "Globex",
+          "link": "https://example.com/customers/globex"
+        },
+        {
+          "text": "Pro",
+          "badge": {
+            "text": "Pro",
+            "color": "Success"
+          }
+        },
+        {
+          "text": "$480"
+        }
+      ],
+      [
+        {
+          "text": "Initech",
+          "link": "https://example.com/customers/initech"
+        },
+        {
+          "text": "Pro",
+          "badge": {
+            "text": "Pro",
+            "color": "Success"
+          }
+        },
+        {
+          "text": "$480"
+        }
+      ]
+    ]
+  }
+}
+```
+
+### Status grid (coloured badges)
+
+A grid of services/checks where each row's badge colour communicates health.
+
+```json
+{
+  "title": "Service health",
+  "actions": [
+    {
+      "title": "Open status page",
+      "type": "link",
+      "url": "https://example.com/status"
+    }
+  ],
+  "data": {
+    "headers": [
+      {
+        "text": "Service",
+        "width": 55
+      },
+      {
+        "text": "State",
+        "width": 45
+      }
+    ],
+    "rows": [
+      [
+        {
+          "text": "API"
+        },
+        {
+          "badge": {
+            "text": "Operational",
+            "color": "Success"
+          }
+        }
+      ],
+      [
+        {
+          "text": "Workers"
+        },
+        {
+          "badge": {
+            "text": "Degraded",
+            "color": "Warning",
+            "fill": "Outline"
+          }
+        }
+      ],
+      [
+        {
+          "text": "Webhooks"
+        },
+        {
+          "badge": {
+            "text": "Down",
+            "icon": "ArrowDown",
+            "color": "Danger",
+            "fill": "Solid"
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+### Status grid with a warning alert
+
+A grid of services where some are degraded — summarise the impact in a warning alert above the table.
+
+```json
+{
+  "title": "Service health",
+  "actions": [
+    {
+      "title": "Open status page",
+      "type": "link",
+      "url": "https://example.com/status"
+    }
+  ],
+  "data": {
+    "headers": [
+      {
+        "text": "Service",
+        "width": 55
+      },
+      {
+        "text": "State",
+        "width": 45
+      }
+    ],
+    "rows": [
+      [
+        {
+          "text": "API"
+        },
+        {
+          "badge": {
+            "text": "Operational",
+            "color": "Success"
+          }
+        }
+      ],
+      [
+        {
+          "text": "Workers"
+        },
+        {
+          "badge": {
+            "text": "Degraded",
+            "color": "Warning",
+            "fill": "Outline"
+          }
+        }
+      ],
+      [
+        {
+          "text": "Search"
+        },
+        {
+          "badge": {
+            "text": "Degraded",
+            "color": "Warning",
+            "fill": "Outline"
+          }
+        }
+      ]
+    ]
+  },
+  "alert": {
+    "active": true,
+    "level": "warning",
+    "message": "2 services reporting degraded performance"
+  }
+}
+```
 
 ## Validation
 
-The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. JSON-validate your response against the resolved schema before declaring done.
+The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate your response's `data` field against `assets/schemas/table.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
 
 ## Styling
 

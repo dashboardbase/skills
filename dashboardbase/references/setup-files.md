@@ -13,6 +13,7 @@ The full JSON Schema is bundled at `assets/setup-file.schema.json`. Load it when
   "$schema": "https://api.dashboardbase.com/setup-file/schema/v1.json",
   "version": 1,
   "id": "00000000-0000-0000-0000-000000000000",
+  "name": "MRR Overview",
   "baseUrl": "https://api.example.com",
   "datasources": [
     { "id": "stripe", "baseUrl": "https://api.stripe.com" }
@@ -24,14 +25,30 @@ The full JSON Schema is bundled at `assets/setup-file.schema.json`. Load it when
 
 - `version` is currently always `1`. Omit to default.
 - `id` is the target dashboard UUID. If absent, a new dashboard is created on import. The value above is a placeholder — replace with a real UUID or omit the field.
+- `name` (optional) is the human-readable dashboard name, so the file on disk carries which dashboard it configures.
 - `baseUrl` is the default base URL for mappings without an explicit `datasourceId` or absolute `path`.
 - `datasources[]` declares named datasources. Each `mapping` may reference one by `datasourceId`. Credentials live in Dashboardbase, never in the setup file.
 - `refreshInterval` is one of `1m`, `5m`, `10m`, `30m`.
-- `mappings[]` is the array of widget-to-endpoint wires — each entry is in one of three states described below.
+- `mappings[]` is the array of widget-to-endpoint wires — each entry is in one of four states described below.
 
-## The three mapping states
+## Widget `type` values
 
-Each entry in `mappings[]` is in exactly one of three states.
+Mappings that create widgets (States B, C, and D) declare the widget with a `type` slug. These are the canonical values:
+
+| Widget | Setup-file `type` | Reference |
+| --- | --- | --- |
+| BarChart | `bar` | `references/bar-chart.md` |
+| DonutChart | `donut` | `references/donut-chart.md` |
+| GaugeChart | `gauge` | `references/gauge-chart.md` |
+| KPI | `kpi` | `references/kpi.md` |
+| LineChart | `line` | `references/line-chart.md` |
+| PieChart | `pie` | `references/pie-chart.md` |
+| Status | `status` | `references/status.md` |
+| Table | `table` | `references/table.md` |
+
+## The four mapping states
+
+Each entry in `mappings[]` is in exactly one of four states. You author States A–C by hand; State D is what the export endpoint produces.
 
 ### State A — Wire existing widget
 
@@ -156,6 +173,161 @@ Describe a widget you intend to build but for which no endpoint exists yet. Requ
 }
 ```
 
+### State D — Recreate existing widget (export format)
+
+An existing widget exported with its full spec, so the dashboard can be recreated elsewhere: `widgetId` plus `type` / `size` / `position`, and either a `path` (wired widget) or a `plan` (plan widget). This is the shape the export endpoint produces — you rarely author it by hand, but you will encounter it when editing an exported file (see "Exporting an existing dashboard" below).
+
+```json
+{
+  "$schema": "https://api.dashboardbase.com/setup-file/schema/v1.json",
+  "version": 1,
+  "id": "8f2e3a60-5975-4c63-9a84-2b638a5e3d3e",
+  "name": "MRR Overview",
+  "baseUrl": "https://api.example.com",
+  "refreshInterval": "5m",
+  "mappings": [
+    {
+      "widgetId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      "type": "kpi",
+      "path": "/metrics/mrr",
+      "size": { "w": 3, "h": 1 },
+      "position": { "x": 0, "y": 0 }
+    },
+    {
+      "widgetId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+      "type": "line",
+      "size": { "w": 12, "h": 3 },
+      "position": { "x": 0, "y": 1 },
+      "plan": {
+        "goal": "Revenue over time",
+        "dateRange": "last 30 days",
+        "groupBy": "day",
+        "dataSource": "stripe"
+      }
+    }
+  ]
+}
+```
+
+## Recommended layouts
+
+When you are **creating new widgets** (mapping State B or State C), don't invent `position` / `size` values — start from one of the known-good layouts below so the imported dashboard looks right immediately. The grid is 12 columns wide.
+
+How to use them:
+
+1. List the widgets you're adding and note each one's slot role from the affinity table below (a single-number widget like KPI / Status / Gauge is a `Kpi` slot; a hero chart like Line / Bar is `Primary`; supporting charts and tables like Table / Pie / Donut are `Secondary`).
+2. Pick the smallest layout whose slots cover that mix — leftover slots are fine to leave unused.
+3. Assign each widget to a slot whose role it fits, and copy that slot's `position` and `size` straight into the mapping. The user can drag things around afterward.
+
+Worked examples:
+
+- **LineChart + Table** → *Two Columns*: the line chart takes the `Primary` slot (`position {x:0,y:0}`, `size {w:8,h:6}`), the table the `Secondary` slot (`position {x:8,y:0}`, `size {w:4,h:6}`).
+- **LineChart + Table + KPI** → *Spotlight*: the KPI drops into the small `Kpi` slot, the line chart into `Primary`, the table into `Secondary`.
+
+### Which widget fits which slot
+
+| Slot role | Recommended widgets |
+| --- | --- |
+| `Kpi` | GaugeChart, KPI, Status |
+| `Primary` | BarChart, LineChart, Table |
+| `Secondary` | BarChart, DonutChart, GaugeChart, PieChart, Table |
+
+### Layouts
+
+#### Starter Kit
+
+A balanced dashboard with KPIs and charts to get you started.
+
+| Slot | position | size | role |
+| --- | --- | --- | --- |
+| 1 | `x:0 y:0` | `w:3 h:1` | `Kpi` |
+| 2 | `x:3 y:0` | `w:3 h:1` | `Kpi` |
+| 3 | `x:6 y:0` | `w:3 h:1` | `Kpi` |
+| 4 | `x:9 y:0` | `w:3 h:1` | `Kpi` |
+| 5 | `x:0 y:1` | `w:8 h:5` | `Primary` |
+| 6 | `x:8 y:1` | `w:4 h:5` | `Secondary` |
+
+#### Reversed Starter Kit
+
+A starter kit with the second row's column order reversed.
+
+| Slot | position | size | role |
+| --- | --- | --- | --- |
+| 1 | `x:0 y:0` | `w:3 h:1` | `Kpi` |
+| 2 | `x:3 y:0` | `w:3 h:1` | `Kpi` |
+| 3 | `x:6 y:0` | `w:3 h:1` | `Kpi` |
+| 4 | `x:9 y:0` | `w:3 h:1` | `Kpi` |
+| 5 | `x:0 y:1` | `w:4 h:5` | `Secondary` |
+| 6 | `x:4 y:1` | `w:8 h:5` | `Primary` |
+
+#### Starter Kit Single Column
+
+A starter kit with a single large column in the second row.
+
+| Slot | position | size | role |
+| --- | --- | --- | --- |
+| 1 | `x:0 y:0` | `w:3 h:1` | `Kpi` |
+| 2 | `x:3 y:0` | `w:3 h:1` | `Kpi` |
+| 3 | `x:6 y:0` | `w:3 h:1` | `Kpi` |
+| 4 | `x:9 y:0` | `w:3 h:1` | `Kpi` |
+| 5 | `x:0 y:1` | `w:12 h:5` | `Primary` |
+
+#### Starter Kit - Two Rows
+
+A starter kit with the second row split into two.
+
+| Slot | position | size | role |
+| --- | --- | --- | --- |
+| 1 | `x:0 y:0` | `w:3 h:1` | `Kpi` |
+| 2 | `x:3 y:0` | `w:3 h:1` | `Kpi` |
+| 3 | `x:6 y:0` | `w:3 h:1` | `Kpi` |
+| 4 | `x:9 y:0` | `w:3 h:1` | `Kpi` |
+| 5 | `x:0 y:1` | `w:12 h:2` | `Primary` |
+| 6 | `x:0 y:3` | `w:12 h:3` | `Secondary` |
+
+#### Starter Kit - Three Columns
+
+A starter kit with three columns in the second row.
+
+| Slot | position | size | role |
+| --- | --- | --- | --- |
+| 1 | `x:0 y:0` | `w:3 h:1` | `Kpi` |
+| 2 | `x:3 y:0` | `w:3 h:1` | `Kpi` |
+| 3 | `x:6 y:0` | `w:3 h:1` | `Kpi` |
+| 4 | `x:9 y:0` | `w:3 h:1` | `Kpi` |
+| 5 | `x:0 y:1` | `w:4 h:5` | `Primary` |
+| 6 | `x:4 y:1` | `w:4 h:5` | `Secondary` |
+| 7 | `x:8 y:1` | `w:4 h:5` | `Secondary` |
+
+#### Two Columns
+
+Two full-height columns side by side, one wide and one narrow.
+
+| Slot | position | size | role |
+| --- | --- | --- | --- |
+| 1 | `x:0 y:0` | `w:8 h:6` | `Primary` |
+| 2 | `x:8 y:0` | `w:4 h:6` | `Secondary` |
+
+#### Spotlight
+
+A wide full-height panel beside a stacked pair in a narrow column.
+
+| Slot | position | size | role |
+| --- | --- | --- | --- |
+| 1 | `x:0 y:0` | `w:8 h:6` | `Primary` |
+| 2 | `x:8 y:0` | `w:4 h:1` | `Kpi` |
+| 3 | `x:8 y:1` | `w:4 h:5` | `Secondary` |
+
+#### Reversed Spotlight
+
+A stacked pair in a narrow column beside a wide full-height panel.
+
+| Slot | position | size | role |
+| --- | --- | --- | --- |
+| 1 | `x:0 y:0` | `w:4 h:1` | `Kpi` |
+| 2 | `x:0 y:1` | `w:4 h:5` | `Secondary` |
+| 3 | `x:4 y:0` | `w:8 h:6` | `Primary` |
+
 ## Example with multiple datasources
 
 ```json
@@ -234,6 +406,20 @@ Describe a widget you intend to build but for which no endpoint exists yet. Requ
 }
 ```
 
+## Where to keep the file
+
+Save the setup file in your repo as `.dashboardbase/<slug>.json`, where `<slug>` is your dashboard name in lowercase with hyphens (e.g. `.dashboardbase/mrr-overview.json`). Keeping configs under `.dashboardbase/` lets you version-control all your dashboard configs alongside your code, one file per dashboard.
+
+## Reuse the base URL from an existing setup file
+
+Before writing a **new** setup file, check whether the user already has one — look in the `.dashboardbase/` directory (and any other setup-file JSON the project keeps). If one exists, reuse its connection details instead of asking the user again or falling back to a placeholder like `https://api.example.com`:
+
+- Copy the top-level `baseUrl` so every new mapping points at the same host the user has already configured.
+- Carry over any `datasources[]` entries and reference them by `datasourceId` when the new widgets are served by one of those same datasources.
+- Only prompt the user for a base URL when no existing setup file is found and you cannot otherwise infer the host (for example from env files, app config, or an existing HTTP client in the codebase).
+
+This keeps every dashboard in the repo pointed at the same API and saves the user from re-entering a URL they have already set up.
+
 ## How to load your setup file into Dashboardbase
 
 After generating the JSON, a user has three ways to import it:
@@ -286,6 +472,16 @@ Response (`ValidateSetupFileResponse`):
 ```
 
 Use `summary.requiresAuth` and `summary.authPromptTargets` to decide whether to prompt the user for credentials before importing. Use `errors[]` to surface line-and-column-precise validation feedback inside your tool.
+
+## Exporting an existing dashboard
+
+To turn an existing dashboard into a setup file (State D mappings, one per widget):
+
+```http
+POST /bff/v1/organizations/{orgId}/dashboards/{dashboardId}/export-setup-file
+```
+
+The response's `data` field contains the setup-file JSON with every widget's full spec. Save it under `.dashboardbase/` to version-control the dashboard, or import it into another organisation to clone it. Exported files never contain credentials.
 
 ## Common mistakes
 

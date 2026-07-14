@@ -6,9 +6,11 @@
 
 Render one or more series of values across a shared label axis as connected lines — ideal for time-series data (traffic, revenue, latency over time).
 
+In a setup file, this widget's `type` is `line` (see `references/setup-files.md`).
+
 ## Resolved JSON schema
 
-The `data` field of the response envelope must match this schema (all `$ref`s are inlined here, so this is the complete contract):
+The `data` field of the response envelope must match this schema (all `$ref`s are inlined here, so this is the complete contract). A standalone copy is bundled at `assets/schemas/line-chart.json` for use with a JSON Schema validator:
 
 ```json
 {
@@ -35,7 +37,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "Right"
           ],
           "type": "string",
-          "format": "int32",
           "nullable": true
         },
         "badge": {
@@ -54,7 +55,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "ArrowDown"
               ],
               "type": "string",
-              "format": "int32",
               "nullable": true
             },
             "color": {
@@ -71,7 +71,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "Dark"
               ],
               "type": "string",
-              "format": "int32",
               "nullable": true
             },
             "fill": {
@@ -81,7 +80,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "Outline"
               ],
               "type": "string",
-              "format": "int32",
               "nullable": true
             }
           },
@@ -102,7 +100,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "Dark"
           ],
           "type": "string",
-          "format": "int32",
           "nullable": true
         },
         "size": {
@@ -113,7 +110,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "XL"
           ],
           "type": "string",
-          "format": "int32",
           "nullable": true
         }
       },
@@ -170,7 +166,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                     "Dark"
                   ],
                   "type": "string",
-                  "format": "int32",
                   "nullable": true
                 }
               },
@@ -196,7 +191,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "Dark"
             ],
             "type": "string",
-            "format": "int32",
             "nullable": true
           }
         },
@@ -233,6 +227,15 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
     }
   ],
   "data": {
+    "header": {
+      "title": "1010",
+      "subtitle": "Last 7 days",
+      "badge": {
+        "text": "+70%",
+        "icon": "ArrowUp",
+        "color": "Success"
+      }
+    },
     "labels": [
       "Mon",
       "Tue",
@@ -281,6 +284,24 @@ curl -X GET 'https://api.dashboardbase.com/example/api-key/linechart' \
 -H "x-api-key: test"
 ```
 
+## Header — headline, subtitle, and colored badge
+
+The `header` block is optional in the schema — **include it anyway**. Without it the widget renders as a bare plot; the header is what makes it read well at a glance. Use the three parts together:
+
+- `title` — the headline number or aggregate of the series (e.g. `"1,010"` total).
+- `subtitle` — the plain-text context line. Best use: state the time window (`"Last 7 days"`), and when your endpoint handles `?dateRange=`, echo the selected range here so users can see the filter is applied.
+- `badge` — the colored element: `{ "text": "+8%", "icon": "ArrowUp", "color": "Success" }`. Color and icon render **only** on the badge — a trend placed in `subtitle` shows as plain text.
+
+```json
+{
+  "header": {
+    "title": "1,010",
+    "subtitle": "Last 7 days",
+    "badge": { "text": "+8%", "icon": "ArrowUp", "color": "Success" }
+  }
+}
+```
+
 ## Multiple series
 
 The canonical example shows a single dataset because colors and multi-series are optional. To draw multiple lines, pass several entries in `datasets`; each has its own `label` and an optional `color`. `labels` is shared across all datasets. Set `fill: true` to fill the area beneath each line.
@@ -295,9 +316,241 @@ The canonical example shows a single dataset because colors and multi-series are
 }
 ```
 
+## Variations
+
+Other shapes and styling for this widget — pick the one closest to your data:
+
+### Coloured multi-series (filled)
+
+Comparing two trends with explicit colours and a filled area beneath each line.
+
+```json
+{
+  "title": "Traffic breakdown",
+  "actions": [
+    {
+      "title": "Analyze Traffic",
+      "type": "link",
+      "url": "https://example.com/traffic-analysis"
+    }
+  ],
+  "data": {
+    "labels": [
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sat",
+      "Sun"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 100
+          },
+          {
+            "value": 120
+          },
+          {
+            "value": 150
+          },
+          {
+            "value": 130
+          },
+          {
+            "value": 160
+          },
+          {
+            "value": 180
+          },
+          {
+            "value": 170
+          }
+        ],
+        "label": "Page Views",
+        "color": "Blue"
+      },
+      {
+        "data": [
+          {
+            "value": 40
+          },
+          {
+            "value": 48
+          },
+          {
+            "value": 55
+          },
+          {
+            "value": 50
+          },
+          {
+            "value": 62
+          },
+          {
+            "value": 70
+          },
+          {
+            "value": 66
+          }
+        ],
+        "label": "Unique Visitors",
+        "color": "Green"
+      }
+    ],
+    "fill": true
+  }
+}
+```
+
+### Latency trend (unit postfix)
+
+An average/percentile metric over time where each point carries a unit (ms, %, $).
+
+```json
+{
+  "title": "Avg response time",
+  "actions": [
+    {
+      "title": "View Traces",
+      "type": "link",
+      "url": "https://example.com/traces"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "182ms",
+      "subtitle": "Last 7 days",
+      "badge": {
+        "text": "+12ms",
+        "icon": "ArrowUp",
+        "color": "Danger"
+      }
+    },
+    "labels": [
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sat",
+      "Sun"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 168,
+            "postfix": "ms"
+          },
+          {
+            "value": 172,
+            "postfix": "ms"
+          },
+          {
+            "value": 165,
+            "postfix": "ms"
+          },
+          {
+            "value": 190,
+            "postfix": "ms"
+          },
+          {
+            "value": 201,
+            "postfix": "ms"
+          },
+          {
+            "value": 178,
+            "postfix": "ms"
+          },
+          {
+            "value": 182,
+            "postfix": "ms"
+          }
+        ],
+        "label": "p95 latency",
+        "color": "Light"
+      }
+    ]
+  }
+}
+```
+
+### Trend with an info alert
+
+A trend where a spike has a known cause — add an info alert so viewers don't misread it.
+
+```json
+{
+  "title": "Website Traffic",
+  "actions": [
+    {
+      "title": "Analyze Traffic",
+      "type": "link",
+      "url": "https://example.com/traffic-analysis"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "1480",
+      "subtitle": "Last 7 days",
+      "badge": {
+        "text": "+146%",
+        "icon": "ArrowUp",
+        "color": "Success"
+      }
+    },
+    "labels": [
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sat",
+      "Sun"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 100
+          },
+          {
+            "value": 320
+          },
+          {
+            "value": 310
+          },
+          {
+            "value": 280
+          },
+          {
+            "value": 230
+          },
+          {
+            "value": 140
+          },
+          {
+            "value": 100
+          }
+        ],
+        "label": "Page Views"
+      }
+    ]
+  },
+  "alert": {
+    "active": true,
+    "level": "info",
+    "message": "Includes the marketing campaign launched Tue"
+  }
+}
+```
+
 ## Validation
 
-The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. JSON-validate your response against the resolved schema before declaring done.
+The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate your response's `data` field against `assets/schemas/line-chart.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
 
 ## Styling
 

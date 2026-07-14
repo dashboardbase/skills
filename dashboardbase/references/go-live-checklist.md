@@ -47,7 +47,7 @@ Walk through this list before declaring the integration ready.
 - [ ] Datasource baseUrls in the setup file are correct.
 - [ ] No credentials in the setup file.
 
-## Reactions (if used)
+## Events (if used)
 
 - [ ] Webhook secret is stored in a secret manager.
 - [ ] Sender is server-side only (never client-side).

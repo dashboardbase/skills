@@ -110,6 +110,8 @@ To let users reproduce the same dashboard with one click, export a setup file:
 }
 ```
 
+Save this file in your repo as `.dashboardbase/<slug>.json`, where `<slug>` is your dashboard name in lowercase with hyphens (e.g. `.dashboardbase/mrr-overview.json`). Keeping it in `.dashboardbase/` lets you version-control all your dashboard configs alongside your code.
+
 Share this file. Users drag-drop it into Dashboardbase (or paste it; see `references/setup-files.md`). They provide credentials in the import flow; the file itself stays credential-free.
 
 ## Step 5 — Before going live
@@ -120,5 +122,5 @@ Walk through `references/go-live-checklist.md`. The key items: HTTPS, secret rot
 
 - **More widget types:** see `references/<widget>.md` for one file per widget.
 - **Multiple datasources:** see `references/setup-files.md` → "Example with multiple datasources".
-- **Real-time notifications:** see `references/reactions.md` to push events from your backend.
+- **Real-time notifications:** see `references/events.md` to push events from your backend.
 - **Production hosting concerns:** see `references/hosting-and-http.md`.

@@ -6,9 +6,11 @@
 
 Same as PieChart but rendered with a hollow centre — useful when you want a 'ring' visual style for a category breakdown.
 
+In a setup file, this widget's `type` is `donut` (see `references/setup-files.md`).
+
 ## Resolved JSON schema
 
-The `data` field of the response envelope must match this schema (all `$ref`s are inlined here, so this is the complete contract):
+The `data` field of the response envelope must match this schema (all `$ref`s are inlined here, so this is the complete contract). A standalone copy is bundled at `assets/schemas/donut-chart.json` for use with a JSON Schema validator:
 
 ```json
 {
@@ -35,7 +37,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "Right"
           ],
           "type": "string",
-          "format": "int32",
           "nullable": true
         },
         "badge": {
@@ -54,7 +55,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "ArrowDown"
               ],
               "type": "string",
-              "format": "int32",
               "nullable": true
             },
             "color": {
@@ -71,7 +71,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "Dark"
               ],
               "type": "string",
-              "format": "int32",
               "nullable": true
             },
             "fill": {
@@ -81,7 +80,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "Outline"
               ],
               "type": "string",
-              "format": "int32",
               "nullable": true
             }
           },
@@ -102,7 +100,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "Dark"
           ],
           "type": "string",
-          "format": "int32",
           "nullable": true
         },
         "size": {
@@ -113,7 +110,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "XL"
           ],
           "type": "string",
-          "format": "int32",
           "nullable": true
         }
       },
@@ -170,7 +166,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                     "Dark"
                   ],
                   "type": "string",
-                  "format": "int32",
                   "nullable": true
                 }
               },
@@ -197,8 +192,7 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "Light",
                 "Dark"
               ],
-              "type": "string",
-              "format": "int32"
+              "type": "string"
             },
             "nullable": true
           }
@@ -260,6 +254,24 @@ curl -X GET 'https://api.dashboardbase.com/example/basic-auth/donutchart' \
 -u "test:test"
 ```
 
+## Header — headline, subtitle, and colored badge
+
+The `header` block is optional in the schema — **include it anyway**. Without it the widget renders as a bare plot; the header is what makes it read well at a glance. Use the three parts together:
+
+- `title` — the headline number or aggregate of the series (e.g. `"1,010"` total).
+- `subtitle` — the plain-text context line. Best use: state the time window (`"Last 7 days"`), and when your endpoint handles `?dateRange=`, echo the selected range here so users can see the filter is applied.
+- `badge` — the colored element: `{ "text": "+8%", "icon": "ArrowUp", "color": "Success" }`. Color and icon render **only** on the badge — a trend placed in `subtitle` shows as plain text.
+
+```json
+{
+  "header": {
+    "title": "1,010",
+    "subtitle": "Last 7 days",
+    "badge": { "text": "+8%", "icon": "ArrowUp", "color": "Success" }
+  }
+}
+```
+
 ## Multiple series
 
 The canonical example omits `color` — the default palette renders well without one. To color each slice explicitly, pass `color` as a **list** of `WidgetDataColor` values, one per slice, matching the order of `data`.
@@ -277,9 +289,158 @@ The canonical example omits `color` — the default palette renders well without
 }
 ```
 
+## Variations
+
+Other shapes and styling for this widget — pick the one closest to your data:
+
+### Explicitly coloured ring
+
+You want each ring segment in a specific colour rather than the default palette.
+
+```json
+{
+  "title": "Product Sales Distribution",
+  "actions": [
+    {
+      "title": "View Details",
+      "type": "link",
+      "url": "https://example.com/donut-details"
+    }
+  ],
+  "data": {
+    "labels": [
+      "Electronics",
+      "Clothing",
+      "Home Goods",
+      "Books"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 300
+          },
+          {
+            "value": 50
+          },
+          {
+            "value": 100
+          },
+          {
+            "value": 75
+          }
+        ],
+        "label": "Sales",
+        "color": [
+          "Blue",
+          "Green",
+          "Orange",
+          "Yellow"
+        ]
+      }
+    ]
+  }
+}
+```
+
+### Subscription plan mix
+
+Share of customers (or revenue) across subscription tiers.
+
+```json
+{
+  "title": "Plan mix",
+  "actions": [
+    {
+      "title": "View Plans",
+      "type": "link",
+      "url": "https://example.com/plans"
+    }
+  ],
+  "data": {
+    "labels": [
+      "Free",
+      "Pro",
+      "Enterprise"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 420
+          },
+          {
+            "value": 180
+          },
+          {
+            "value": 36
+          }
+        ],
+        "label": "Customers",
+        "color": [
+          "Light",
+          "Blue",
+          "Dark"
+        ]
+      }
+    ]
+  }
+}
+```
+
+### Ring breakdown with a success alert
+
+A tier breakdown where a target was hit — surface a success alert above the ring.
+
+```json
+{
+  "title": "Plan mix",
+  "actions": [
+    {
+      "title": "View Plans",
+      "type": "link",
+      "url": "https://example.com/plans"
+    }
+  ],
+  "data": {
+    "labels": [
+      "Free",
+      "Pro",
+      "Enterprise"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 380
+          },
+          {
+            "value": 240
+          },
+          {
+            "value": 48
+          }
+        ],
+        "label": "Customers",
+        "color": [
+          "Light",
+          "Blue",
+          "Dark"
+        ]
+      }
+    ]
+  },
+  "alert": {
+    "active": true,
+    "level": "success",
+    "message": "Pro plan adoption hit the quarterly goal"
+  }
+}
+```
+
 ## Validation
 
-The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. JSON-validate your response against the resolved schema before declaring done.
+The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate your response's `data` field against `assets/schemas/donut-chart.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
 
 ## Styling
 

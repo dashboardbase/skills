@@ -1,10 +1,11 @@
 ---
 name: dashboardbase
-description: Use when building, wiring, or debugging an HTTP endpoint that Dashboardbase will poll to render a widget (BarChart, DonutChart, GaugeChart, KPI, LineChart, PieChart, Status, Table), or when writing a Dashboardbase setup file, configuring authentication, or sending reactions/notifications. Covers the response envelope, JSON schemas per widget, the recommended authentication method (API key via the `x-api-key` header), refresh intervals, hosting requirements, and a go-live checklist.
+description: Use when creating a Dashboardbase dashboard end-to-end, or when building, wiring, or debugging an HTTP endpoint that Dashboardbase will poll to render a widget (BarChart, DonutChart, GaugeChart, KPI, LineChart, PieChart, Status, Table), writing a Dashboardbase setup file, configuring authentication, or sending events/notifications. Covers the full create-a-dashboard workflow (choose widgets, pick a layout, build endpoints, write the setup file, validate, import), the response envelope, JSON schemas per widget, widget styling (header title/subtitle and colored badges), the recommended authentication method (API key via the `x-api-key` header), refresh intervals, hosting requirements, and a go-live checklist.
 license: MIT
 metadata:
   source-repo: dashboardbase-api
-  generated-at: "2026-05-21T07:20:06Z"
+  generated-at: "2026-07-11T06:48:01Z"
+  api-version: "1.0.0"
   spec-version: "1.0"
 ---
 
@@ -15,6 +16,30 @@ This skill teaches you to build HTTP endpoints whose JSON responses Dashboardbas
 ## Mental model
 
 Dashboardbase periodically polls each widget's configured HTTPS endpoint at the dashboard's `refreshInterval` (one of `1m`, `5m`, `10m`, `30m`). Your endpoint returns JSON in a fixed envelope; Dashboardbase parses it and renders the widget. There is no streaming and no callback — your endpoint is just a regular `GET` that returns the current snapshot of data.
+
+## Creating a dashboard end-to-end
+
+When the task is a whole dashboard (not a single widget), follow this workflow:
+
+1. **Choose widgets.** Pick one widget type per metric:
+
+- **BarChart** (setup-file type `bar`) — building a bar chart / grouped bars / comparison by category.
+- **DonutChart** (setup-file type `donut`) — building a donut chart / ring breakdown.
+- **GaugeChart** (setup-file type `gauge`) — building a gauge / dial / progress indicator.
+- **KPI** (setup-file type `kpi`) — building a single-number / headline / KPI tile.
+- **LineChart** (setup-file type `line`) — building a line chart / time series / trend over time.
+- **PieChart** (setup-file type `pie`) — building a pie chart / share-of-total / breakdown.
+- **Status** (setup-file type `status`) — building a status / health / up-or-down indicator.
+- **Table** (setup-file type `table`) — building a table / list / rows-and-columns widget.
+
+2. **Pick a layout.** Load `references/setup-files.md` → "Recommended layouts". Choose the smallest layout whose slots cover your widget mix and copy each slot's `position` / `size` into the setup file — don't invent grid values.
+3. **Build or plan each endpoint.**
+   - Endpoints already exist → wire them with mapping State A (existing widgets) or State B (new widgets); see `references/setup-files.md`.
+   - You're building them now → implement one endpoint per widget using its `references/<widget>.md`, then map with State B.
+   - Endpoints can't be built yet → describe each widget with a State C `plan` mapping; the setup file still imports as a sketch to implement later.
+4. **Write the setup file** per `references/setup-files.md` and save it as `.dashboardbase/<dashboard-slug>.json` in the repo.
+5. **Validate before handing over:** each endpoint response's `data` against the widget's schema in `assets/schemas/<widget>.json`, the setup file against `assets/setup-file.schema.json` (or `POST /bff/v1/organizations/{orgId}/setup-files/validate`), then run the validation loop below.
+6. **Import.** The user drags the setup file into Dashboardbase (or pastes it) and enters credentials in the import flow — credentials never go in the file.
 
 ## Response envelope (always true)
 
@@ -48,7 +73,7 @@ Supported values:
 | `SixtyDays` |
 | `NinetyDays` |
 
-Your endpoint should map these to a time window (e.g. `SevenDays` → "last 7 days, ending now") and filter the underlying data accordingly. `Today` means the current calendar day. If the parameter is absent, return your sensible default (typically `ThirtyDays` for trend widgets, "all-time" for KPI counts).
+Your endpoint should map these to a time window (e.g. `SevenDays` → "last 7 days, ending now") and filter the underlying data accordingly. `Today` means the current calendar day. If the parameter is absent, return your sensible default (typically `ThirtyDays` for trend widgets, "all-time" for KPI counts). Echo the selected window in the widget's `header.subtitle` (e.g. `"Last 7 days"`) so viewers can see which range is applied.
 
 ```bash
 curl -H "x-api-key: $KEY" "https://your-api.example.com/widgets/revenue?dateRange=SevenDays"
@@ -88,16 +113,28 @@ curl -H "x-api-key: $DASHBOARDBASE_KEY" https://your-api.example.com/widgets/mrr
 
 Connect it in Dashboardbase: create a KPI widget, point it at this URL with the `x-api-key` header, save. See `references/quickstart.md` for an extended walkthrough including a Table widget.
 
+## Make it look good
+
+Dashboards read dramatically better when every widget uses the styling surface the contract provides:
+
+- **Always include `header` on charts and KPI** (`title` + `subtitle` + `badge`), even where the schema marks it optional: `title` = the headline number, `subtitle` = the context line (`"Last 7 days"`), `badge` = the colored trend (`{ "text": "+8%", "icon": "ArrowUp", "color": "Success" }`).
+- **Color lives on badges and datasets, not in text.** `subtitle` renders as plain text; use `badge.color` with `ArrowUp` / `ArrowDown` for the colored accent, and per-dataset `color` to distinguish chart series.
+- **Echo the active date range in `header.subtitle`** when handling `?dateRange=` — it shows users their filter is applied.
+- **Add link `actions`** so a widget clicks through to the underlying tool (Stripe, your admin, a runbook).
+
+Each widget reference's "Header" section shows the exact shape.
+
 ## When to load which reference
 
 Load only what the current task needs — these files are progressive disclosure, not preloaded.
 
 | Trigger | File |
 |---|---|
+| Creating a **complete dashboard** from scratch | Follow "Creating a dashboard end-to-end" above, with `references/setup-files.md` for layouts and the setup file |
 | Building a **BarChart / DonutChart / GaugeChart / KPI / LineChart / PieChart / Status / Table** endpoint | `references/<widget>.md` (e.g. `references/kpi.md`, `references/bar-chart.md`) |
 | Writing a **setup file** (declarative dashboard config) | `references/setup-files.md` (and `assets/setup-file.schema.json` for full schema) |
 | Choosing or rotating **authentication** | `references/authentication.md` |
-| Pushing **reactions / notifications / sounds** to a dashboard | `references/reactions.md` |
+| Pushing **events / notifications / sounds** to a dashboard | `references/events.md` |
 | Production **hosting** / TLS / status codes / latency | `references/hosting-and-http.md` |
 | Endpoint returns 200 but widget is broken — **debugging** | `references/gotchas.md` |
 | Shipping to **production** | `references/go-live-checklist.md` |
@@ -119,7 +156,7 @@ The widget reference filenames are: `bar-chart.md`, `donut-chart.md`, `gauge-cha
 ## Validation loop — before declaring done
 
 1. `curl` the endpoint and confirm it returns `200` in under 5 seconds.
-2. JSON-validate the response against the relevant widget schema in `references/<widget>.md`.
+2. JSON-validate the response's `data` field against the widget's bundled schema at `assets/schemas/<widget>.json` (the same schema is shown in `references/<widget>.md`).
 3. Open the widget in Dashboardbase and confirm it renders. If it doesn't, load `references/gotchas.md`.
 4. Confirm the configured `refreshInterval` is realistic given upstream rate limits.
 
@@ -203,4 +240,4 @@ Each has its own reference file under `references/` — see the filename list ab
 
 ---
 
-*Skill generated at `2026-05-21T07:20:06Z` from the Dashboardbase API contract.*
+*Skill generated at `2026-07-11T06:48:01Z` from the Dashboardbase API contract.*
