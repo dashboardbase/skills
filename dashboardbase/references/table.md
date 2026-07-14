@@ -136,8 +136,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
       "nullable": true
     },
     "rows": {
+      "minItems": 1,
       "type": "array",
       "items": {
+        "minItems": 1,
         "type": "array",
         "items": {
           "type": "object",

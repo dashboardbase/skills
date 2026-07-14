@@ -79,7 +79,7 @@ Connect a widget that already exists in the dashboard to an endpoint. Requires `
 
 ### State B — Create new wired widget
 
-Create a new widget and point it at an endpoint. Requires `type` and `path`. Typically also includes `size` and `position`.
+Create a new widget and point it at an endpoint. Requires `type` and `path`. Typically also includes `size` and `position` — copy those from a layout slot (see "Recommended layouts" below). This example uses the *Starter Kit* layout: two `Kpi` slots, the `Primary` slot for the line chart, and the `Secondary` slot for the table.
 
 ```json
 {
@@ -91,26 +91,26 @@ Create a new widget and point it at an endpoint. Requires `type` and `path`. Typ
     {
       "type": "kpi",
       "path": "/metrics/mrr",
-      "size": { "w": 3, "h": 2 },
+      "size": { "w": 3, "h": 1 },
       "position": { "x": 0, "y": 0 }
     },
     {
       "type": "kpi",
       "path": "/metrics/active-users",
-      "size": { "w": 3, "h": 2 },
+      "size": { "w": 3, "h": 1 },
       "position": { "x": 3, "y": 0 }
     },
     {
       "type": "line",
       "path": "/metrics/revenue-over-time",
-      "size": { "w": 12, "h": 3 },
-      "position": { "x": 0, "y": 2 }
+      "size": { "w": 8, "h": 5 },
+      "position": { "x": 0, "y": 1 }
     },
     {
       "type": "table",
       "path": "/metrics/top-customers",
-      "size": { "w": 6, "h": 3 },
-      "position": { "x": 0, "y": 5 }
+      "size": { "w": 4, "h": 5 },
+      "position": { "x": 8, "y": 1 }
     }
   ]
 }
@@ -118,7 +118,7 @@ Create a new widget and point it at an endpoint. Requires `type` and `path`. Typ
 
 ### State C — Create plan-only widget
 
-Describe a widget you intend to build but for which no endpoint exists yet. Requires `type` and `plan` (free-text description of the data the widget should display). Useful for sketching dashboards before implementation.
+Describe a widget you intend to build but for which no endpoint exists yet. Requires `type` and `plan` (free-text description of the data the widget should display). Useful for sketching dashboards before implementation. This example uses the *Starter Kit* layout: two `Kpi` slots, `Primary` for the line chart, `Secondary` for the pie chart.
 
 ```json
 {
@@ -127,7 +127,7 @@ Describe a widget you intend to build but for which no endpoint exists yet. Requ
   "mappings": [
     {
       "type": "kpi",
-      "size": { "w": 3, "h": 2 },
+      "size": { "w": 3, "h": 1 },
       "position": { "x": 0, "y": 0 },
       "plan": {
         "goal": "Monthly recurring revenue",
@@ -138,7 +138,7 @@ Describe a widget you intend to build but for which no endpoint exists yet. Requ
     },
     {
       "type": "kpi",
-      "size": { "w": 3, "h": 2 },
+      "size": { "w": 3, "h": 1 },
       "position": { "x": 3, "y": 0 },
       "plan": {
         "goal": "Active users today",
@@ -149,8 +149,8 @@ Describe a widget you intend to build but for which no endpoint exists yet. Requ
     },
     {
       "type": "line",
-      "size": { "w": 12, "h": 3 },
-      "position": { "x": 0, "y": 2 },
+      "size": { "w": 8, "h": 5 },
+      "position": { "x": 0, "y": 1 },
       "plan": {
         "goal": "Revenue over time",
         "dateRange": "last 30 days",
@@ -160,8 +160,8 @@ Describe a widget you intend to build but for which no endpoint exists yet. Requ
     },
     {
       "type": "pie",
-      "size": { "w": 6, "h": 3 },
-      "position": { "x": 0, "y": 5 },
+      "size": { "w": 4, "h": 5 },
+      "position": { "x": 8, "y": 1 },
       "plan": {
         "goal": "Revenue breakdown by plan",
         "dateRange": "current month",
@@ -175,7 +175,7 @@ Describe a widget you intend to build but for which no endpoint exists yet. Requ
 
 ### State D — Recreate existing widget (export format)
 
-An existing widget exported with its full spec, so the dashboard can be recreated elsewhere: `widgetId` plus `type` / `size` / `position`, and either a `path` (wired widget) or a `plan` (plan widget). This is the shape the export endpoint produces — you rarely author it by hand, but you will encounter it when editing an exported file (see "Exporting an existing dashboard" below).
+An existing widget exported with its full spec, so the dashboard can be recreated elsewhere: `widgetId` plus `type` / `size` / `position`, and either a `path` (wired widget) or a `plan` (plan widget). This is the shape the export endpoint produces — you rarely author it by hand, but you will encounter it when editing an exported file (see "Exporting an existing dashboard" below). This example's grid values are the *Spotlight* layout's `Kpi` and `Primary` slots.
 
 ```json
 {
@@ -190,14 +190,14 @@ An existing widget exported with its full spec, so the dashboard can be recreate
       "widgetId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
       "type": "kpi",
       "path": "/metrics/mrr",
-      "size": { "w": 3, "h": 1 },
-      "position": { "x": 0, "y": 0 }
+      "size": { "w": 4, "h": 1 },
+      "position": { "x": 8, "y": 0 }
     },
     {
       "widgetId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
       "type": "line",
-      "size": { "w": 12, "h": 3 },
-      "position": { "x": 0, "y": 1 },
+      "size": { "w": 8, "h": 6 },
+      "position": { "x": 0, "y": 0 },
       "plan": {
         "goal": "Revenue over time",
         "dateRange": "last 30 days",
@@ -211,7 +211,13 @@ An existing widget exported with its full spec, so the dashboard can be recreate
 
 ## Recommended layouts
 
-When you are **creating new widgets** (mapping State B or State C), don't invent `position` / `size` values — start from one of the known-good layouts below so the imported dashboard looks right immediately. The grid is 12 columns wide.
+When you are **creating new widgets** (mapping State B or State C), don't invent `position` / `size` values — start from one of the known-good layouts below so the imported dashboard looks right immediately.
+
+Grid constraints (every layout slot below satisfies them):
+
+- The grid is **12 columns wide**. A widget's `size.w` must be **3–12** columns and `size.h` must be **1–8** rows.
+- If a mapping omits `size`, the widget gets its type's default: **3×1** for compact single-value widgets (KPI-style), **6×4** for everything else (charts, tables).
+- The bundled `assets/setup-file.schema.json` flags out-of-range values, but the server-side import does **not** reject them — they are clamped when the widget is added, so the imported dashboard silently differs from your file. Stay in range.
 
 How to use them:
 
@@ -330,6 +336,8 @@ A stacked pair in a narrow column beside a wide full-height panel.
 
 ## Example with multiple datasources
 
+Grid values from the *Starter Kit* layout (two `Kpi` slots plus `Primary`):
+
 ```json
 {
   "$schema": "https://api.dashboardbase.com/setup-file/schema/v1.json",
@@ -350,28 +358,30 @@ A stacked pair in a narrow column beside a wide full-height panel.
       "type": "kpi",
       "path": "/v1/metrics/mrr",
       "datasourceId": "stripe",
-      "size": { "w": 3, "h": 2 },
+      "size": { "w": 3, "h": 1 },
       "position": { "x": 0, "y": 0 }
     },
     {
       "type": "kpi",
       "path": "/api/projects/default/insights/trend",
       "datasourceId": "posthog",
-      "size": { "w": 3, "h": 2 },
+      "size": { "w": 3, "h": 1 },
       "position": { "x": 3, "y": 0 }
     },
     {
       "type": "line",
       "path": "/v1/metrics/revenue-over-time",
       "datasourceId": "stripe",
-      "size": { "w": 12, "h": 3 },
-      "position": { "x": 0, "y": 2 }
+      "size": { "w": 8, "h": 5 },
+      "position": { "x": 0, "y": 1 }
     }
   ]
 }
 ```
 
 ## Example with mixed states
+
+Grid values from the *Starter Kit* layout — the new KPI takes the second `Kpi` slot (the wired State A widget already occupies the first) and the planned bar chart takes `Primary`:
 
 ```json
 {
@@ -388,13 +398,13 @@ A stacked pair in a narrow column beside a wide full-height panel.
     {
       "type": "kpi",
       "path": "/metrics/active-users",
-      "size": { "w": 3, "h": 2 },
+      "size": { "w": 3, "h": 1 },
       "position": { "x": 3, "y": 0 }
     },
     {
       "type": "bar",
-      "size": { "w": 12, "h": 3 },
-      "position": { "x": 0, "y": 2 },
+      "size": { "w": 8, "h": 5 },
+      "position": { "x": 0, "y": 1 },
       "plan": {
         "goal": "Signups by country",
         "dateRange": "last 7 days",
@@ -485,7 +495,7 @@ The response's `data` field contains the setup-file JSON with every widget's ful
 
 ## Common mistakes
 
-- **Mixing State A and State B in the same mapping.** A mapping with both `widgetId` and `type` is invalid — pick one.
+- **Mixing State A and State B in the same mapping.** A mapping with both `widgetId` and `type` but **without** the full State D export shape (`size`, `position`, and one of `path` / `plan`) is invalid — either wire an existing widget (State A: `widgetId` + `path`, no `type`) or create a new one (State B: `type` + `path`). Only exported State D mappings legitimately carry both.
 - **Including credentials in the file.** Setup files are designed to be shareable; credentials are configured in Dashboardbase per-datasource.
 - **Using a `refreshInterval` outside the allowed set.** Only `1m`, `5m`, `10m`, `30m`.
 - **Forgetting `$schema`.** Optional but recommended — editors with JSON Schema support will offer completion when it's present.
