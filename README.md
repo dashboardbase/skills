@@ -13,6 +13,7 @@
 </p>
 
 <p align="center">
+  <a href="https://skills.sh/dashboardbase/dashboardbase-skill"><img src="https://skills.sh/b/dashboardbase/dashboardbase-skill" alt="skills.sh install count"></a>
   <a href="https://agentskills.io"><img src="https://img.shields.io/badge/Agent%20Skills-compatible-2563eb" alt="Agent Skills compatible"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-22c55e" alt="MIT License"></a>
   <a href="https://dashboardbase.com"><img src="https://img.shields.io/badge/dashboardbase.com-0a0a0a" alt="Dashboardbase"></a>
@@ -53,7 +54,7 @@ Ask your agent _"build a dashboardbase KPI endpoint for monthly revenue in Node"
 npx skills add dashboardbase/dashboardbase-skill
 ```
 
-This installs the skill into the correct directory for your agent (Claude Code, Cursor, etc.) and keeps it up to date. See [skills](https://www.npmjs.com/package/skills) for details.
+This installs the skill into the correct directory for your agent (Claude Code, Cursor, and [70+ others](https://github.com/vercel-labs/skills#supported-agents)) and keeps it up to date. Pick a specific agent with `--agent`, e.g. `npx skills add dashboardbase/dashboardbase-skill --agent claude-code`. See [skills](https://github.com/vercel-labs/skills) / [skills.sh](https://skills.sh) for details.
 
 > The skill lives in the [`dashboardbase/`](dashboardbase/) folder of this repo. The folder name matches the skill's `name:` field, as required by the Agent Skills spec.
 
@@ -65,6 +66,8 @@ Clone the repo and copy the skill into your skills directory:
 git clone https://github.com/dashboardbase/dashboardbase-skill
 cp -r dashboardbase-skill/dashboardbase ~/.claude/skills/
 ```
+
+To share the skill with a team instead, copy it into a project's `.claude/skills/` directory — it then ships with the repo and is picked up by everyone working in it.
 
 The skill activates automatically when you ask Claude Code to build a dashboardbase endpoint.
 
@@ -104,12 +107,12 @@ https://raw.githubusercontent.com/dashboardbase/dashboardbase-skill/main/dashboa
 dashboardbase-skill/
 ├── dashboardbase/              # The skill itself (auto-generated)
 │   ├── SKILL.md                # Metadata + core instructions
-│   ├── references/             # Per-widget schemas, auth, errors, webhooks
-│   └── assets/                 # Setup-file JSON schema
-├── assets/                     # Repo branding (logo)
+│   ├── references/             # Per-widget guides, setup files, auth, events, gotchas
+│   └── assets/                 # JSON schemas (per-widget + setup file)
+├── logo-dark.png               # Repo branding
+├── logo-light.png
 ├── README.md
-├── LICENSE
-└── .gitignore
+└── LICENSE
 ```
 
 ## Keeping it current
