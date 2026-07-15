@@ -32,7 +32,7 @@ When the task is a whole dashboard (not a single widget), follow this workflow:
 - **Status** (setup-file type `status`) — building a status / health / up-or-down indicator.
 - **Table** (setup-file type `table`) — building a table / list / rows-and-columns widget.
 
-2. **Pick a layout.** Load `references/setup-files.md` → "Recommended layouts". Choose the smallest layout whose slots cover your widget mix and copy each slot's `position` / `size` into the setup file — don't invent grid values.
+2. **Pick a layout.** Load `references/setup-files.md` → "Recommended layouts". Choose the smallest layout whose slots cover your widget mix and copy each slot's `position` / `size` into the setup file — don't invent grid values. If no layout covers the mix, extend the closest one per that file's "When no layout fits". Name the layout you picked when handing over (e.g. "arranged as *Spotlight*") so the user knows what to expect and can ask for a different arrangement.
 3. **Build or plan each endpoint.**
    - Endpoints already exist → wire them with mapping State A (existing widgets) or State B (new widgets); see `references/setup-files.md`.
    - You're building them now → implement one endpoint per widget using its `references/<widget>.md`, then map with State B.
