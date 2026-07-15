@@ -334,6 +334,16 @@ A stacked pair in a narrow column beside a wide full-height panel.
 | 2 | `x:0 y:1` | `w:4 h:5` | `Secondary` |
 | 3 | `x:4 y:0` | `w:8 h:6` | `Primary` |
 
+### When no layout fits
+
+The layouts above top out at four `Kpi` slots, one `Primary`, and two `Secondary` slots. When the widget mix is bigger, extend the closest layout instead of inventing a grid from scratch — keep the existing slots as-is and add rows below them:
+
+- **More than four KPI-role widgets** → repeat the KPI row: four more `w:3 h:1` slots at `x:0 / 3 / 6 / 9` on the next row, shifting every later row's `y` down by 1.
+- **More than one Primary-role widget** → give each extra one its own full-width row (`w:12 h:5`), or pair two side by side as `w:6 h:5`.
+- **More Secondary-role widgets than slots** → tile the extras in rows of three `w:4 h:5` or two `w:6 h:5` below the layout.
+
+Rules that keep an extended layout valid: each added row starts at `y` = the previous row's `y` + its `h` (so nothing overlaps), each row's widths sum to 12 columns, and every slot stays inside the size constraints listed above. Tell the user which layout you extended and how, so they can rearrange in Dashboardbase if they prefer.
+
 ## Example with multiple datasources
 
 Grid values from the *Starter Kit* layout (two `Kpi` slots plus `Primary`):
