@@ -123,10 +123,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
     "author": {
       "type": "string",
       "nullable": true
-    },
-    "source": {
-      "type": "string",
-      "nullable": true
     }
   },
   "additionalProperties": false
