@@ -208,6 +208,14 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
     "ticksY": {
       "type": "boolean",
       "nullable": true
+    },
+    "indexAxis": {
+      "enum": [
+        "x",
+        "y"
+      ],
+      "type": "string",
+      "nullable": true
     }
   },
   "additionalProperties": false
@@ -530,6 +538,53 @@ A breakdown where every category beat its goal — celebrate it with a success a
 }
 ```
 
+### Horizontal bars (indexAxis: y)
+
+Long category labels or a ranking that reads better horizontally — set `indexAxis` to `y`.
+
+```json
+{
+  "title": "Top referrers",
+  "data": {
+    "header": {
+      "title": "Top referrers",
+      "subtitle": "Last 30 days"
+    },
+    "labels": [
+      "Google",
+      "Direct",
+      "Twitter / X",
+      "Newsletter",
+      "Product Hunt"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 4200
+          },
+          {
+            "value": 3100
+          },
+          {
+            "value": 1800
+          },
+          {
+            "value": 1200
+          },
+          {
+            "value": 640
+          }
+        ],
+        "label": "Visits",
+        "color": "Blue"
+      }
+    ],
+    "indexAxis": "y"
+  }
+}
+```
+
 ## Validation
 
 The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate your response's `data` field against `assets/schemas/bar-chart.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
@@ -551,3 +606,4 @@ All values are case-sensitive (`"Success"`, not `"success"`).
 - Mismatched lengths: if `labels` has 6 entries, every dataset's `data` should have 6 entries.
 - Sending `value` as a string (`"65"`) — values must be numbers.
 - Setting `color` inside `data` items when you meant the whole series — series color goes on the dataset.
+- Wanting horizontal bars? Set `indexAxis` to `y` — do not look for a separate horizontal-bar widget type.

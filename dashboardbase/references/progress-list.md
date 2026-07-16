@@ -1,21 +1,21 @@
-# Status widget
+# ProgressList widget
 
-> **Load this file when:** building a status / health / up-or-down indicator.
+> **Load this file when:** building a list of labelled progress / goal / capacity bars.
 
 ## Purpose
 
-Show a binary health indicator (Ok / Error) with optional header context — ideal for service status, deploy state, alert summaries. Set the optional `mode` to `Heartbeat` to have the client render the indicator as an ECG-style pulse that beats (a healthy service visibly 'lives' on a TV wall); omit it or send `Default` for the plain Ok/Error pill.
+Render a stacked list of labelled progress bars — ideal for storage per service, goals per team, or usage per plan. Each row is the same 'progress toward a cap' shape as the optional KPI progress bar, just repeated.
 
-In a setup file, this widget's `type` is `status` (see `references/setup-files.md`).
+In a setup file, this widget's `type` is `progress` (see `references/setup-files.md`).
 
 ## Resolved JSON schema
 
-The `data` field of the response envelope must match this schema (all `$ref`s are inlined here, so this is the complete contract). A standalone copy is bundled at `assets/schemas/status.json` for use with a JSON Schema validator:
+The `data` field of the response envelope must match this schema (all `$ref`s are inlined here, so this is the complete contract). A standalone copy is bundled at `assets/schemas/progress-list.json` for use with a JSON Schema validator:
 
 ```json
 {
   "required": [
-    "status"
+    "items"
   ],
   "type": "object",
   "properties": {
@@ -116,20 +116,47 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
       "additionalProperties": false,
       "nullable": true
     },
-    "status": {
-      "enum": [
-        "Ok",
-        "Error"
-      ],
-      "type": "string"
-    },
-    "mode": {
-      "enum": [
-        "Default",
-        "Heartbeat"
-      ],
-      "type": "string",
-      "nullable": true
+    "items": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "required": [
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "number",
+            "format": "double"
+          },
+          "max": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "label": {
+            "type": "string",
+            "nullable": true
+          },
+          "color": {
+            "enum": [
+              "Success",
+              "Warning",
+              "Danger",
+              "Blue",
+              "Green",
+              "Red",
+              "Yellow",
+              "Orange",
+              "Light",
+              "Dark"
+            ],
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      }
     }
   },
   "additionalProperties": false
@@ -140,16 +167,39 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
 
 ```json
 {
-  "title": "Status",
+  "title": "Storage",
   "actions": [
     {
-      "title": "Check Logs",
+      "title": "Manage",
       "type": "link",
-      "url": "https://example.com/status-logs"
+      "url": "https://example.com/storage"
     }
   ],
   "data": {
-    "status": "Ok"
+    "header": {
+      "title": "Storage by service",
+      "subtitle": "Last synced 5m ago"
+    },
+    "items": [
+      {
+        "value": 820,
+        "max": 1000,
+        "label": "Postgres",
+        "color": "Blue"
+      },
+      {
+        "value": 340,
+        "max": 500,
+        "label": "Blob",
+        "color": "Green"
+      },
+      {
+        "value": 470,
+        "max": 500,
+        "label": "Redis",
+        "color": "Danger"
+      }
+    ]
   }
 }
 ```
@@ -157,7 +207,7 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
 ## Example request
 
 ```bash
-curl -X GET 'https://api.dashboardbase.com/example/statuschart'
+curl -X GET 'https://api.dashboardbase.com/example/progresslist'
 ```
 
 ## Header — headline, subtitle, and colored badge
@@ -184,90 +234,41 @@ The `header` block is optional in the schema — **include it anyway**. Without 
 
 Other shapes and styling for this widget — pick the one closest to your data:
 
-### Healthy heartbeat (pulsing)
+### Goals per team
 
-A healthy service you want to visibly 'beat' on a TV wall — set `mode` to `Heartbeat`.
-
-```json
-{
-  "title": "API health",
-  "actions": [
-    {
-      "title": "Check Logs",
-      "type": "link",
-      "url": "https://example.com/status-logs"
-    }
-  ],
-  "data": {
-    "header": {
-      "title": "Operational",
-      "subtitle": "All checks passing",
-      "color": "Success"
-    },
-    "status": "Ok",
-    "mode": "Heartbeat"
-  }
-}
-```
-
-### Failing (with header context)
-
-A service is down/erroring — pair the Error indicator with a header naming the service.
+Progress toward a set of goals or quotas, one bar per owner.
 
 ```json
 {
-  "title": "Payments API",
-  "actions": [
-    {
-      "title": "Check Logs",
-      "type": "link",
-      "url": "https://example.com/status-logs"
-    }
-  ],
+  "title": "Quarterly goals",
   "data": {
-    "header": {
-      "title": "Degraded",
-      "subtitle": "3 failing checks",
-      "color": "Danger"
-    },
-    "status": "Error"
-  }
-}
-```
-
-### Outage with a critical alert
-
-A service is fully down — pair the Error indicator with a critical alert spelling out the impact.
-
-```json
-{
-  "title": "Payments API",
-  "actions": [
-    {
-      "title": "Open Incident",
-      "type": "link",
-      "url": "https://example.com/incident"
-    }
-  ],
-  "data": {
-    "header": {
-      "title": "Down",
-      "subtitle": "All checks failing",
-      "color": "Danger"
-    },
-    "status": "Error"
-  },
-  "alert": {
-    "active": true,
-    "level": "critical",
-    "message": "Payments API has been down for 8 minutes"
+    "items": [
+      {
+        "value": 82,
+        "max": 100,
+        "label": "Sales",
+        "color": "Success"
+      },
+      {
+        "value": 45,
+        "max": 100,
+        "label": "Marketing",
+        "color": "Warning"
+      },
+      {
+        "value": 63,
+        "max": 100,
+        "label": "Support",
+        "color": "Blue"
+      }
+    ]
   }
 }
 ```
 
 ## Validation
 
-The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate your response's `data` field against `assets/schemas/status.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
+The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate your response's `data` field against `assets/schemas/progress-list.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
 
 ## Styling
 
@@ -283,6 +284,6 @@ All values are case-sensitive (`"Success"`, not `"success"`).
 
 ## Common mistakes
 
-- Sending a string for `status` outside `Ok` / `Error` — values are case-sensitive and limited to the `WidgetStatusIndicator` enum.
-- Using KPI shape for a binary indicator — Status renders an explicit Ok/Error pill, KPI does not.
-- Sending a `mode` outside `Default` / `Heartbeat` — it is nullable, so omit it for the default rendering.
+- Leaving a row's `label` empty — every bar in the list must be labelled.
+- Sending `value` greater than `max`, or a `max` of `0` — when `max` is set it must be `> 0` and `0 <= value <= max`.
+- Using this for a single bar — a single goal bar belongs on the KPI widget's `progress` field.

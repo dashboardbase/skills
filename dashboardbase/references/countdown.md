@@ -1,21 +1,21 @@
-# Status widget
+# Countdown widget
 
-> **Load this file when:** building a status / health / up-or-down indicator.
+> **Load this file when:** building a countdown / days-until / time-remaining tile.
 
 ## Purpose
 
-Show a binary health indicator (Ok / Error) with optional header context — ideal for service status, deploy state, alert summaries. Set the optional `mode` to `Heartbeat` to have the client render the indicator as an ECG-style pulse that beats (a healthy service visibly 'lives' on a TV wall); omit it or send `Default` for the plain Ok/Error pill.
+Count down to (or up from) a target timestamp — ideal for launches, deadlines, quarter-end, or a 'days since last incident' streak. The endpoint returns the target instant; the ticking is client-side, so no polling is needed to stay live.
 
-In a setup file, this widget's `type` is `status` (see `references/setup-files.md`).
+In a setup file, this widget's `type` is `countdown` (see `references/setup-files.md`).
 
 ## Resolved JSON schema
 
-The `data` field of the response envelope must match this schema (all `$ref`s are inlined here, so this is the complete contract). A standalone copy is bundled at `assets/schemas/status.json` for use with a JSON Schema validator:
+The `data` field of the response envelope must match this schema (all `$ref`s are inlined here, so this is the complete contract). A standalone copy is bundled at `assets/schemas/countdown.json` for use with a JSON Schema validator:
 
 ```json
 {
   "required": [
-    "status"
+    "target"
   ],
   "type": "object",
   "properties": {
@@ -116,18 +116,11 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
       "additionalProperties": false,
       "nullable": true
     },
-    "status": {
-      "enum": [
-        "Ok",
-        "Error"
-      ],
-      "type": "string"
+    "target": {
+      "type": "string",
+      "format": "date-time"
     },
-    "mode": {
-      "enum": [
-        "Default",
-        "Heartbeat"
-      ],
+    "label": {
       "type": "string",
       "nullable": true
     }
@@ -140,16 +133,21 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
 
 ```json
 {
-  "title": "Status",
+  "title": "Launch day",
   "actions": [
     {
-      "title": "Check Logs",
+      "title": "View Roadmap",
       "type": "link",
-      "url": "https://example.com/status-logs"
+      "url": "https://example.com/roadmap"
     }
   ],
   "data": {
-    "status": "Ok"
+    "header": {
+      "title": "Public launch",
+      "subtitle": "v1.0 goes live"
+    },
+    "target": "2026-12-31T23:59:59+00:00",
+    "label": "until launch"
   }
 }
 ```
@@ -157,7 +155,7 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
 ## Example request
 
 ```bash
-curl -X GET 'https://api.dashboardbase.com/example/statuschart'
+curl -X GET 'https://api.dashboardbase.com/example/countdown'
 ```
 
 ## Header — headline, subtitle, and colored badge
@@ -184,90 +182,26 @@ The `header` block is optional in the schema — **include it anyway**. Without 
 
 Other shapes and styling for this widget — pick the one closest to your data:
 
-### Healthy heartbeat (pulsing)
+### Days since last incident
 
-A healthy service you want to visibly 'beat' on a TV wall — set `mode` to `Heartbeat`.
-
-```json
-{
-  "title": "API health",
-  "actions": [
-    {
-      "title": "Check Logs",
-      "type": "link",
-      "url": "https://example.com/status-logs"
-    }
-  ],
-  "data": {
-    "header": {
-      "title": "Operational",
-      "subtitle": "All checks passing",
-      "color": "Success"
-    },
-    "status": "Ok",
-    "mode": "Heartbeat"
-  }
-}
-```
-
-### Failing (with header context)
-
-A service is down/erroring — pair the Error indicator with a header naming the service.
+A streak that counts up from a past moment — days since the last incident/outage.
 
 ```json
 {
-  "title": "Payments API",
-  "actions": [
-    {
-      "title": "Check Logs",
-      "type": "link",
-      "url": "https://example.com/status-logs"
-    }
-  ],
+  "title": "Reliability",
   "data": {
     "header": {
-      "title": "Degraded",
-      "subtitle": "3 failing checks",
-      "color": "Danger"
+      "title": "Days since last incident"
     },
-    "status": "Error"
-  }
-}
-```
-
-### Outage with a critical alert
-
-A service is fully down — pair the Error indicator with a critical alert spelling out the impact.
-
-```json
-{
-  "title": "Payments API",
-  "actions": [
-    {
-      "title": "Open Incident",
-      "type": "link",
-      "url": "https://example.com/incident"
-    }
-  ],
-  "data": {
-    "header": {
-      "title": "Down",
-      "subtitle": "All checks failing",
-      "color": "Danger"
-    },
-    "status": "Error"
-  },
-  "alert": {
-    "active": true,
-    "level": "critical",
-    "message": "Payments API has been down for 8 minutes"
+    "target": "2026-01-01T00:00:00+00:00",
+    "label": "since last incident"
   }
 }
 ```
 
 ## Validation
 
-The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate your response's `data` field against `assets/schemas/status.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
+The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate your response's `data` field against `assets/schemas/countdown.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
 
 ## Styling
 
@@ -283,6 +217,6 @@ All values are case-sensitive (`"Success"`, not `"success"`).
 
 ## Common mistakes
 
-- Sending a string for `status` outside `Ok` / `Error` — values are case-sensitive and limited to the `WidgetStatusIndicator` enum.
-- Using KPI shape for a binary indicator — Status renders an explicit Ok/Error pill, KPI does not.
-- Sending a `mode` outside `Default` / `Heartbeat` — it is nullable, so omit it for the default rendering.
+- Sending `target` as a local date without an offset — use an ISO-8601 instant (e.g. `2026-01-01T00:00:00Z`) so every viewer counts down to the same moment.
+- Trying to send the remaining days/hours as the value — return the `target` timestamp and let the client tick.
+- Omitting `target` — it is required.

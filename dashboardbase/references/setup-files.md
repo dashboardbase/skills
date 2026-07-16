@@ -38,13 +38,19 @@ Mappings that create widgets (States B, C, and D) declare the widget with a `typ
 | Widget | Setup-file `type` | Reference |
 | --- | --- | --- |
 | BarChart | `bar` | `references/bar-chart.md` |
+| Clock | `clock` | `references/clock.md` |
+| ContributionsGrid | `contributions` | `references/contributions-grid.md` |
+| Countdown | `countdown` | `references/countdown.md` |
 | DonutChart | `donut` | `references/donut-chart.md` |
 | GaugeChart | `gauge` | `references/gauge-chart.md` |
+| Image | `image` | `references/image.md` |
 | KPI | `kpi` | `references/kpi.md` |
 | LineChart | `line` | `references/line-chart.md` |
 | PieChart | `pie` | `references/pie-chart.md` |
+| ProgressList | `progress` | `references/progress-list.md` |
 | Status | `status` | `references/status.md` |
 | Table | `table` | `references/table.md` |
+| Text | `text` | `references/text.md` |
 
 ## The four mapping states
 
@@ -234,9 +240,9 @@ Worked examples:
 
 | Slot role | Recommended widgets |
 | --- | --- |
-| `Kpi` | GaugeChart, KPI, Status |
-| `Primary` | BarChart, LineChart, Table |
-| `Secondary` | BarChart, DonutChart, GaugeChart, PieChart, Table |
+| `Kpi` | Clock, Countdown, GaugeChart, KPI, Status |
+| `Primary` | BarChart, ContributionsGrid, Image, LineChart, ProgressList, Table, Text |
+| `Secondary` | BarChart, Clock, ContributionsGrid, DonutChart, GaugeChart, Image, PieChart, ProgressList, Table, Text |
 
 ### Layouts
 

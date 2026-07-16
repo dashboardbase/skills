@@ -1,21 +1,21 @@
-# Status widget
+# Text widget
 
-> **Load this file when:** building a status / health / up-or-down indicator.
+> **Load this file when:** building a text / quote / announcement / message-of-the-day tile.
 
 ## Purpose
 
-Show a binary health indicator (Ok / Error) with optional header context — ideal for service status, deploy state, alert summaries. Set the optional `mode` to `Heartbeat` to have the client render the indicator as an ECG-style pulse that beats (a healthy service visibly 'lives' on a TV wall); omit it or send `Default` for the plain Ok/Error pill.
+Show a block of free text with optional attribution — ideal for announcements, a message-of-the-day, the current on-call name, or a rotating quote. Pairs well with a TV wall.
 
-In a setup file, this widget's `type` is `status` (see `references/setup-files.md`).
+In a setup file, this widget's `type` is `text` (see `references/setup-files.md`).
 
 ## Resolved JSON schema
 
-The `data` field of the response envelope must match this schema (all `$ref`s are inlined here, so this is the complete contract). A standalone copy is bundled at `assets/schemas/status.json` for use with a JSON Schema validator:
+The `data` field of the response envelope must match this schema (all `$ref`s are inlined here, so this is the complete contract). A standalone copy is bundled at `assets/schemas/text.json` for use with a JSON Schema validator:
 
 ```json
 {
   "required": [
-    "status"
+    "text"
   ],
   "type": "object",
   "properties": {
@@ -116,18 +116,15 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
       "additionalProperties": false,
       "nullable": true
     },
-    "status": {
-      "enum": [
-        "Ok",
-        "Error"
-      ],
+    "text": {
+      "minLength": 1,
       "type": "string"
     },
-    "mode": {
-      "enum": [
-        "Default",
-        "Heartbeat"
-      ],
+    "author": {
+      "type": "string",
+      "nullable": true
+    },
+    "source": {
       "type": "string",
       "nullable": true
     }
@@ -140,16 +137,12 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
 
 ```json
 {
-  "title": "Status",
-  "actions": [
-    {
-      "title": "Check Logs",
-      "type": "link",
-      "url": "https://example.com/status-logs"
-    }
-  ],
+  "title": "Notice",
   "data": {
-    "status": "Ok"
+    "header": {
+      "title": "On call"
+    },
+    "text": "Ada Lovelace is on call this week. Ping #ops for anything urgent."
   }
 }
 ```
@@ -157,7 +150,7 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
 ## Example request
 
 ```bash
-curl -X GET 'https://api.dashboardbase.com/example/statuschart'
+curl -X GET 'https://api.dashboardbase.com/example/textchart'
 ```
 
 ## Header — headline, subtitle, and colored badge
@@ -184,90 +177,24 @@ The `header` block is optional in the schema — **include it anyway**. Without 
 
 Other shapes and styling for this widget — pick the one closest to your data:
 
-### Healthy heartbeat (pulsing)
+### Attributed quote
 
-A healthy service you want to visibly 'beat' on a TV wall — set `mode` to `Heartbeat`.
-
-```json
-{
-  "title": "API health",
-  "actions": [
-    {
-      "title": "Check Logs",
-      "type": "link",
-      "url": "https://example.com/status-logs"
-    }
-  ],
-  "data": {
-    "header": {
-      "title": "Operational",
-      "subtitle": "All checks passing",
-      "color": "Success"
-    },
-    "status": "Ok",
-    "mode": "Heartbeat"
-  }
-}
-```
-
-### Failing (with header context)
-
-A service is down/erroring — pair the Error indicator with a header naming the service.
+A rotating quote with attribution — culture dashboards, kickoff screens.
 
 ```json
 {
-  "title": "Payments API",
-  "actions": [
-    {
-      "title": "Check Logs",
-      "type": "link",
-      "url": "https://example.com/status-logs"
-    }
-  ],
+  "title": "Quote of the day",
   "data": {
-    "header": {
-      "title": "Degraded",
-      "subtitle": "3 failing checks",
-      "color": "Danger"
-    },
-    "status": "Error"
-  }
-}
-```
-
-### Outage with a critical alert
-
-A service is fully down — pair the Error indicator with a critical alert spelling out the impact.
-
-```json
-{
-  "title": "Payments API",
-  "actions": [
-    {
-      "title": "Open Incident",
-      "type": "link",
-      "url": "https://example.com/incident"
-    }
-  ],
-  "data": {
-    "header": {
-      "title": "Down",
-      "subtitle": "All checks failing",
-      "color": "Danger"
-    },
-    "status": "Error"
-  },
-  "alert": {
-    "active": true,
-    "level": "critical",
-    "message": "Payments API has been down for 8 minutes"
+    "text": "Simplicity is a prerequisite for reliability.",
+    "author": "Edsger W. Dijkstra",
+    "source": "EWD498"
   }
 }
 ```
 
 ## Validation
 
-The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate your response's `data` field against `assets/schemas/status.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
+The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate your response's `data` field against `assets/schemas/text.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
 
 ## Styling
 
@@ -283,6 +210,6 @@ All values are case-sensitive (`"Success"`, not `"success"`).
 
 ## Common mistakes
 
-- Sending a string for `status` outside `Ok` / `Error` — values are case-sensitive and limited to the `WidgetStatusIndicator` enum.
-- Using KPI shape for a binary indicator — Status renders an explicit Ok/Error pill, KPI does not.
-- Sending a `mode` outside `Default` / `Heartbeat` — it is nullable, so omit it for the default rendering.
+- Leaving `text` empty — it is required and cannot be blank.
+- Putting the author inside `text` (e.g. `"— Ada"`) instead of the `author` field — attribution renders separately.
+- Using this for a single headline number — that's the KPI widget.
