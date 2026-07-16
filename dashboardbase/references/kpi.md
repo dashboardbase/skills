@@ -4,7 +4,7 @@
 
 ## Purpose
 
-Show a single headline number with optional subtitle and trend badge — ideal for MRR, active users, conversion rate, error count, anything you'd put in a 'big number' tile.
+Show a single headline number with optional subtitle and trend badge — ideal for MRR, active users, conversion rate, error count, anything you'd put in a 'big number' tile. Add an optional `progress` field to turn it into a progress-to-goal tile (e.g. 'MRR $8.2k / $10k') with a right-aligned cap label and a thin bar under the number.
 
 In a setup file, this widget's `type` is `kpi` (see `references/setup-files.md`).
 
@@ -114,6 +114,45 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
         }
       },
       "additionalProperties": false
+    },
+    "progress": {
+      "required": [
+        "value"
+      ],
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "number",
+          "format": "double"
+        },
+        "max": {
+          "type": "number",
+          "format": "double",
+          "nullable": true
+        },
+        "label": {
+          "type": "string",
+          "nullable": true
+        },
+        "color": {
+          "enum": [
+            "Success",
+            "Warning",
+            "Danger",
+            "Blue",
+            "Green",
+            "Red",
+            "Yellow",
+            "Orange",
+            "Light",
+            "Dark"
+          ],
+          "type": "string",
+          "nullable": true
+        }
+      },
+      "additionalProperties": false,
+      "nullable": true
     }
   },
   "additionalProperties": false
@@ -297,6 +336,40 @@ A metric that has breached a threshold and should surface a critical alert banne
 }
 ```
 
+### Progress toward a goal (MRR / cap)
+
+A headline number that is tracking toward a goal or cap — 'MRR $8.2k / $10k'. Add the optional `progress` field.
+
+```json
+{
+  "title": "MRR",
+  "actions": [
+    {
+      "title": "View Details",
+      "type": "link",
+      "url": "https://example.com/mrr-details"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "$8,200",
+      "subtitle": "toward $10k goal",
+      "badge": {
+        "text": "+$820",
+        "icon": "ArrowUp",
+        "color": "Success"
+      }
+    },
+    "progress": {
+      "value": 8200,
+      "max": 10000,
+      "label": "Goal 10.000 $",
+      "color": "Success"
+    }
+  }
+}
+```
+
 ## Validation
 
 The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate your response's `data` field against `assets/schemas/kpi.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
@@ -318,3 +391,4 @@ All values are case-sensitive (`"Success"`, not `"success"`).
 - Returning the metric as `data.value` — KPI uses `header.title`, not a value field (that's GaugeChart).
 - Forgetting `badge.text` when including a badge — `text` is required; icon and color are decoration.
 - Putting the trend percentage in `header.subtitle` instead of `header.badge.text` — only badges render with color and icon.
+- Setting `progress.max` to `0` or a `value` above `max` — when `progress` is present `max` must be `> 0` and `value` non-negative.

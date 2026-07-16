@@ -1,10 +1,10 @@
 ---
 name: dashboardbase
-description: Use when creating a Dashboardbase dashboard end-to-end, or when building, wiring, or debugging an HTTP endpoint that Dashboardbase will poll to render a widget (BarChart, DonutChart, GaugeChart, KPI, LineChart, PieChart, Status, Table), writing a Dashboardbase setup file, configuring authentication, or sending events/notifications. Covers the full create-a-dashboard workflow (choose widgets, pick a layout, build endpoints, write the setup file, validate, import), the response envelope, JSON schemas per widget, widget styling (header title/subtitle and colored badges), the recommended authentication method (API key via the `x-api-key` header), refresh intervals, hosting requirements, and a go-live checklist.
+description: Use when creating a Dashboardbase dashboard end-to-end, or when building, wiring, or debugging an HTTP endpoint that Dashboardbase will poll to render a widget (BarChart, Clock, ContributionsGrid, Countdown, DonutChart, GaugeChart, Image, KPI, LineChart, PieChart, ProgressList, Status, Table, Text), writing a Dashboardbase setup file, configuring authentication, or sending events/notifications. Covers the full create-a-dashboard workflow (choose widgets, pick a layout, build endpoints, write the setup file, validate, import), the response envelope, JSON schemas per widget, widget styling (header title/subtitle and colored badges), the recommended authentication method (API key via the `x-api-key` header), refresh intervals, hosting requirements, and a go-live checklist.
 license: MIT
 metadata:
   source-repo: dashboardbase-api
-  generated-at: "2026-07-14T15:00:51Z"
+  generated-at: "2026-07-16T10:43:53Z"
   api-version: "1.0.0"
   spec-version: "1.0"
 ---
@@ -24,13 +24,19 @@ When the task is a whole dashboard (not a single widget), follow this workflow:
 1. **Choose widgets.** Pick one widget type per metric:
 
 - **BarChart** (setup-file type `bar`) — building a bar chart / grouped bars / comparison by category.
+- **Clock** (setup-file type `clock`) — building a clock / current-time / timezone tile.
+- **ContributionsGrid** (setup-file type `contributions`) — building a GitHub-style contributions / activity heatmap grid.
+- **Countdown** (setup-file type `countdown`) — building a countdown / days-until / time-remaining tile.
 - **DonutChart** (setup-file type `donut`) — building a donut chart / ring breakdown.
 - **GaugeChart** (setup-file type `gauge`) — building a gauge / dial / progress indicator.
+- **Image** (setup-file type `image`) — building an image / meme / GIF / picture tile.
 - **KPI** (setup-file type `kpi`) — building a single-number / headline / KPI tile.
 - **LineChart** (setup-file type `line`) — building a line chart / time series / trend over time.
 - **PieChart** (setup-file type `pie`) — building a pie chart / share-of-total / breakdown.
+- **ProgressList** (setup-file type `progress`) — building a list of labelled progress / goal / capacity bars.
 - **Status** (setup-file type `status`) — building a status / health / up-or-down indicator.
 - **Table** (setup-file type `table`) — building a table / list / rows-and-columns widget.
+- **Text** (setup-file type `text`) — building a text / quote / announcement / message-of-the-day tile.
 
 2. **Pick a layout.** Load `references/setup-files.md` → "Recommended layouts". Choose the smallest layout whose slots cover your widget mix and copy each slot's `position` / `size` into the setup file — don't invent grid values. If no layout covers the mix, extend the closest one per that file's "When no layout fits". Name the layout you picked when handing over (e.g. "arranged as *Spotlight*") so the user knows what to expect and can ask for a different arrangement.
 3. **Build or plan each endpoint.**
@@ -135,7 +141,7 @@ Load only what the current task needs — these files are progressive disclosure
 | Trigger | File |
 |---|---|
 | Creating a **complete dashboard** from scratch | Follow "Creating a dashboard end-to-end" above, with `references/setup-files.md` for layouts and the setup file |
-| Building a **BarChart / DonutChart / GaugeChart / KPI / LineChart / PieChart / Status / Table** endpoint | `references/<widget>.md` (e.g. `references/kpi.md`, `references/bar-chart.md`) |
+| Building a **BarChart / Clock / ContributionsGrid / Countdown / DonutChart / GaugeChart / Image / KPI / LineChart / PieChart / ProgressList / Status / Table / Text** endpoint | `references/<widget>.md` (e.g. `references/kpi.md`, `references/bar-chart.md`) |
 | Writing a **setup file** (declarative dashboard config) | `references/setup-files.md` (and `assets/setup-file.schema.json` for full schema) |
 | Choosing or rotating **authentication** | `references/authentication.md` |
 | Pushing **events / notifications / sounds** to a dashboard | `references/events.md` |
@@ -144,7 +150,7 @@ Load only what the current task needs — these files are progressive disclosure
 | Shipping to **production** | `references/go-live-checklist.md` |
 | **First-time** users wanting an extended walkthrough | `references/quickstart.md` |
 
-The widget reference filenames are: `bar-chart.md`, `donut-chart.md`, `gauge-chart.md`, `kpi.md`, `line-chart.md`, `pie-chart.md`, `status.md`, `table.md`.
+The widget reference filenames are: `bar-chart.md`, `clock.md`, `contributions-grid.md`, `countdown.md`, `donut-chart.md`, `gauge-chart.md`, `image.md`, `kpi.md`, `line-chart.md`, `pie-chart.md`, `progress-list.md`, `status.md`, `table.md`, `text.md`.
 
 ## Always-true rules (no need to read anything to apply these)
 
@@ -243,16 +249,22 @@ Unlike the styling enums above, alert levels are **lowercase**:
 ## Supported widgets
 
 - BarChart
+- Clock
+- ContributionsGrid
+- Countdown
 - DonutChart
 - GaugeChart
+- Image
 - KPI
 - LineChart
 - PieChart
+- ProgressList
 - Status
 - Table
+- Text
 
 Each has its own reference file under `references/` — see the filename list above.
 
 ---
 
-*Skill generated at `2026-07-14T15:00:51Z` from the Dashboardbase API contract.*
+*Skill generated at `2026-07-16T10:43:53Z` from the Dashboardbase API contract.*

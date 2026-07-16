@@ -107,6 +107,14 @@
         "Error"
       ],
       "type": "string"
+    },
+    "mode": {
+      "enum": [
+        "Default",
+        "Heartbeat"
+      ],
+      "type": "string",
+      "nullable": true
     }
   },
   "additionalProperties": false

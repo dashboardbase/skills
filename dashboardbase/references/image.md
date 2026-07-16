@@ -1,21 +1,21 @@
-# Status widget
+# Image widget
 
-> **Load this file when:** building a status / health / up-or-down indicator.
+> **Load this file when:** building an image / meme / GIF / picture tile.
 
 ## Purpose
 
-Show a binary health indicator (Ok / Error) with optional header context — ideal for service status, deploy state, alert summaries. Set the optional `mode` to `Heartbeat` to have the client render the indicator as an ECG-style pulse that beats (a healthy service visibly 'lives' on a TV wall); omit it or send `Default` for the plain Ok/Error pill.
+Show an external image, meme or GIF by URL — ideal for team-culture dashboards. Dashboardbase serves the image through a hardened server-side proxy (`/bff/v1/widget-image?url=...`) so the viewer's browser never contacts the origin directly; return the original HTTPS `url` here and the app rewrites it to the proxy.
 
-In a setup file, this widget's `type` is `status` (see `references/setup-files.md`).
+In a setup file, this widget's `type` is `image` (see `references/setup-files.md`).
 
 ## Resolved JSON schema
 
-The `data` field of the response envelope must match this schema (all `$ref`s are inlined here, so this is the complete contract). A standalone copy is bundled at `assets/schemas/status.json` for use with a JSON Schema validator:
+The `data` field of the response envelope must match this schema (all `$ref`s are inlined here, so this is the complete contract). A standalone copy is bundled at `assets/schemas/image.json` for use with a JSON Schema validator:
 
 ```json
 {
   "required": [
-    "status"
+    "url"
   ],
   "type": "object",
   "properties": {
@@ -116,18 +116,15 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
       "additionalProperties": false,
       "nullable": true
     },
-    "status": {
-      "enum": [
-        "Ok",
-        "Error"
-      ],
+    "url": {
+      "minLength": 1,
       "type": "string"
     },
-    "mode": {
-      "enum": [
-        "Default",
-        "Heartbeat"
-      ],
+    "alt": {
+      "type": "string",
+      "nullable": true
+    },
+    "caption": {
       "type": "string",
       "nullable": true
     }
@@ -140,16 +137,14 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
 
 ```json
 {
-  "title": "Status",
-  "actions": [
-    {
-      "title": "Check Logs",
-      "type": "link",
-      "url": "https://example.com/status-logs"
-    }
-  ],
+  "title": "Ship it",
   "data": {
-    "status": "Ok"
+    "header": {
+      "title": "Release vibes"
+    },
+    "url": "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbnJpeXpybnFkY2ptN2Q1ZGF0dnVqMTl0Z250MG0wdHpnN21qbHIyeCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/GbH8vRmrNHdVZhouBt/giphy.gif",
+    "alt": "Celebration GIF",
+    "caption": "We shipped v1.0 \uD83D\uDE80"
   }
 }
 ```
@@ -157,7 +152,7 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
 ## Example request
 
 ```bash
-curl -X GET 'https://api.dashboardbase.com/example/statuschart'
+curl -X GET 'https://api.dashboardbase.com/example/imagechart'
 ```
 
 ## Header — headline, subtitle, and colored badge
@@ -180,94 +175,11 @@ The `header` block is optional in the schema — **include it anyway**. Without 
 
 
 
-## Variations
 
-Other shapes and styling for this widget — pick the one closest to your data:
-
-### Healthy heartbeat (pulsing)
-
-A healthy service you want to visibly 'beat' on a TV wall — set `mode` to `Heartbeat`.
-
-```json
-{
-  "title": "API health",
-  "actions": [
-    {
-      "title": "Check Logs",
-      "type": "link",
-      "url": "https://example.com/status-logs"
-    }
-  ],
-  "data": {
-    "header": {
-      "title": "Operational",
-      "subtitle": "All checks passing",
-      "color": "Success"
-    },
-    "status": "Ok",
-    "mode": "Heartbeat"
-  }
-}
-```
-
-### Failing (with header context)
-
-A service is down/erroring — pair the Error indicator with a header naming the service.
-
-```json
-{
-  "title": "Payments API",
-  "actions": [
-    {
-      "title": "Check Logs",
-      "type": "link",
-      "url": "https://example.com/status-logs"
-    }
-  ],
-  "data": {
-    "header": {
-      "title": "Degraded",
-      "subtitle": "3 failing checks",
-      "color": "Danger"
-    },
-    "status": "Error"
-  }
-}
-```
-
-### Outage with a critical alert
-
-A service is fully down — pair the Error indicator with a critical alert spelling out the impact.
-
-```json
-{
-  "title": "Payments API",
-  "actions": [
-    {
-      "title": "Open Incident",
-      "type": "link",
-      "url": "https://example.com/incident"
-    }
-  ],
-  "data": {
-    "header": {
-      "title": "Down",
-      "subtitle": "All checks failing",
-      "color": "Danger"
-    },
-    "status": "Error"
-  },
-  "alert": {
-    "active": true,
-    "level": "critical",
-    "message": "Payments API has been down for 8 minutes"
-  }
-}
-```
 
 ## Validation
 
-The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate your response's `data` field against `assets/schemas/status.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
+The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate your response's `data` field against `assets/schemas/image.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
 
 ## Styling
 
@@ -283,6 +195,6 @@ All values are case-sensitive (`"Success"`, not `"success"`).
 
 ## Common mistakes
 
-- Sending a string for `status` outside `Ok` / `Error` — values are case-sensitive and limited to the `WidgetStatusIndicator` enum.
-- Using KPI shape for a binary indicator — Status renders an explicit Ok/Error pill, KPI does not.
-- Sending a `mode` outside `Default` / `Heartbeat` — it is nullable, so omit it for the default rendering.
+- Sending a non-HTTPS `url` — only `https://` image URLs are accepted.
+- Pointing `url` at an SVG — the proxy serves only raster images (png, jpeg, gif, webp); SVG is rejected for safety.
+- Expecting a URL that redirects (302) to a CDN to work — the proxy does not follow redirects; use the final image URL.

@@ -1,21 +1,21 @@
-# Status widget
+# ContributionsGrid widget
 
-> **Load this file when:** building a status / health / up-or-down indicator.
+> **Load this file when:** building a GitHub-style contributions / activity heatmap grid.
 
 ## Purpose
 
-Show a binary health indicator (Ok / Error) with optional header context — ideal for service status, deploy state, alert summaries. Set the optional `mode` to `Heartbeat` to have the client render the indicator as an ECG-style pulse that beats (a healthy service visibly 'lives' on a TV wall); omit it or send `Default` for the plain Ok/Error pill.
+Render a GitHub-style grid of day cells shaded by an intensity value — ideal for activity streaks, deploys per day, commits, or any 'per-day count over time' series.
 
-In a setup file, this widget's `type` is `status` (see `references/setup-files.md`).
+In a setup file, this widget's `type` is `contributions` (see `references/setup-files.md`).
 
 ## Resolved JSON schema
 
-The `data` field of the response envelope must match this schema (all `$ref`s are inlined here, so this is the complete contract). A standalone copy is bundled at `assets/schemas/status.json` for use with a JSON Schema validator:
+The `data` field of the response envelope must match this schema (all `$ref`s are inlined here, so this is the complete contract). A standalone copy is bundled at `assets/schemas/contributions-grid.json` for use with a JSON Schema validator:
 
 ```json
 {
   "required": [
-    "status"
+    "cells"
   ],
   "type": "object",
   "properties": {
@@ -116,20 +116,27 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
       "additionalProperties": false,
       "nullable": true
     },
-    "status": {
-      "enum": [
-        "Ok",
-        "Error"
-      ],
-      "type": "string"
-    },
-    "mode": {
-      "enum": [
-        "Default",
-        "Heartbeat"
-      ],
-      "type": "string",
-      "nullable": true
+    "cells": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "required": [
+          "date",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "value": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      }
     }
   },
   "additionalProperties": false
@@ -140,16 +147,77 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
 
 ```json
 {
-  "title": "Status",
+  "title": "Deploys",
   "actions": [
     {
-      "title": "Check Logs",
+      "title": "View Pipeline",
       "type": "link",
-      "url": "https://example.com/status-logs"
+      "url": "https://example.com/pipeline"
     }
   ],
   "data": {
-    "status": "Ok"
+    "header": {
+      "title": "142",
+      "subtitle": "Last 14 days"
+    },
+    "cells": [
+      {
+        "date": "2026-01-01",
+        "value": 2
+      },
+      {
+        "date": "2026-01-02",
+        "value": 0
+      },
+      {
+        "date": "2026-01-03",
+        "value": 5
+      },
+      {
+        "date": "2026-01-04",
+        "value": 1
+      },
+      {
+        "date": "2026-01-05",
+        "value": 0
+      },
+      {
+        "date": "2026-01-06",
+        "value": 8
+      },
+      {
+        "date": "2026-01-07",
+        "value": 3
+      },
+      {
+        "date": "2026-01-08",
+        "value": 4
+      },
+      {
+        "date": "2026-01-09",
+        "value": 0
+      },
+      {
+        "date": "2026-01-10",
+        "value": 6
+      },
+      {
+        "date": "2026-01-11",
+        "value": 2
+      },
+      {
+        "date": "2026-01-12",
+        "value": 1
+      },
+      {
+        "date": "2026-01-13",
+        "value": 7
+      },
+      {
+        "date": "2026-01-14",
+        "value": 3
+      }
+    ]
   }
 }
 ```
@@ -157,7 +225,7 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
 ## Example request
 
 ```bash
-curl -X GET 'https://api.dashboardbase.com/example/statuschart'
+curl -X GET 'https://api.dashboardbase.com/example/contributionsgrid'
 ```
 
 ## Header — headline, subtitle, and colored badge
@@ -180,94 +248,11 @@ The `header` block is optional in the schema — **include it anyway**. Without 
 
 
 
-## Variations
 
-Other shapes and styling for this widget — pick the one closest to your data:
-
-### Healthy heartbeat (pulsing)
-
-A healthy service you want to visibly 'beat' on a TV wall — set `mode` to `Heartbeat`.
-
-```json
-{
-  "title": "API health",
-  "actions": [
-    {
-      "title": "Check Logs",
-      "type": "link",
-      "url": "https://example.com/status-logs"
-    }
-  ],
-  "data": {
-    "header": {
-      "title": "Operational",
-      "subtitle": "All checks passing",
-      "color": "Success"
-    },
-    "status": "Ok",
-    "mode": "Heartbeat"
-  }
-}
-```
-
-### Failing (with header context)
-
-A service is down/erroring — pair the Error indicator with a header naming the service.
-
-```json
-{
-  "title": "Payments API",
-  "actions": [
-    {
-      "title": "Check Logs",
-      "type": "link",
-      "url": "https://example.com/status-logs"
-    }
-  ],
-  "data": {
-    "header": {
-      "title": "Degraded",
-      "subtitle": "3 failing checks",
-      "color": "Danger"
-    },
-    "status": "Error"
-  }
-}
-```
-
-### Outage with a critical alert
-
-A service is fully down — pair the Error indicator with a critical alert spelling out the impact.
-
-```json
-{
-  "title": "Payments API",
-  "actions": [
-    {
-      "title": "Open Incident",
-      "type": "link",
-      "url": "https://example.com/incident"
-    }
-  ],
-  "data": {
-    "header": {
-      "title": "Down",
-      "subtitle": "All checks failing",
-      "color": "Danger"
-    },
-    "status": "Error"
-  },
-  "alert": {
-    "active": true,
-    "level": "critical",
-    "message": "Payments API has been down for 8 minutes"
-  }
-}
-```
 
 ## Validation
 
-The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate your response's `data` field against `assets/schemas/status.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
+The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate your response's `data` field against `assets/schemas/contributions-grid.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
 
 ## Styling
 
@@ -283,6 +268,6 @@ All values are case-sensitive (`"Success"`, not `"success"`).
 
 ## Common mistakes
 
-- Sending a string for `status` outside `Ok` / `Error` — values are case-sensitive and limited to the `WidgetStatusIndicator` enum.
-- Using KPI shape for a binary indicator — Status renders an explicit Ok/Error pill, KPI does not.
-- Sending a `mode` outside `Default` / `Heartbeat` — it is nullable, so omit it for the default rendering.
+- Sending `value` as a string — cell values must be numbers.
+- Using a negative `value` — intensities must be `>= 0` (0 renders as the empty cell).
+- Sending fewer than one cell — `cells` must contain at least one `{ date, value }` entry.

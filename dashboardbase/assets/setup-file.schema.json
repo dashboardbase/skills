@@ -160,7 +160,13 @@
                   "bar",
                   "pie",
                   "donut",
-                  "gauge"
+                  "gauge",
+                  "countdown",
+                  "contributions",
+                  "text",
+                  "clock",
+                  "progress",
+                  "image"
                 ],
                 "description": "Widget type."
               },
@@ -242,7 +248,13 @@
                   "bar",
                   "pie",
                   "donut",
-                  "gauge"
+                  "gauge",
+                  "countdown",
+                  "contributions",
+                  "text",
+                  "clock",
+                  "progress",
+                  "image"
                 ],
                 "description": "Widget type."
               },
@@ -365,7 +377,13 @@
                   "bar",
                   "pie",
                   "donut",
-                  "gauge"
+                  "gauge",
+                  "countdown",
+                  "contributions",
+                  "text",
+                  "clock",
+                  "progress",
+                  "image"
                 ],
                 "description": "Widget type."
               },

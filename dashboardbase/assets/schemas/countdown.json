@@ -1,6 +1,6 @@
 {
   "required": [
-    "datasets"
+    "target"
   ],
   "type": "object",
   "properties": {
@@ -101,104 +101,11 @@
       "additionalProperties": false,
       "nullable": true
     },
-    "labels": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "nullable": true
+    "target": {
+      "type": "string",
+      "format": "date-time"
     },
-    "datasets": {
-      "minItems": 1,
-      "type": "array",
-      "items": {
-        "required": [
-          "label"
-        ],
-        "type": "object",
-        "properties": {
-          "data": {
-            "type": "array",
-            "items": {
-              "required": [
-                "value"
-              ],
-              "type": "object",
-              "properties": {
-                "value": {
-                  "type": "number",
-                  "format": "double"
-                },
-                "prefix": {
-                  "type": "string",
-                  "nullable": true
-                },
-                "postfix": {
-                  "type": "string",
-                  "nullable": true
-                },
-                "note": {
-                  "type": "string",
-                  "nullable": true
-                },
-                "color": {
-                  "enum": [
-                    "Success",
-                    "Warning",
-                    "Danger",
-                    "Blue",
-                    "Green",
-                    "Red",
-                    "Yellow",
-                    "Orange",
-                    "Light",
-                    "Dark"
-                  ],
-                  "type": "string",
-                  "nullable": true
-                }
-              },
-              "additionalProperties": false
-            },
-            "nullable": true
-          },
-          "label": {
-            "minLength": 1,
-            "type": "string"
-          },
-          "color": {
-            "enum": [
-              "Success",
-              "Warning",
-              "Danger",
-              "Blue",
-              "Green",
-              "Red",
-              "Yellow",
-              "Orange",
-              "Light",
-              "Dark"
-            ],
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      }
-    },
-    "ticksX": {
-      "type": "boolean",
-      "nullable": true
-    },
-    "ticksY": {
-      "type": "boolean",
-      "nullable": true
-    },
-    "indexAxis": {
-      "enum": [
-        "x",
-        "y"
-      ],
+    "label": {
       "type": "string",
       "nullable": true
     }

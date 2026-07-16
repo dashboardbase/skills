@@ -99,6 +99,45 @@
         }
       },
       "additionalProperties": false
+    },
+    "progress": {
+      "required": [
+        "value"
+      ],
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "number",
+          "format": "double"
+        },
+        "max": {
+          "type": "number",
+          "format": "double",
+          "nullable": true
+        },
+        "label": {
+          "type": "string",
+          "nullable": true
+        },
+        "color": {
+          "enum": [
+            "Success",
+            "Warning",
+            "Danger",
+            "Blue",
+            "Green",
+            "Red",
+            "Yellow",
+            "Orange",
+            "Light",
+            "Dark"
+          ],
+          "type": "string",
+          "nullable": true
+        }
+      },
+      "additionalProperties": false,
+      "nullable": true
     }
   },
   "additionalProperties": false
