@@ -210,6 +210,32 @@ A healthy service you want to visibly 'beat' on a TV wall — set `mode` to `Hea
 }
 ```
 
+### Unhealthy heartbeat (flatlining)
+
+A failing service you still want to render as an ECG pulse on a TV wall — set `mode` to `Heartbeat` with an `Error` status so the beat flatlines.
+
+```json
+{
+  "title": "API health",
+  "actions": [
+    {
+      "title": "Check Logs",
+      "type": "link",
+      "url": "https://example.com/status-logs"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "Not operational",
+      "subtitle": "All checks failing",
+      "color": "Danger"
+    },
+    "status": "Error",
+    "mode": "Heartbeat"
+  }
+}
+```
+
 ### Failing (with header context)
 
 A service is down/erroring — pair the Error indicator with a header naming the service.
