@@ -123,10 +123,6 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
     "author": {
       "type": "string",
       "nullable": true
-    },
-    "source": {
-      "type": "string",
-      "nullable": true
     }
   },
   "additionalProperties": false
@@ -186,8 +182,7 @@ A rotating quote with attribution — culture dashboards, kickoff screens.
   "title": "Quote of the day",
   "data": {
     "text": "Simplicity is a prerequisite for reliability.",
-    "author": "Edsger W. Dijkstra",
-    "source": "EWD498"
+    "author": "Edsger W. Dijkstra"
   }
 }
 ```

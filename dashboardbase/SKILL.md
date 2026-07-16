@@ -4,7 +4,7 @@ description: Use when creating a Dashboardbase dashboard end-to-end, or when bui
 license: MIT
 metadata:
   source-repo: dashboardbase-api
-  generated-at: "2026-07-16T10:43:53Z"
+  generated-at: "2026-07-16T18:56:14Z"
   api-version: "1.0.0"
   spec-version: "1.0"
 ---
@@ -267,4 +267,4 @@ Each has its own reference file under `references/` — see the filename list ab
 
 ---
 
-*Skill generated at `2026-07-16T10:43:53Z` from the Dashboardbase API contract.*
+*Skill generated at `2026-07-16T18:56:14Z` from the Dashboardbase API contract.*
