@@ -4,7 +4,7 @@
 
 ## Purpose
 
-Show the current time and date for a given timezone — a kiosk/TV-wall staple. The endpoint only states the timezone and formatting; the ticking clock is rendered client-side, so no polling is needed.
+Show the current time and date for a given timezone — a kiosk/TV-wall staple. The endpoint only states the timezone and formatting; the ticking clock is rendered client-side, so no polling is needed. Set the optional `mode` to `Digital` for a seven-segment display or `Analog` for a rendered clock face; omit it or send `Text` for the plain typographic time.
 
 In a setup file, this widget's `type` is `clock` (see `references/setup-files.md`).
 
@@ -30,6 +30,15 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
       "nullable": true
     },
     "label": {
+      "type": "string",
+      "nullable": true
+    },
+    "mode": {
+      "enum": [
+        "Text",
+        "Digital",
+        "Analog"
+      ],
       "type": "string",
       "nullable": true
     }
@@ -82,6 +91,40 @@ Showing a second timezone for a distributed team, in 12-hour format.
 }
 ```
 
+### Digital clock
+
+A seven-segment digital display for a control room or NOC wall.
+
+```json
+{
+  "title": "London",
+  "data": {
+    "timeZone": "Europe/London",
+    "hourCycle": 24,
+    "showDate": true,
+    "label": "GMT",
+    "mode": "Digital"
+  }
+}
+```
+
+### Analog clock
+
+A rendered clock face for a lobby or reception display.
+
+```json
+{
+  "title": "Tokyo",
+  "data": {
+    "timeZone": "Asia/Tokyo",
+    "hourCycle": 12,
+    "showDate": false,
+    "label": "JST",
+    "mode": "Analog"
+  }
+}
+```
+
 ## Validation
 
 The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate your response's `data` field against `assets/schemas/clock.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
@@ -103,3 +146,4 @@ All values are case-sensitive (`"Success"`, not `"success"`).
 - Sending a Windows/abbreviated zone (e.g. `PST`) — use an IANA timezone id such as `Europe/Copenhagen` or `America/New_York`.
 - Sending `hourCycle` other than `12` or `24`.
 - Returning a formatted time string — return the timezone/format and let the client keep it ticking.
+- Sending a `mode` outside `Text` / `Digital` / `Analog` — it is nullable, so omit it for the default (text) rendering.

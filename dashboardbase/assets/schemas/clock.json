@@ -17,6 +17,15 @@
     "label": {
       "type": "string",
       "nullable": true
+    },
+    "mode": {
+      "enum": [
+        "Text",
+        "Digital",
+        "Analog"
+      ],
+      "type": "string",
+      "nullable": true
     }
   },
   "additionalProperties": false
