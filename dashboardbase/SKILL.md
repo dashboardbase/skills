@@ -131,6 +131,7 @@ Dashboards read dramatically better when every widget uses the styling surface t
 - **Color lives on badges and datasets, not in text.** `subtitle` renders as plain text; use `badge.color` with `ArrowUp` / `ArrowDown` for the colored accent, and per-dataset `color` to distinguish chart series.
 - **Echo the active date range in `header.subtitle`** when handling `?dateRange=` — it shows users their filter is applied.
 - **Add link `actions`** so a widget clicks through to the underlying tool (Stripe, your admin, a runbook).
+- **Design for the big screen too.** A dashboard can be shown on a wall-mounted TV (paired as a display device) and viewed from across a room. Nothing extra to build — a TV renders the same widget endpoints — but the styling above is exactly what makes it read at a distance: large headline numbers, high-contrast badges, and an echoed date range beat dense tables and tiny labels on a 55" screen.
 
 Each widget reference's "Header" section shows the exact shape.
 
