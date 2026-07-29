@@ -256,7 +256,7 @@ curl -X GET 'https://api.dashboardbase.com/example/api-key/piechart' \
 
 ## Header — headline, subtitle, and colored badge
 
-The `header` block is optional in the schema — **include it anyway**. Without it the widget renders as a bare plot; the header is what makes it read well at a glance. Use the three parts together:
+The `header` block is **optional**, and this widget reads fine without one — several of the bundled examples omit it. Include it when there is a headline worth showing above the widget. Use the three parts together:
 
 - `title` — the headline number or aggregate of the series (e.g. `"1,010"` total).
 - `subtitle` — the plain-text context line. Best use: state the time window (`"Last 7 days"`), and when your endpoint handles `?dateRange=`, echo the selected range here so users can see the filter is applied.
@@ -456,3 +456,4 @@ All values are case-sensitive (`"Success"`, not `"success"`).
 - Confusing `color` as a single value — for Pie/Donut it is `List<WidgetDataColor>` (one per slice), not a single color.
 - Forgetting that slices sum visually — passing negative values produces undefined rendering.
 - Mismatched lengths between `labels`, `data`, and `color` arrays.
+- Sending `datasets: []` when there is nothing to break down — it is rejected. A share-of-total has no meaningful zero shape, so return `204 No Content` instead and let Dashboardbase render the widget as empty.

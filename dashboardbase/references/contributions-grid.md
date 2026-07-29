@@ -230,7 +230,7 @@ curl -X GET 'https://api.dashboardbase.com/example/contributionsgrid'
 
 ## Header — headline, subtitle, and colored badge
 
-The `header` block is optional in the schema — **include it anyway**. Without it the widget renders as a bare plot; the header is what makes it read well at a glance. Use the three parts together:
+The `header` block is **optional**, and this widget reads fine without one — several of the bundled examples omit it. Include it when there is a headline worth showing above the widget. Use the three parts together:
 
 - `title` — the headline number or aggregate of the series (e.g. `"1,010"` total).
 - `subtitle` — the plain-text context line. Best use: state the time window (`"Last 7 days"`), and when your endpoint handles `?dateRange=`, echo the selected range here so users can see the filter is applied.

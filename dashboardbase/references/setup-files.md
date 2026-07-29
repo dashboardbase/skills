@@ -31,6 +31,8 @@ The full JSON Schema is bundled at `assets/setup-file.schema.json`. Load it when
 - `refreshInterval` is one of `1m`, `5m`, `10m`, `30m`.
 - `mappings[]` is the array of widget-to-endpoint wires — each entry is in one of four states described below.
 
+A mapping's `path` may carry a query string: `"/api/v1/dashboard/widget?widget=revenue-mrr"` is valid, and it is how a dashboard served by **one shared endpoint** is wired (see `references/endpoint-layout.md`). Dashboardbase appends `dateRange` to whatever URL you configure, using `&` when a query string is already present.
+
 ## Widget `type` values
 
 Mappings that create widgets (States B, C, and D) declare the widget with a `type` slug. These are the canonical values:
@@ -395,6 +397,46 @@ Grid values from the *Starter Kit* layout (two `Kpi` slots plus `Primary`):
 }
 ```
 
+## Example — one shared endpoint
+
+Every widget is served by the same route, distinguished by `?widget=<slug>`. `baseUrl` stays the host; the discriminator lives in each mapping's `path`. Grid values from the *Starter Kit* layout. See `references/endpoint-layout.md` for when to choose this over one endpoint per widget, and how to implement the handler.
+
+```json
+{
+  "$schema": "https://api.dashboardbase.com/setup-file/schema/v1.json",
+  "version": 1,
+  "name": "MRR Overview",
+  "baseUrl": "https://api.example.com",
+  "refreshInterval": "5m",
+  "mappings": [
+    {
+      "type": "kpi",
+      "path": "/api/v1/dashboard/widget?widget=mrr",
+      "size": { "w": 3, "h": 1 },
+      "position": { "x": 0, "y": 0 }
+    },
+    {
+      "type": "kpi",
+      "path": "/api/v1/dashboard/widget?widget=active-users",
+      "size": { "w": 3, "h": 1 },
+      "position": { "x": 3, "y": 0 }
+    },
+    {
+      "type": "line",
+      "path": "/api/v1/dashboard/widget?widget=revenue-over-time",
+      "size": { "w": 8, "h": 5 },
+      "position": { "x": 0, "y": 1 }
+    },
+    {
+      "type": "table",
+      "path": "/api/v1/dashboard/widget?widget=top-customers",
+      "size": { "w": 4, "h": 5 },
+      "position": { "x": 8, "y": 1 }
+    }
+  ]
+}
+```
+
 ## Example with mixed states
 
 Grid values from the *Starter Kit* layout — the new KPI takes the second `Kpi` slot (the wired State A widget already occupies the first) and the planned bar chart takes `Primary`:
@@ -516,3 +558,4 @@ The response's `data` field contains the setup-file JSON with every widget's ful
 - **Using a `refreshInterval` outside the allowed set.** Only `1m`, `5m`, `10m`, `30m`.
 - **Forgetting `$schema`.** Optional but recommended — editors with JSON Schema support will offer completion when it's present.
 - **Relative `path` without `baseUrl` or `datasourceId`.** Either set a top-level `baseUrl`, declare a `datasourceId`, or use an absolute URL in `path`.
+- **Putting a widget's query string in `baseUrl`.** `baseUrl` is shared by every mapping, so a discriminator there sends all widgets the same value. Per-widget query strings belong in each mapping's `path`.

@@ -45,7 +45,13 @@ For PieChart and DonutChart datasets, `color` is `List<WidgetDataColor>` (one pe
 
 ## 8. Empty arrays are different from missing arrays
 
-For `Table`, `"rows": []` is a validation error (must contain at least one row, and every row must contain at least one cell). For charts, an empty `"datasets": []` is likewise rejected. A dataset whose `data` is `[]` passes validation but draws an empty series. If you have no data to show, return `204 No Content` instead.
+For `Table`, `"rows": []` is a validation error (must contain at least one row, and every row must contain at least one cell). For charts, an empty `"datasets": []` is likewise rejected. A dataset whose `data` is `[]` passes validation but draws an empty series.
+
+What to send when there is nothing to show depends on whether the data has a natural zero shape:
+
+- **A chart bucketed over a date range** (LineChart / BarChart over days, weeks or months, ContributionsGrid) — emit **every** bucket in the requested window with `{ "value": 0 }`, including when every bucket is zero. A flat zero line is the honest answer and reads as intentional; a blank widget reads as broken. Never collapse a quiet period to `204`.
+- **A gauge** — send `value: 0` against the real `maxValue`. Do not signal emptiness with `maxValue: 0`; that is rejected.
+- **Data with no zero shape** (a Table with no rows, a Pie/Donut with no categories) — return `204 No Content` and let Dashboardbase render the widget as empty. There is no honest way to draw a share-of-total of nothing.
 
 ## 9. Non-finite numbers fail JSON
 
@@ -70,3 +76,26 @@ When a dashboard has a date selector, Dashboardbase appends `?dateRange=<value>`
 ## 14. Handling `dateRange` correctly, but not showing it
 
 Even when your endpoint filters by `dateRange` correctly, nothing on the widget tells the viewer which window they're looking at — it can look like the selector was ignored even when it wasn't. Echo the active window in `header.subtitle` (e.g. `"Last 7 days"`), and remember the subtitle is plain text: colored accents belong on `header.badge`, not in the subtitle string.
+
+## 15. A shared endpoint returning the wrong widget's shape
+
+When one endpoint serves several widgets via `?widget=<slug>`, a widget that renders as an error (or as another widget's data) usually means the handler branched on the wrong thing. Check that it reads `widget` — not `dateRange` — to pick the payload, that every slug in the setup file has a matching case, and that an unknown slug returns `400` rather than `200` with an empty body, which renders as a blank widget and hides the typo. `additionalProperties: false` still applies per branch: validate each one against `assets/schemas/<widget>.json`. See `references/endpoint-layout.md`.
+
+## 16. The chart is correct but the widget looks broken
+
+A time-series widget that returns valid, accurate data can still render as an empty box with a crowd of
+rotated date labels along the bottom. Three independent omissions compound into it, and all three are
+worth fixing together:
+
+- **No `header`.** The widget has no headline and no context line, so there is nothing to read when the
+  plot itself is flat. LineChart and BarChart should always carry one — see "Make it look good" in
+  `SKILL.md`. (On non-plotting widgets the header stays optional.)
+- **A series that is entirely zeros.** This is usually correct (nothing happened in the window) but the
+  line sits on the baseline and is easy to miss. Keep returning the zero-filled series — it is the
+  honest answer — and let the `header` carry the meaning: `title` = `"0"`, `subtitle` = the window.
+  Do not switch to `204`; see gotcha 8.
+- **Dense axis ticks.** Thirty daily labels rotated 45° eat a third of the tile and swamp the plot. Set
+  `ticksX: false` past roughly a dozen buckets; `header.subtitle` already states the window.
+
+A widget with a header reading "0" over "Last 30 days" and a clean axis says "nothing happened,
+and we know it". The same endpoint without those three says "this is broken".
