@@ -287,7 +287,7 @@ curl -X GET 'https://api.dashboardbase.com/example/api-key/linechart' \
 
 ## Header — headline, subtitle, and colored badge
 
-The `header` block is optional in the schema — **include it anyway**. Without it the widget renders as a bare plot; the header is what makes it read well at a glance. Use the three parts together:
+The `header` block is optional in the schema — **always include it anyway**. Without it the chart is a bare plot with no headline and no period; the header is what makes it read at a glance. Use the three parts together:
 
 - `title` — the headline number or aggregate of the series (e.g. `"1,010"` total).
 - `subtitle` — the plain-text context line. Best use: state the time window (`"Last 7 days"`), and when your endpoint handles `?dateRange=`, echo the selected range here so users can see the filter is applied.
@@ -336,6 +336,15 @@ Comparing two trends with explicit colours and a filled area beneath each line.
     }
   ],
   "data": {
+    "header": {
+      "title": "1010",
+      "subtitle": "Page views, last 7 days",
+      "badge": {
+        "text": "+70%",
+        "icon": "ArrowUp",
+        "color": "Success"
+      }
+    },
     "labels": [
       "Mon",
       "Tue",
@@ -570,3 +579,5 @@ All values are case-sensitive (`"Success"`, not `"success"`).
 - Treating `labels` as datetime stamps — Dashboardbase renders them as opaque strings; format them upstream (e.g. `'2026-05-19'` or `'Mon'`).
 - Sending uneven dataset lengths — every dataset's `data` length should match `labels`.
 - Returning `null` between values to indicate a gap — Dashboardbase expects every index to have a `{ "value": <number> }` entry.
+- Returning `204` (or an empty series) for a period with no activity — emit every bucket in the window with `{ "value": 0 }` instead. A flat zero line is the honest answer and reads as intentional; a blank widget reads as broken.
+- Leaving axis ticks on for a long daily series — thirty rotated date labels crowd the axis and swamp the plot. Set `ticksX: false` past roughly a dozen buckets and let `header.subtitle` carry the window ("Last 30 days").

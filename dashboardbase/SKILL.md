@@ -4,7 +4,7 @@ description: Use when creating a Dashboardbase dashboard end-to-end, or when bui
 license: MIT
 metadata:
   source-repo: dashboardbase-api
-  generated-at: "2026-07-21T05:49:40Z"
+  generated-at: "2026-07-29T17:15:58Z"
   api-version: "1.0.0"
   spec-version: "1.0"
 ---
@@ -39,9 +39,9 @@ When the task is a whole dashboard (not a single widget), follow this workflow:
 - **Text** (setup-file type `text`) — building a text / quote / announcement / message-of-the-day tile.
 
 2. **Pick a layout.** Load `references/setup-files.md` → "Recommended layouts". Choose the smallest layout whose slots cover your widget mix and copy each slot's `position` / `size` into the setup file — don't invent grid values. If no layout covers the mix, extend the closest one per that file's "When no layout fits". Name the layout you picked when handing over (e.g. "arranged as *Spotlight*") so the user knows what to expect and can ask for a different arrangement.
-3. **Build or plan each endpoint.**
+3. **Choose an endpoint layout, then build or plan each endpoint.** Default to **one endpoint per widget** — dedicated endpoints can back the same widget on several dashboards, keep each handler to one response shape, and make wiring a single obvious step. Switch to **one shared endpoint** taking `?widget=<slug>` when the project is a single serverless function or one handler file, or when the user asks for it. Ask which they want when the project doesn't make it obvious, and load `references/endpoint-layout.md` before implementing the shared layout.
    - Endpoints already exist → wire them with mapping State A (existing widgets) or State B (new widgets); see `references/setup-files.md`.
-   - You're building them now → implement one endpoint per widget using its `references/<widget>.md`, then map with State B.
+   - You're building them now → implement them in the chosen layout using each widget's `references/<widget>.md`, then map with State B.
    - Endpoints can't be built yet → describe each widget with a State C `plan` mapping; the setup file still imports as a sketch to implement later.
 4. **Write the setup file** per `references/setup-files.md` and save it as `.dashboardbase/<dashboard-slug>.json` in the repo.
 5. **Validate before handing over:** each endpoint response's `data` against the widget's schema in `assets/schemas/<widget>.json`, the setup file against `assets/setup-file.schema.json` (or `POST /bff/v1/organizations/{orgId}/setup-files/validate`), then run the validation loop below.
@@ -127,9 +127,10 @@ Connect it in Dashboardbase: create a KPI widget, point it at this URL with the 
 
 Dashboards read dramatically better when every widget uses the styling surface the contract provides:
 
-- **Always include `header` on charts and KPI** (`title` + `subtitle` + `badge`), even where the schema marks it optional: `title` = the headline number, `subtitle` = the context line (`"Last 7 days"`), `badge` = the colored trend (`{ "text": "+8%", "icon": "ArrowUp", "color": "Success" }`).
+- **Always include `header` on KPI, LineChart and BarChart** (`title` + `subtitle` + `badge`), even though the schema marks it optional on the charts: `title` = the headline aggregate for the period, `subtitle` = the context line (`"Last 7 days"`), `badge` = the colored trend (`{ "text": "+8%", "icon": "ArrowUp", "color": "Success" }`). A plotted series without a headline and a period is the single biggest cause of a dashboard looking unfinished. On every other widget a `header` is genuinely optional — a pie, gauge, table or status tile reads fine without one, so add it only when there is a headline worth showing. Clock, Countdown and Image have no `header` at all in their contract; adding one there fails `additionalProperties: false`.
 - **Color lives on badges and datasets, not in text.** `subtitle` renders as plain text; use `badge.color` with `ArrowUp` / `ArrowDown` for the colored accent, and per-dataset `color` to distinguish chart series.
 - **Echo the active date range in `header.subtitle`** when handling `?dateRange=` — it shows users their filter is applied.
+- **Turn off crowded axis labels.** LineChart and BarChart take `ticksX` / `ticksY`. Omitting them shows the labels, which is right for a short axis (roughly a dozen buckets or fewer). Past that — any daily series over 30 or 90 days — set `ticksX: false`: thirty rotated date strings crowd the axis and swamp the plot, and `header.subtitle` already tells the viewer the window.
 - **Add link `actions`** so a widget clicks through to the underlying tool (Stripe, your admin, a runbook).
 - **Design for the big screen too.** A dashboard can be shown on a wall-mounted TV (paired as a display device) and viewed from across a room. Nothing extra to build — a TV renders the same widget endpoints — but the styling above is exactly what makes it read at a distance: large headline numbers, high-contrast badges, and an echoed date range beat dense tables and tiny labels on a 55" screen.
 
@@ -144,6 +145,7 @@ Load only what the current task needs — these files are progressive disclosure
 | Creating a **complete dashboard** from scratch | Follow "Creating a dashboard end-to-end" above, with `references/setup-files.md` for layouts and the setup file |
 | Building a **BarChart / Clock / ContributionsGrid / Countdown / DonutChart / GaugeChart / Image / KPI / LineChart / PieChart / ProgressList / Status / Table / Text** endpoint | `references/<widget>.md` (e.g. `references/kpi.md`, `references/bar-chart.md`) |
 | Writing a **setup file** (declarative dashboard config) | `references/setup-files.md` (and `assets/setup-file.schema.json` for full schema) |
+| Deciding between **one endpoint per widget** and **one shared endpoint** (`?widget=`) | `references/endpoint-layout.md` |
 | Choosing or rotating **authentication** | `references/authentication.md` |
 | Pushing **events / notifications / sounds** to a dashboard | `references/events.md` |
 | Production **hosting** / TLS / status codes / latency | `references/hosting-and-http.md` |
@@ -162,6 +164,7 @@ The widget reference filenames are: `bar-chart.md`, `clock.md`, `contributions-g
 - **Enums are case-sensitive.** Use `"Success"`, not `"success"`. See the styling tables below. (The one lowercase enum is the envelope's `alert.level`: `"critical"`, not `"Critical"`.)
 - **`additionalProperties: false`.** Extra fields not in the schema cause render failures. Strip them before responding.
 - **Idempotent `GET`.** The same request should yield the same data (modulo time). Do not mutate state.
+- **Query strings in a widget URL are preserved.** `dateRange` is appended to whatever URL you configure, so a widget wired to `?widget=mrr` is polled as `?widget=mrr&dateRange=SevenDays`. Read both.
 - **Recommended auth:** API key via the `x-api-key` header. See `references/authentication.md` for alternatives.
 
 ## Validation loop — before declaring done
@@ -268,4 +271,4 @@ Each has its own reference file under `references/` — see the filename list ab
 
 ---
 
-*Skill generated at `2026-07-21T05:49:40Z` from the Dashboardbase API contract.*
+*Skill generated at `2026-07-29T17:15:58Z` from the Dashboardbase API contract.*

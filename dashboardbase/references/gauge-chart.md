@@ -197,7 +197,7 @@ curl -X GET 'https://api.dashboardbase.com/example/basic-auth/gaugechart' \
 
 ## Header — headline, subtitle, and colored badge
 
-The `header` block is optional in the schema — **include it anyway**. Without it the widget renders as a bare plot; the header is what makes it read well at a glance. Use the three parts together:
+The `header` block is **optional**, and this widget reads fine without one — several of the bundled examples omit it. Include it when there is a headline worth showing above the widget. Use the three parts together:
 
 - `title` — the headline number or aggregate of the series (e.g. `"1,010"` total).
 - `subtitle` — the plain-text context line. Best use: state the time window (`"Last 7 days"`), and when your endpoint handles `?dateRange=`, echo the selected range here so users can see the filter is applied.
@@ -331,3 +331,4 @@ All values are case-sensitive (`"Success"`, not `"success"`).
 - Returning `value` outside `[0, maxValue]` — Dashboardbase will reject the response. Clamp upstream.
 - Setting `maxValue` to `0` — must be strictly greater than `0`.
 - Forgetting the `prefix`/`postfix` on `value` (e.g. `$` or `%`) — these go on `WidgetDataValue`, not on the header.
+- Returning `204` when the measured quantity is zero — send `value: 0` against the real `maxValue` instead. An empty dial reads as broken; a dial sitting at zero reads as "nothing yet". Reserve `204` for when you genuinely cannot measure, and never signal it with `maxValue: 0` (that is rejected).

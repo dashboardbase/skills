@@ -30,6 +30,8 @@ When the dashboard has a date range selector active, Dashboardbase appends `?dat
 
 If your endpoint ignores this parameter, the widget always shows the same data and the user's date selector appears broken. Handle it explicitly.
 
+`dateRange` is appended to whatever URL the widget is configured with, so if that URL already carries a query string the poll arrives as `?widget=mrr&dateRange=SevenDays`. Read both parameters — see `references/endpoint-layout.md`.
+
 ### Mapping values to time windows
 
 Treat the values as windows ending "now":
@@ -78,7 +80,7 @@ Dashboardbase interprets responses as follows:
 | Status | Effect on widget |
 |---|---|
 | `200 OK` | Render the widget with the returned data. |
-| `204 No Content` | Render the widget as empty / "no data". |
+| `204 No Content` | Render the widget as empty / "no data". Reserve this for data with no zero shape (a table with no rows, a pie with no categories) — a time series with nothing in the window should return `200` with every bucket zero-filled. See gotcha 8. |
 | `304 Not Modified` | Keep previous data. Use with `ETag` / `If-None-Match` to save bandwidth (optional). |
 | `401 Unauthorized` | Show auth error. **Do not redirect.** |
 | `403 Forbidden` | Show auth error. |
