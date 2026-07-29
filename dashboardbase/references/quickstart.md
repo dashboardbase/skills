@@ -121,6 +121,7 @@ Walk through `references/go-live-checklist.md`. The key items: HTTPS, secret rot
 ## Where to go from here
 
 - **More widget types:** see `references/<widget>.md` for one file per widget.
+- **Serving several widgets from one route:** if you're on a single serverless function, one endpoint taking `?widget=<slug>` may suit you better than a route per widget — see `references/endpoint-layout.md`.
 - **Multiple datasources:** see `references/setup-files.md` → "Example with multiple datasources".
 - **Real-time notifications:** see `references/events.md` to push events from your backend.
 - **Production hosting concerns:** see `references/hosting-and-http.md`.
