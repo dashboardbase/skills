@@ -13,7 +13,7 @@
 </p>
 
 <p align="center">
-  <a href="https://skills.sh/dashboardbase/dashboardbase-skill"><img src="https://skills.sh/b/dashboardbase/dashboardbase-skill" alt="skills.sh install count"></a>
+  <a href="https://skills.sh/dashboardbase/skills"><img src="https://skills.sh/b/dashboardbase/skills" alt="skills.sh install count"></a>
   <a href="https://agentskills.io"><img src="https://img.shields.io/badge/Agent%20Skills-compatible-2563eb" alt="Agent Skills compatible"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-22c55e" alt="MIT License"></a>
   <a href="https://dashboardbase.com"><img src="https://img.shields.io/badge/dashboardbase.com-0a0a0a" alt="Dashboardbase"></a>
@@ -51,10 +51,10 @@ Ask your agent _"build a dashboardbase KPI endpoint for monthly revenue in Node"
 ### Recommended: one command
 
 ```bash
-npx skills add dashboardbase/dashboardbase-skill
+npx skills add dashboardbase/skills
 ```
 
-This installs the skill into the correct directory for your agent (Claude Code, Cursor, and [70+ others](https://github.com/vercel-labs/skills#supported-agents)) and keeps it up to date. Pick a specific agent with `--agent`, e.g. `npx skills add dashboardbase/dashboardbase-skill --agent claude-code`. See [skills](https://github.com/vercel-labs/skills) / [skills.sh](https://skills.sh) for details.
+This installs the skill into the correct directory for your agent (Claude Code, Cursor, and [70+ others](https://github.com/vercel-labs/skills#supported-agents)) and keeps it up to date. Pick a specific agent with `--agent`, e.g. `npx skills add dashboardbase/skills --agent claude-code`. See [skills](https://github.com/vercel-labs/skills) / [skills.sh](https://skills.sh) for details.
 
 > The skill lives in the [`dashboardbase/`](dashboardbase/) folder of this repo. The folder name matches the skill's `name:` field, as required by the Agent Skills spec.
 
@@ -63,8 +63,8 @@ This installs the skill into the correct directory for your agent (Claude Code, 
 Clone the repo and copy the skill into your skills directory:
 
 ```bash
-git clone https://github.com/dashboardbase/dashboardbase-skill
-cp -r dashboardbase-skill/dashboardbase ~/.claude/skills/
+git clone https://github.com/dashboardbase/skills
+cp -r skills/dashboardbase ~/.claude/skills/
 ```
 
 To share the skill with a team instead, copy it into a project's `.claude/skills/` directory — it then ships with the repo and is picked up by everyone working in it.
@@ -78,10 +78,10 @@ The skill activates automatically when you ask Claude Code to build a dashboardb
 Clone the repo and point Cursor at the skill folder:
 
 ```bash
-git clone https://github.com/dashboardbase/dashboardbase-skill
+git clone https://github.com/dashboardbase/skills
 ```
 
-Then load `dashboardbase-skill/dashboardbase/SKILL.md` into your Cursor skills/rules setup. See the [Agent Skills client showcase](https://agentskills.io) for your client's exact configuration.
+Then load `skills/dashboardbase/SKILL.md` into your Cursor skills/rules setup. See the [Agent Skills client showcase](https://agentskills.io) for your client's exact configuration.
 
 ### Any other skills-compatible agent
 
@@ -96,7 +96,7 @@ If your AI tool doesn't support Agent Skills, paste the contents of [`dashboardb
 The skill is fetchable directly. Point an agent at the raw file:
 
 ```
-https://raw.githubusercontent.com/dashboardbase/dashboardbase-skill/main/dashboardbase/SKILL.md
+https://raw.githubusercontent.com/dashboardbase/skills/main/dashboardbase/SKILL.md
 ```
 
 ---
@@ -104,7 +104,7 @@ https://raw.githubusercontent.com/dashboardbase/dashboardbase-skill/main/dashboa
 ## What's in the repo
 
 ```
-dashboardbase-skill/
+skills/
 ├── dashboardbase/              # The skill itself (auto-generated)
 │   ├── SKILL.md                # Metadata + core instructions
 │   ├── references/             # Per-widget guides, setup files, auth, events, gotchas
@@ -117,7 +117,7 @@ dashboardbase-skill/
 
 ## Keeping it current
 
-This skill is **auto-generated from the dashboardbase backend**. Widget schemas and example responses come straight from the production API contract, so the skill never drifts from what the platform actually accepts. Releases are tagged — track a [tagged version](https://github.com/dashboardbase/dashboardbase-skill/releases) for a stable reference, or `main` for the latest.
+This skill is **auto-generated from the dashboardbase backend**. Widget schemas and example responses come straight from the production API contract, so the skill never drifts from what the platform actually accepts. Track `main` for the latest — it updates automatically as the contract evolves.
 
 ## Related
 
