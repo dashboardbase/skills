@@ -4,7 +4,7 @@ description: Use when creating a Dashboardbase dashboard end-to-end, or when bui
 license: MIT
 metadata:
   source-repo: dashboardbase-api
-  generated-at: "2026-07-29T17:15:58Z"
+  generated-at: "2026-08-04T11:31:01Z"
   api-version: "1.0.0"
   spec-version: "1.0"
 ---
@@ -44,7 +44,11 @@ When the task is a whole dashboard (not a single widget), follow this workflow:
    - You're building them now → implement them in the chosen layout using each widget's `references/<widget>.md`, then map with State B.
    - Endpoints can't be built yet → describe each widget with a State C `plan` mapping; the setup file still imports as a sketch to implement later.
 4. **Write the setup file** per `references/setup-files.md` and save it as `.dashboardbase/<dashboard-slug>.json` in the repo.
-5. **Validate before handing over:** each endpoint response's `data` against the widget's schema in `assets/schemas/<widget>.json`, the setup file against `assets/setup-file.schema.json` (or `POST /bff/v1/organizations/{orgId}/setup-files/validate`), then run the validation loop below.
+5. **Validate before handing over.**
+   - **If the `validate_widget_response` and `validate_setup_file` tools are available** (the Dashboardbase MCP server is installed), use them — they check against the live contract, so they cannot drift from what the platform accepts. Pass `validate_widget_response` the **full response envelope** (`title` / `actions` / `data` / `alert`), not just `data`. No account or API key is needed.
+   - **Otherwise**, validate each endpoint response's `data` against `assets/schemas/<widget>.json`, and the setup file against `assets/setup-file.schema.json` (or `POST /bff/v1/organizations/{orgId}/setup-files/validate`).
+
+   Then run the validation loop below.
 6. **Import.** The user drags the setup file into Dashboardbase (or pastes it) and enters credentials in the import flow — credentials never go in the file.
 
 ## Response envelope (always true)
@@ -170,7 +174,7 @@ The widget reference filenames are: `bar-chart.md`, `clock.md`, `contributions-g
 ## Validation loop — before declaring done
 
 1. `curl` the endpoint and confirm it returns `200` in under 5 seconds.
-2. JSON-validate the response's `data` field against the widget's bundled schema at `assets/schemas/<widget>.json` (the same schema is shown in `references/<widget>.md`).
+2. Validate the response. If `validate_widget_response` is available, call it with the **full response body** — it checks the envelope and the `data` payload against the live contract. Otherwise JSON-validate the response's `data` field against the bundled schema at `assets/schemas/<widget>.json` (the same schema is shown in `references/<widget>.md`).
 3. Open the widget in Dashboardbase and confirm it renders. If it doesn't, load `references/gotchas.md`.
 4. Confirm the configured `refreshInterval` is realistic given upstream rate limits.
 
@@ -271,4 +275,4 @@ Each has its own reference file under `references/` — see the filename list ab
 
 ---
 
-*Skill generated at `2026-07-29T17:15:58Z` from the Dashboardbase API contract.*
+*Skill generated at `2026-08-04T11:31:01Z` from the Dashboardbase API contract.*

@@ -82,7 +82,7 @@ Rules that hold regardless of language:
 
 - **Read `widget` first, then `dateRange`.** They are independent parameters; `dateRange` never identifies the widget.
 - **Unknown `widget` returns `400`.** Never `200` with an empty body — that renders as a blank widget and hides the typo.
-- **`additionalProperties: false` still applies per widget type.** A shared handler makes it easy to leak a field from one widget's builder into another's payload. Validate each branch against `assets/schemas/<widget>.json`.
+- **`additionalProperties: false` still applies per widget type.** A shared handler makes it easy to leak a field from one widget's builder into another's payload. Each `?widget=` branch returns a different envelope, so validate every branch separately — one `validate_widget_response` call per branch if that tool is available, otherwise each branch's `data` against `assets/schemas/<widget>.json`.
 - **One auth check now covers every widget.** That is a simplification, but it also means one mistake exposes all of them. See `references/authentication.md`.
 - **`title`, `actions` and `alert` are per-widget** — build them inside each branch, not once at the top.
 

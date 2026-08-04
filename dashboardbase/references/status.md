@@ -201,8 +201,7 @@ A healthy service you want to visibly 'beat' on a TV wall — set `mode` to `Hea
   "data": {
     "header": {
       "title": "Operational",
-      "subtitle": "All checks passing",
-      "color": "Success"
+      "subtitle": "All checks passing"
     },
     "status": "Ok",
     "mode": "Heartbeat"
@@ -227,8 +226,7 @@ A failing service you still want to render as an ECG pulse on a TV wall — set 
   "data": {
     "header": {
       "title": "Not operational",
-      "subtitle": "All checks failing",
-      "color": "Danger"
+      "subtitle": "All checks failing"
     },
     "status": "Error",
     "mode": "Heartbeat"
@@ -253,8 +251,7 @@ A service is down/erroring — pair the Error indicator with a header naming the
   "data": {
     "header": {
       "title": "Degraded",
-      "subtitle": "3 failing checks",
-      "color": "Danger"
+      "subtitle": "3 failing checks"
     },
     "status": "Error"
   }
@@ -278,8 +275,7 @@ A service is fully down — pair the Error indicator with a critical alert spell
   "data": {
     "header": {
       "title": "Down",
-      "subtitle": "All checks failing",
-      "color": "Danger"
+      "subtitle": "All checks failing"
     },
     "status": "Error"
   },
@@ -293,7 +289,7 @@ A service is fully down — pair the Error indicator with a critical alert spell
 
 ## Validation
 
-The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate your response's `data` field against `assets/schemas/status.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
+The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate the response. If the `validate_widget_response` tool is available, call it with the full response body — that checks against the live contract. Otherwise validate the response's `data` field against `assets/schemas/status.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
 
 ## Styling
 

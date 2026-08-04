@@ -219,9 +219,9 @@ The `header` block is **optional**, and this widget reads fine without one — s
 
 Other shapes and styling for this widget — pick the one closest to your data:
 
-### Percentage with unit + coloured header
+### Percentage with unit postfix
 
-A health/SLA percentage where the value carries a unit and the header signals status.
+A health/SLA percentage where the value carries a unit and the header restates it.
 
 ```json
 {
@@ -236,8 +236,7 @@ A health/SLA percentage where the value carries a unit and the header signals st
   "data": {
     "header": {
       "title": "99.9%",
-      "subtitle": "Last 30 days",
-      "color": "Success"
+      "subtitle": "Last 30 days"
     },
     "value": {
       "value": 99.9,
@@ -265,8 +264,7 @@ Progress toward a goal where the value can sit anywhere from 0 to the target.
   "data": {
     "header": {
       "title": "62 / 100",
-      "subtitle": "Q2 new customers",
-      "color": "Warning"
+      "subtitle": "Q2 new customers"
     },
     "value": {
       "value": 62
@@ -293,8 +291,7 @@ A utilisation dial nearing its ceiling — raise a warning alert before it maxes
   "data": {
     "header": {
       "title": "87%",
-      "subtitle": "Current",
-      "color": "Warning"
+      "subtitle": "Current"
     },
     "value": {
       "value": 87,
@@ -312,7 +309,7 @@ A utilisation dial nearing its ceiling — raise a warning alert before it maxes
 
 ## Validation
 
-The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate your response's `data` field against `assets/schemas/gauge-chart.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
+The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate the response. If the `validate_widget_response` tool is available, call it with the full response body — that checks against the live contract. Otherwise validate the response's `data` field against `assets/schemas/gauge-chart.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
 
 ## Styling
 
