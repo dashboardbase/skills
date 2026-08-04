@@ -500,7 +500,17 @@ In the Dashboardbase web app, open the dashboard import area and drop the `.json
 
 Some import dialogs accept pasted text. Copy the file contents and paste them into the import input field; Dashboardbase parses and validates server-side.
 
-### Option 3 — POST to the validate endpoint (for tools)
+### Option 3 — validate the file before importing (for tools)
+
+**If the `validate_setup_file` tool is available** (the Dashboardbase MCP server is installed), call it — it validates against the live contract, needs no org ID and no credentials, and cannot drift from what the platform accepts. It is backed by the public endpoint below, which you can also call directly:
+
+```http
+POST /tools/v1/validate/setup-file
+```
+
+The request body is the setup file itself — no `{ "content": … }` wrapper — and the response carries `success`, `errors[]` and `warnings[]`. Being anonymous, it has no org context and so returns no `summary`.
+
+**Otherwise**, use the org-scoped endpoint, which additionally returns the import `summary` described below:
 
 ```http
 POST /bff/v1/organizations/{orgId}/setup-files/validate

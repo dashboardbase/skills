@@ -294,56 +294,6 @@ The canonical example omits `color` — the default palette renders well without
 
 Other shapes and styling for this widget — pick the one closest to your data:
 
-### Explicitly coloured ring
-
-You want each ring segment in a specific colour rather than the default palette.
-
-```json
-{
-  "title": "Product Sales Distribution",
-  "actions": [
-    {
-      "title": "View Details",
-      "type": "link",
-      "url": "https://example.com/donut-details"
-    }
-  ],
-  "data": {
-    "labels": [
-      "Electronics",
-      "Clothing",
-      "Home Goods",
-      "Books"
-    ],
-    "datasets": [
-      {
-        "data": [
-          {
-            "value": 300
-          },
-          {
-            "value": 50
-          },
-          {
-            "value": 100
-          },
-          {
-            "value": 75
-          }
-        ],
-        "label": "Sales",
-        "color": [
-          "Blue",
-          "Green",
-          "Orange",
-          "Yellow"
-        ]
-      }
-    ]
-  }
-}
-```
-
 ### Subscription plan mix
 
 Share of customers (or revenue) across subscription tiers.
@@ -377,12 +327,7 @@ Share of customers (or revenue) across subscription tiers.
             "value": 36
           }
         ],
-        "label": "Customers",
-        "color": [
-          "Light",
-          "Blue",
-          "Dark"
-        ]
+        "label": "Customers"
       }
     ]
   }
@@ -422,12 +367,7 @@ A tier breakdown where a target was hit — surface a success alert above the ri
             "value": 48
           }
         ],
-        "label": "Customers",
-        "color": [
-          "Light",
-          "Blue",
-          "Dark"
-        ]
+        "label": "Customers"
       }
     ]
   },
@@ -441,7 +381,7 @@ A tier breakdown where a target was hit — surface a success alert above the ri
 
 ## Validation
 
-The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate your response's `data` field against `assets/schemas/donut-chart.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
+The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate the response. If the `validate_widget_response` tool is available, call it with the full response body — that checks against the live contract. Otherwise validate the response's `data` field against `assets/schemas/donut-chart.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
 
 ## Styling
 

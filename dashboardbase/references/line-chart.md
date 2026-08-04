@@ -321,9 +321,9 @@ The canonical example shows a single dataset because colors and multi-series are
 
 Other shapes and styling for this widget — pick the one closest to your data:
 
-### Coloured multi-series (filled)
+### Multi-series (filled)
 
-Comparing two trends with explicit colours and a filled area beneath each line.
+Comparing two trends on one chart with a filled area beneath each line.
 
 ```json
 {
@@ -379,8 +379,7 @@ Comparing two trends with explicit colours and a filled area beneath each line.
             "value": 170
           }
         ],
-        "label": "Page Views",
-        "color": "Blue"
+        "label": "Page Views"
       },
       {
         "data": [
@@ -406,8 +405,7 @@ Comparing two trends with explicit colours and a filled area beneath each line.
             "value": 66
           }
         ],
-        "label": "Unique Visitors",
-        "color": "Green"
+        "label": "Unique Visitors"
       }
     ],
     "fill": true
@@ -480,8 +478,7 @@ An average/percentile metric over time where each point carries a unit (ms, %, $
             "postfix": "ms"
           }
         ],
-        "label": "p95 latency",
-        "color": "Light"
+        "label": "p95 latency"
       }
     ]
   }
@@ -560,7 +557,7 @@ A trend where a spike has a known cause — add an info alert so viewers don't m
 
 ## Validation
 
-The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate your response's `data` field against `assets/schemas/line-chart.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
+The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate the response. If the `validate_widget_response` tool is available, call it with the full response body — that checks against the live contract. Otherwise validate the response's `data` field against `assets/schemas/line-chart.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
 
 ## Styling
 

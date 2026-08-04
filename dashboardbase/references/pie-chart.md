@@ -295,51 +295,6 @@ Pie charts typically use a single dataset; `datasets` is still an array for shap
 
 Other shapes and styling for this widget — pick the one closest to your data:
 
-### Explicitly coloured slices
-
-You want each slice in a specific colour rather than the default palette.
-
-```json
-{
-  "title": "Market Share",
-  "actions": [
-    {
-      "title": "View Details",
-      "type": "link",
-      "url": "https://example.com/piechart-details"
-    }
-  ],
-  "data": {
-    "labels": [
-      "Product A",
-      "Product B",
-      "Product C"
-    ],
-    "datasets": [
-      {
-        "data": [
-          {
-            "value": 30
-          },
-          {
-            "value": 50
-          },
-          {
-            "value": 20
-          }
-        ],
-        "label": "Share",
-        "color": [
-          "Blue",
-          "Green",
-          "Yellow"
-        ]
-      }
-    ]
-  }
-}
-```
-
 ### Platform breakdown
 
 Distribution of users/sessions across platforms or segments.
@@ -373,12 +328,7 @@ Distribution of users/sessions across platforms or segments.
             "value": 8
           }
         ],
-        "label": "Sessions",
-        "color": [
-          "Blue",
-          "Green",
-          "Orange"
-        ]
+        "label": "Sessions"
       }
     ]
   }
@@ -418,12 +368,7 @@ A breakdown drawn from a sample or estimate — add an info alert so viewers rea
             "value": 20
           }
         ],
-        "label": "Share",
-        "color": [
-          "Blue",
-          "Green",
-          "Yellow"
-        ]
+        "label": "Share"
       }
     ]
   },
@@ -437,7 +382,7 @@ A breakdown drawn from a sample or estimate — add an info alert so viewers rea
 
 ## Validation
 
-The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate your response's `data` field against `assets/schemas/pie-chart.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
+The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate the response. If the `validate_widget_response` tool is available, call it with the full response body — that checks against the live contract. Otherwise validate the response's `data` field against `assets/schemas/pie-chart.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
 
 ## Styling
 

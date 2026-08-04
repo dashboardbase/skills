@@ -79,7 +79,7 @@ Even when your endpoint filters by `dateRange` correctly, nothing on the widget 
 
 ## 15. A shared endpoint returning the wrong widget's shape
 
-When one endpoint serves several widgets via `?widget=<slug>`, a widget that renders as an error (or as another widget's data) usually means the handler branched on the wrong thing. Check that it reads `widget` — not `dateRange` — to pick the payload, that every slug in the setup file has a matching case, and that an unknown slug returns `400` rather than `200` with an empty body, which renders as a blank widget and hides the typo. `additionalProperties: false` still applies per branch: validate each one against `assets/schemas/<widget>.json`. See `references/endpoint-layout.md`.
+When one endpoint serves several widgets via `?widget=<slug>`, a widget that renders as an error (or as another widget's data) usually means the handler branched on the wrong thing. Check that it reads `widget` — not `dateRange` — to pick the payload, that every slug in the setup file has a matching case, and that an unknown slug returns `400` rather than `200` with an empty body, which renders as a blank widget and hides the typo. `additionalProperties: false` still applies per branch: validate each one separately — one `validate_widget_response` call per branch if that tool is available, otherwise against `assets/schemas/<widget>.json`. See `references/endpoint-layout.md`.
 
 ## 16. The chart is correct but the widget looks broken
 

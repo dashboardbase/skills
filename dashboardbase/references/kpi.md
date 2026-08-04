@@ -272,9 +272,9 @@ A whole-number count of currently-active entities (active users, online devices,
 }
 ```
 
-### Alert metric (coloured header + outline badge)
+### Alert metric (outline badge)
 
-A metric where a high value is bad (churn, error rate) — colour the header and badge to draw the eye.
+A metric where a high value is bad (churn, error rate) — colour the badge to draw the eye.
 
 ```json
 {
@@ -295,8 +295,7 @@ A metric where a high value is bad (churn, error rate) — colour the header and
         "icon": "ArrowUp",
         "color": "Danger",
         "fill": "Outline"
-      },
-      "color": "Danger"
+      }
     }
   }
 }
@@ -324,8 +323,7 @@ A metric that has breached a threshold and should surface a critical alert banne
         "text": "+3.4%",
         "icon": "ArrowUp",
         "color": "Danger"
-      },
-      "color": "Danger"
+      }
     }
   },
   "alert": {
@@ -363,8 +361,7 @@ A headline number that is tracking toward a goal or cap — 'MRR $8.2k / $10k'. 
     "progress": {
       "value": 8200,
       "max": 10000,
-      "label": "Goal 10.000 $",
-      "color": "Success"
+      "label": "Goal 10.000 $"
     }
   }
 }
@@ -372,7 +369,7 @@ A headline number that is tracking toward a goal or cap — 'MRR $8.2k / $10k'. 
 
 ## Validation
 
-The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate your response's `data` field against `assets/schemas/kpi.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
+The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate the response. If the `validate_widget_response` tool is available, call it with the full response body — that checks against the live contract. Otherwise validate the response's `data` field against `assets/schemas/kpi.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
 
 ## Styling
 

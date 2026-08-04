@@ -347,7 +347,7 @@ The canonical example shows two datasets ("Series A" and "Series B") with no exp
 
 Other shapes and styling for this widget — pick the one closest to your data:
 
-### Single coloured series
+### Single series breakdown
 
 A single metric broken down by category (revenue per category, signups per plan).
 
@@ -397,17 +397,16 @@ A single metric broken down by category (revenue per category, signups per plan)
             "value": 3200
           }
         ],
-        "label": "Revenue",
-        "color": "Blue"
+        "label": "Revenue"
       }
     ]
   }
 }
 ```
 
-### Explicitly coloured series
+### Segment split
 
-You want brand/semantic colours on each series rather than the default palette.
+Comparing two segments of the same total side by side (new vs returning, mobile vs desktop).
 
 ```json
 {
@@ -450,8 +449,7 @@ You want brand/semantic colours on each series rather than the default palette.
             "value": 55
           }
         ],
-        "label": "New",
-        "color": "Blue"
+        "label": "New"
       },
       {
         "data": [
@@ -471,8 +469,7 @@ You want brand/semantic colours on each series rather than the default palette.
             "value": 35
           }
         ],
-        "label": "Returning",
-        "color": "Green"
+        "label": "Returning"
       }
     ]
   }
@@ -529,8 +526,7 @@ A breakdown where every category beat its goal — celebrate it with a success a
             "value": 4000
           }
         ],
-        "label": "Revenue",
-        "color": "Green"
+        "label": "Revenue"
       }
     ]
   },
@@ -580,8 +576,7 @@ Long category labels or a ranking that reads better horizontally — set `indexA
             "value": 640
           }
         ],
-        "label": "Visits",
-        "color": "Blue"
+        "label": "Visits"
       }
     ],
     "indexAxis": "y"
@@ -591,7 +586,7 @@ Long category labels or a ranking that reads better horizontally — set `indexA
 
 ## Validation
 
-The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate your response's `data` field against `assets/schemas/bar-chart.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
+The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate the response. If the `validate_widget_response` tool is available, call it with the full response body — that checks against the live contract. Otherwise validate the response's `data` field against `assets/schemas/bar-chart.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
 
 ## Styling
 

@@ -13,7 +13,7 @@ Walk through this list before declaring the integration ready.
 
 ## Response correctness
 
-- [ ] Response JSON validates against the widget's schema (see `references/<widget>.md`).
+- [ ] Response JSON validates against the widget's schema — via the `validate_widget_response` tool if it is available (pass the full response body), otherwise against `assets/schemas/<widget>.json` (see `references/<widget>.md`).
 - [ ] No extra fields outside the schema (`additionalProperties: false` will reject them).
 - [ ] All enum values use exact case (`Success`, not `success`).
 - [ ] Action URLs are absolute `https://`.
@@ -42,7 +42,7 @@ Walk through this list before declaring the integration ready.
 
 ## Setup file
 
-- [ ] If publishing a dashboard via setup file: the file validates via `POST /bff/v1/organizations/{orgId}/setup-files/validate`.
+- [ ] If publishing a dashboard via setup file: the file validates — via the `validate_setup_file` tool if it is available (no org ID and no credentials needed), otherwise via `POST /bff/v1/organizations/{orgId}/setup-files/validate`.
 - [ ] `refreshInterval` in the setup file matches upstream rate limits.
 - [ ] Datasource baseUrls in the setup file are correct.
 - [ ] No credentials in the setup file.
