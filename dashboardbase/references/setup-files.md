@@ -531,14 +531,6 @@ Give the user the `url` **and** tell them how to use it. A bare URL with no expl
 
 If they declined the link in the first place, none of this applies — just point them at the saved file and let them drag-drop or paste it (Options 2 and 3).
 
-#### Reading a link back
-
-```http
-GET /bff/v1/setup-links/{id}
-```
-
-This is what the preview page calls; you rarely need it yourself. It returns the derived metadata alongside the file — `kind`, `mode`, `title`, `widgetCount`, `widgetTypes`, `hosts`, `expiresAt`, `createdAt`, `content` — so a preview renders without running any import logic. An unknown **or** expired link returns `404` with a `reason` of `not_found` or `expired`.
-
 #### Limits and failure cases
 
 - **Credentials are rejected, not stripped.** If the file carries anything credential-shaped — a `headers` object, `apiKey`, `authorization`, `basicAuth`, a `user:password@host` base URL, a `?api_key=…` query parameter, or a pasted provider key — the POST fails with `400` and `reason: "credentials_detected"`, listing the offending fields. Remove them and configure the credentials in Dashboardbase per-datasource. Do not try to work around the check.
