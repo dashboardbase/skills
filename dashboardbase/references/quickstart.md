@@ -112,7 +112,7 @@ To let users reproduce the same dashboard with one click, export a setup file. T
 
 Save this file in your repo as `.dashboardbase/<slug>.json`, where `<slug>` is your dashboard name in lowercase with hyphens (e.g. `.dashboardbase/mrr-overview.json`). Keeping it in `.dashboardbase/` lets you version-control all your dashboard configs alongside your code.
 
-Share this file. Users drag-drop it into Dashboardbase (or paste it; see `references/setup-files.md`). They provide credentials in the import flow; the file itself stays credential-free.
+Share this file. Ask the user how they want it: you can POST it to `/tools/v1/setup-links` and send them the short URL that comes back — they open it, preview what will be created, and import from there — or they can drag-drop or paste the file themselves. Uploading their config is their call, so ask before you do it. See `references/setup-files.md` for all four options. They provide credentials in the import flow; the file itself stays credential-free.
 
 ## Step 5 — Before going live
 
