@@ -4,7 +4,7 @@ description: Use when creating a Dashboardbase dashboard end-to-end, or when bui
 license: MIT
 metadata:
   source-repo: dashboardbase-api
-  generated-at: "2026-08-04T11:31:01Z"
+  generated-at: "2026-08-07T04:45:01Z"
   api-version: "1.0.0"
   spec-version: "1.0"
 ---
@@ -49,7 +49,25 @@ When the task is a whole dashboard (not a single widget), follow this workflow:
    - **Otherwise**, validate each endpoint response's `data` against `assets/schemas/<widget>.json`, and the setup file against `assets/setup-file.schema.json` (or `POST /bff/v1/organizations/{orgId}/setup-files/validate`).
 
    Then run the validation loop below.
-6. **Import.** The user drags the setup file into Dashboardbase (or pastes it) and enters credentials in the import flow — credentials never go in the file.
+6. **Ask how they want it handed over, then do that.** There are two routes and the choice is the user's — **never upload their config without being asked to**:
+
+   > The dashboard config is ready. I can upload it and give you a link that opens straight into the import preview, or you can drag `.dashboardbase/<slug>.json` into Dashboardbase yourself. Shall I create the link?
+
+   **If they take the link:** `POST` the file as the raw body to `https://api.dashboardbase.com/tools/v1/setup-links` — no account, no API key, no org ID, and no `{"content": …}` wrapper. You get back `id`, `url` (e.g. `https://app.dashboardbase.com/i/V1v3rZ8Qk2mN4pR6tY8uWx`) and `expiresAt`. Full request/response and failure cases are in `references/setup-files.md` → "How to load your setup file into Dashboardbase".
+
+   **If they'd rather do it themselves:** nothing to upload — point them at the saved file and let them drag it onto the import area or paste its contents. Same result; credentials are entered in the import flow either way.
+
+   **When you do create a link, give the user the `url` and tell them what it does** — a bare link with no explanation is not a handover. Say, in your own words:
+
+   - **What happens when they click it:** they'll see a preview of the dashboard — its widgets and which hosts they pull from — *before* anything is created. Nothing touches their Dashboardbase org until they confirm.
+   - **That they'll enter credentials there, not in the file:** if the widgets point at a real API, the import flow asks for the API key or basic-auth details. That is the right place for them — never put them in the setup file.
+   - **That it expires in 48 hours:** it's a handover, not storage. The setup file lives in their repo at `.dashboardbase/<slug>.json`; if the link goes stale, you can mint a fresh one from the same file in one call.
+   - **That it works more than once:** they can forward it to teammates and each person can import the dashboard.
+   - **That the link is the only thing protecting the file:** anyone holding the URL can read it. Tell them to send it directly rather than pasting it into a public issue or channel.
+
+   If the POST comes back `400` with `reason: "credentials_detected"`, the file carries something credential-shaped — a `headers` object, an `apiKey`, a `user:password@host` base URL, a `?api_key=…` parameter, or a pasted provider key. The response lists the offending fields. **Remove them and re-post; do not try to work around the check.** Credentials belong in the import flow.
+
+   See `references/setup-files.md` for every option. Either way, credentials never go in the file.
 
 ## Response envelope (always true)
 
@@ -149,6 +167,7 @@ Load only what the current task needs — these files are progressive disclosure
 | Creating a **complete dashboard** from scratch | Follow "Creating a dashboard end-to-end" above, with `references/setup-files.md` for layouts and the setup file |
 | Building a **BarChart / Clock / ContributionsGrid / Countdown / DonutChart / GaugeChart / Image / KPI / LineChart / PieChart / ProgressList / Status / Table / Text** endpoint | `references/<widget>.md` (e.g. `references/kpi.md`, `references/bar-chart.md`) |
 | Writing a **setup file** (declarative dashboard config) | `references/setup-files.md` (and `assets/setup-file.schema.json` for full schema) |
+| **Handing a finished dashboard to the user** — sharing it as a link, or the drag-drop / paste alternatives | `references/setup-files.md` → "How to load your setup file into Dashboardbase" |
 | Deciding between **one endpoint per widget** and **one shared endpoint** (`?widget=`) | `references/endpoint-layout.md` |
 | Choosing or rotating **authentication** | `references/authentication.md` |
 | Pushing **events / notifications / sounds** to a dashboard | `references/events.md` |
@@ -275,4 +294,4 @@ Each has its own reference file under `references/` — see the filename list ab
 
 ---
 
-*Skill generated at `2026-08-04T11:31:01Z` from the Dashboardbase API contract.*
+*Skill generated at `2026-08-07T04:45:01Z` from the Dashboardbase API contract.*
