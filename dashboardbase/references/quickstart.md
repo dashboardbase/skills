@@ -16,10 +16,15 @@ This guide builds a small Node.js service that exposes two widget endpoints — 
 import express from "express";
 
 const app = express();
-const KEY = process.env.DASHBOARDBASE_KEY;
+// Your workspace's Endpoint Secret, from app.dashboardbase.com/workspace. Dashboardbase sends it on
+// every request already — you only have to check it. Both headers are accepted so a rotation does
+// not 401 this endpoint during its 24-hour grace window.
+const SECRET = process.env.DASHBOARDBASE_ENDPOINT_SECRET;
 
 function auth(req, res, next) {
-  if (req.get("x-api-key") !== KEY) return res.sendStatus(401);
+  const sent = req.get("x-dashboardbase-secret");
+  const previous = req.get("x-dashboardbase-secret-previous");
+  if (sent !== SECRET && previous !== SECRET) return res.sendStatus(401);
   next();
 }
 
@@ -78,8 +83,8 @@ Copy the `https://` URL ngrok prints (e.g. `https://abc123.ngrok.app`).
 ## Step 3 — Wire in Dashboardbase
 
 1. Create a new dashboard.
-2. Add a KPI widget. Set the URL to `https://abc123.ngrok.app/widgets/mrr`, add header `x-api-key` with your key, save.
-3. Add a Table widget. Set the URL to `https://abc123.ngrok.app/widgets/top-customers`, add the same header, save.
+2. Add a KPI widget. Set the URL to `https://abc123.ngrok.app/widgets/mrr` and save — no headers to configure, the Endpoint Secret is sent automatically.
+3. Add a Table widget. Set the URL to `https://abc123.ngrok.app/widgets/top-customers`, save.
 
 Both widgets should render within a few seconds.
 

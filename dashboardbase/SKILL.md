@@ -1,10 +1,10 @@
 ---
 name: dashboardbase
-description: Use when creating a Dashboardbase dashboard end-to-end, or when building, wiring, or debugging an HTTP endpoint that Dashboardbase will poll to render a widget (BarChart, Clock, ContributionsGrid, Countdown, DonutChart, GaugeChart, Image, KPI, LineChart, PieChart, ProgressList, Status, Table, Text), writing a Dashboardbase setup file, configuring authentication, or sending events/notifications. Covers the full create-a-dashboard workflow (choose widgets, pick a layout, build endpoints, write the setup file, validate, import), the response envelope, JSON schemas per widget, widget styling (header title/subtitle and colored badges), the recommended authentication method (API key via the `x-api-key` header), refresh intervals, hosting requirements, and a go-live checklist.
+description: Use when creating a Dashboardbase dashboard end-to-end, or when building, wiring, or debugging an HTTP endpoint that Dashboardbase will poll to render a widget (BarChart, Clock, ContributionsGrid, Countdown, DonutChart, GaugeChart, Image, KPI, LineChart, PieChart, ProgressList, Status, Table, Text), writing a Dashboardbase setup file, configuring authentication, or sending events/notifications. Covers the full create-a-dashboard workflow (choose widgets, pick a layout, build endpoints, write the setup file, validate, import), the response envelope, JSON schemas per widget, widget styling (header title/subtitle and colored badges), the recommended authentication method (verifying the `x-dashboardbase-secret` header Dashboardbase already sends), refresh intervals, hosting requirements, and a go-live checklist.
 license: MIT
 metadata:
   source-repo: dashboardbase-api
-  generated-at: "2026-08-07T04:45:01Z"
+  generated-at: "2026-08-12T05:53:37Z"
   api-version: "1.0.0"
   spec-version: "1.0"
 ---
@@ -108,7 +108,7 @@ Supported values:
 Your endpoint should map these to a time window (e.g. `SevenDays` → "last 7 days, ending now") and filter the underlying data accordingly. `Today` means the current calendar day. If the parameter is absent, return your sensible default (typically `ThirtyDays` for trend widgets, "all-time" for KPI counts). Echo the selected window in the widget's `header.subtitle` (e.g. `"Last 7 days"`) so viewers can see which range is applied.
 
 ```bash
-curl -H "x-api-key: $KEY" "https://your-api.example.com/widgets/revenue?dateRange=SevenDays"
+curl -H "x-dashboardbase-secret: $DASHBOARDBASE_ENDPOINT_SECRET" "https://your-api.example.com/widgets/revenue?dateRange=SevenDays"
 ```
 
 See `references/hosting-and-http.md` for handling defaults, mapping the values to SQL window functions, and caching considerations.
@@ -120,7 +120,8 @@ import express from "express";
 const app = express();
 
 app.get("/widgets/mrr", (req, res) => {
-  if (req.get("x-api-key") !== process.env.DASHBOARDBASE_KEY) return res.sendStatus(401);
+  // Dashboardbase sends your workspace Endpoint Secret on every request; just check it.
+  if (req.get("x-dashboardbase-secret") !== process.env.DASHBOARDBASE_ENDPOINT_SECRET) return res.sendStatus(401);
   res.json({
     title: "MRR",
     actions: [{ title: "Open Stripe", type: "link", url: "https://dashboard.stripe.com" }],
@@ -140,10 +141,10 @@ app.listen(3000);
 Verify it:
 
 ```bash
-curl -H "x-api-key: $DASHBOARDBASE_KEY" https://your-api.example.com/widgets/mrr
+curl -H "x-dashboardbase-secret: $DASHBOARDBASE_ENDPOINT_SECRET" https://your-api.example.com/widgets/mrr
 ```
 
-Connect it in Dashboardbase: create a KPI widget, point it at this URL with the `x-api-key` header, save. See `references/quickstart.md` for an extended walkthrough including a Table widget.
+Connect it in Dashboardbase: create a KPI widget, point it at this URL and save — no headers to configure, the Endpoint Secret is sent automatically. Find its value at app.dashboardbase.com/workspace and set it as `DASHBOARDBASE_ENDPOINT_SECRET`. See `references/quickstart.md` for an extended walkthrough including a Table widget.
 
 ## Make it look good
 
@@ -188,7 +189,7 @@ The widget reference filenames are: `bar-chart.md`, `clock.md`, `contributions-g
 - **`additionalProperties: false`.** Extra fields not in the schema cause render failures. Strip them before responding.
 - **Idempotent `GET`.** The same request should yield the same data (modulo time). Do not mutate state.
 - **Query strings in a widget URL are preserved.** `dateRange` is appended to whatever URL you configure, so a widget wired to `?widget=mrr` is polled as `?widget=mrr&dateRange=SevenDays`. Read both.
-- **Recommended auth:** API key via the `x-api-key` header. See `references/authentication.md` for alternatives.
+- **Recommended auth:** verify the `x-dashboardbase-secret` header. Dashboardbase already sends your workspace's Endpoint Secret on every request — find it at app.dashboardbase.com/workspace, set it as `DASHBOARDBASE_ENDPOINT_SECRET`, and compare. Nothing to configure on the datasource. API key and basic auth still work and are sent in addition. See `references/authentication.md`.
 
 ## Validation loop — before declaring done
 
@@ -294,4 +295,4 @@ Each has its own reference file under `references/` — see the filename list ab
 
 ---
 
-*Skill generated at `2026-08-07T04:45:01Z` from the Dashboardbase API contract.*
+*Skill generated at `2026-08-12T05:53:37Z` from the Dashboardbase API contract.*
