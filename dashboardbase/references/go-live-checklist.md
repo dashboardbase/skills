@@ -22,9 +22,11 @@ Walk through this list before declaring the integration ready.
 
 ## Authentication
 
-- [ ] Auth is configured (recommended: API key via `x-api-key` header — see `references/authentication.md`).
-- [ ] Secret is stored in a secret manager or environment variable; not in committed config.
+- [ ] Auth is enforced (recommended: verify the `x-dashboardbase-secret` header — see `references/authentication.md`).
+- [ ] Both `x-dashboardbase-secret` and `x-dashboardbase-secret-previous` are accepted, so a rotation does not 401 the endpoint.
+- [ ] Secret is stored in a secret manager or environment variable (`DASHBOARDBASE_ENDPOINT_SECRET`); not in committed config.
 - [ ] Endpoint returns `401` (not `302` redirect) on bad credentials.
+- [ ] An unauthenticated request to the endpoint returns `401`, not data — confirm with the datasource "Test" in the editor.
 - [ ] Key rotation procedure is documented.
 
 ## Refresh interval
