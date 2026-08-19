@@ -4,7 +4,7 @@ description: Use when creating a Dashboardbase dashboard end-to-end, or when bui
 license: MIT
 metadata:
   source-repo: dashboardbase-api
-  generated-at: "2026-08-12T05:53:37Z"
+  generated-at: "2026-08-19T11:57:54Z"
   api-version: "1.0.0"
   spec-version: "1.0"
 ---
@@ -43,7 +43,7 @@ When the task is a whole dashboard (not a single widget), follow this workflow:
    - Endpoints already exist → wire them with mapping State A (existing widgets) or State B (new widgets); see `references/setup-files.md`.
    - You're building them now → implement them in the chosen layout using each widget's `references/<widget>.md`, then map with State B.
    - Endpoints can't be built yet → describe each widget with a State C `plan` mapping; the setup file still imports as a sketch to implement later.
-4. **Write the setup file** per `references/setup-files.md` and save it as `.dashboardbase/<dashboard-slug>.json` in the repo.
+4. **Write the setup file** per `references/setup-files.md` and save it as `.dashboardbase/<dashboard-slug>.json` in the repo — named after the dashboard, never a generic `dashboard.json`. Write it as part of the build, as soon as the endpoint paths are settled; only the handover in step 6 waits for live endpoints. If that path already exists and describes a different dashboard, pick a distinct slug rather than overwriting it — two near-identical file names in one directory is the failure mode to avoid. That directory is also the first thing to read when you join an existing project: an existing setup file gives you the `baseUrl` and the path convention outright.
 5. **Validate before handing over.**
    - **If the `validate_widget_response` and `validate_setup_file` tools are available** (the Dashboardbase MCP server is installed), use them — they check against the live contract, so they cannot drift from what the platform accepts. Pass `validate_widget_response` the **full response envelope** (`title` / `actions` / `data` / `alert`), not just `data`. No account or API key is needed.
    - **Otherwise**, validate each endpoint response's `data` against `assets/schemas/<widget>.json`, and the setup file against `assets/setup-file.schema.json` (or `POST /bff/v1/organizations/{orgId}/setup-files/validate`).
@@ -105,7 +105,7 @@ Supported values:
 | `SixtyDays` |
 | `NinetyDays` |
 
-Your endpoint should map these to a time window (e.g. `SevenDays` → "last 7 days, ending now") and filter the underlying data accordingly. `Today` means the current calendar day. If the parameter is absent, return your sensible default (typically `ThirtyDays` for trend widgets, "all-time" for KPI counts). Echo the selected window in the widget's `header.subtitle` (e.g. `"Last 7 days"`) so viewers can see which range is applied.
+Not every widget has a period: **Clock**, **Countdown** and **Image** have no time window and no `header`, so their endpoints take no `dateRange`, and their payload carries no headline, badge or date semantics — ignore the parameter if it arrives. Everywhere else, your endpoint should map these values to a time window (e.g. `SevenDays` → "last 7 days, ending now") and filter the underlying data accordingly. `Today` means the current calendar day. If the parameter is absent, return your sensible default (typically `ThirtyDays` for trend widgets, "all-time" for KPI counts). Echo the selected window in the widget's `header.subtitle` (e.g. `"Last 7 days"`) so viewers can see which range is applied.
 
 ```bash
 curl -H "x-dashboardbase-secret: $DASHBOARDBASE_ENDPOINT_SECRET" "https://your-api.example.com/widgets/revenue?dateRange=SevenDays"
@@ -189,6 +189,8 @@ The widget reference filenames are: `bar-chart.md`, `clock.md`, `contributions-g
 - **`additionalProperties: false`.** Extra fields not in the schema cause render failures. Strip them before responding.
 - **Idempotent `GET`.** The same request should yield the same data (modulo time). Do not mutate state.
 - **Query strings in a widget URL are preserved.** `dateRange` is appended to whatever URL you configure, so a widget wired to `?widget=mrr` is polled as `?widget=mrr&dateRange=SevenDays`. Read both.
+- **Know what the widget exposes.** Before settling on an auth method, state in one line what the endpoint actually returns. A widget serving personal data — names, email addresses, customer records — or anything else the project would not publish deserves a deliberate decision rather than the default, so call it out to the user; the project's own `SECURITY.md` may describe the feed as aggregate-only.
+- **An existing convention beats the recommended default.** Where the project already checks a particular auth header on its other widget endpoints, or already uses a route prefix or folder layout, reuse it and ask "reuse X?" rather than offering the menu below.
 - **Recommended auth:** verify the `x-dashboardbase-secret` header. Dashboardbase already sends your workspace's Endpoint Secret on every request — find it at app.dashboardbase.com/workspace, set it as `DASHBOARDBASE_ENDPOINT_SECRET`, and compare. Nothing to configure on the datasource. API key and basic auth still work and are sent in addition. See `references/authentication.md`.
 
 ## Validation loop — before declaring done
@@ -295,4 +297,4 @@ Each has its own reference file under `references/` — see the filename list ab
 
 ---
 
-*Skill generated at `2026-08-12T05:53:37Z` from the Dashboardbase API contract.*
+*Skill generated at `2026-08-19T11:57:54Z` from the Dashboardbase API contract.*
