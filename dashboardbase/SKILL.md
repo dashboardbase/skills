@@ -1,6 +1,6 @@
 ---
 name: dashboardbase
-description: Use when creating a Dashboardbase dashboard end-to-end, or when building, wiring, or debugging an HTTP endpoint that Dashboardbase will poll to render a widget (BarChart, Clock, ContributionsGrid, Countdown, DonutChart, GaugeChart, Image, KPI, LineChart, PieChart, ProgressList, Status, Table, Text), writing a Dashboardbase setup file, configuring authentication, or sending events/notifications. Use it too when changing an endpoint that is already live: adding alerting, action links, a header or badge, another chart series, or wiring an event webhook. Covers the full create-a-dashboard workflow (choose widgets, pick a layout, build endpoints, write the setup file, validate, import), the response envelope, JSON schemas per widget, widget styling (header title/subtitle and colored badges), the recommended authentication method (verifying the `x-dashboardbase-secret` header Dashboardbase already sends), refresh intervals, hosting requirements, and a go-live checklist.
+description: Use when creating a Dashboardbase dashboard end-to-end, or when building, wiring, or debugging an HTTP endpoint that Dashboardbase will poll to render a widget (BarChart, Clock, ContributionsGrid, Countdown, DonutChart, GaugeChart, Image, KPI, LineChart, PieChart, ProgressList, Status, Table, Text), writing a Dashboardbase setup file, configuring, changing or adding authentication, or sending events/notifications. Use it too when changing an endpoint that is already live: adding alerting, action links, a header or badge, another chart series, or wiring an event webhook. Covers the full create-a-dashboard workflow (choose widgets, pick a layout, build endpoints, write the setup file, validate, import), the response envelope, JSON schemas per widget, widget styling (header title/subtitle and colored badges), the recommended authentication method (verifying the `x-dashboardbase-secret` header Dashboardbase already sends), refresh intervals, hosting requirements, and a go-live checklist.
 license: MIT
 metadata:
   source-repo: dashboardbase-api
@@ -71,13 +71,14 @@ When the task is a whole dashboard (not a single widget), follow this workflow:
 
 ## Changing an endpoint that is already live
 
-Not every task is a new dashboard. Adding a header or badge, an action link, a different colour, another bar or line, another table column, or an alert to an endpoint that is already being polled is the same contract, approached from the other end: find the smallest change, keep the rest of the payload intact, and know whether anything outside the code has to change too.
+Not every task is a new dashboard. Adding a header or badge, an action link, a different colour, another bar or line, another table column, an alert, or another way of authenticating to an endpoint that is already being polled is the same contract, approached from the other end: find the smallest change, keep the rest of the payload intact, and know whether anything outside the code has to change too.
 
-Load `references/modifying-endpoints.md` — it maps each kind of ask to the part of the payload it touches, lists what is safe to change on a live endpoint, and says when the setup file has to be updated and re-imported.
+Load `references/modifying-endpoints.md` — it maps each kind of ask to the part of the payload it touches, lists what is safe to change on a live endpoint, and says when the setup file has to be updated and re-imported. For an auth change specifically, load `references/authentication.md` → "Changing or adding an authentication method on a live endpoint".
 
 Two things are worth knowing without loading anything:
 
 - **Adding alerting is half code, half configuration.** Returning `alert` in the envelope does nothing until the user enables alerts on that widget in the dashboard editor, and the dashboard is published. Always say so when you hand the change over. See `references/alerting.md`.
+- **Changing how an endpoint authenticates is code *and* configuration, in that order.** Deploy the endpoint accepting both the old and the new credential, update the credential on every datasource pointing at it, and only then drop the old one. Reverse that order and every widget on the endpoint 401s. The Endpoint Secret is the exception with nothing to configure — it is already sent on every request. See `references/authentication.md`.
 - **A payload-only change needs no re-import.** Anything inside `title`, `actions`, `data` or `alert` is picked up on the next poll. Only a new endpoint, a changed URL, or a new or retyped widget means updating `.dashboardbase/<slug>.json` and importing it again.
 
 ## Response envelope (always true)
@@ -181,7 +182,7 @@ Load only what the current task needs — these files are progressive disclosure
 | Writing a **setup file** (declarative dashboard config) | `references/setup-files.md` (and `assets/setup-file.schema.json` for full schema) |
 | **Handing a finished dashboard to the user** — sharing it as a link, or the drag-drop / paste alternatives | `references/setup-files.md` → "How to load your setup file into Dashboardbase" |
 | Deciding between **one endpoint per widget** and **one shared endpoint** (`?widget=`) | `references/endpoint-layout.md` |
-| Choosing or rotating **authentication** | `references/authentication.md` |
+| Choosing, changing or adding **authentication** — a new method, a second method alongside it, or a rotation | `references/authentication.md` |
 | **Changing an endpoint that is already live** — adding a header, badge, action link, colour, another series or column | `references/modifying-endpoints.md` |
 | Adding **alerting** to a widget, or an alert that isn't firing | `references/alerting.md` |
 | Pushing **events / notifications / sounds** to a dashboard, or wiring an event webhook into an existing codebase | `references/events.md` |

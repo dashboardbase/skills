@@ -1,6 +1,6 @@
 # Changing an endpoint that is already live
 
-> **Load this file when:** a widget endpoint already exists and is being polled, and the task is to change what it returns — add a header, a badge, an action link, a colour, another bar or line, another column, or an alert.
+> **Load this file when:** a widget endpoint already exists and is being polled, and the task is to change what it returns — add a header, a badge, an action link, a colour, another bar or line, another column, or an alert — or to change how it authenticates.
 
 Building the first version of an endpoint and changing the tenth are different jobs. The endpoint is already wired to a widget someone is looking at, so the question is not "what shape should this be" but "what is the smallest change that gets the new thing on screen without breaking what is already there".
 
@@ -27,6 +27,7 @@ Do not guess the widget type from the endpoint's name. A route called `/widgets/
 | Raise an alert from the endpoint | envelope `alert` **and a toggle in the editor** | `references/alerting.md` |
 | Honour the dashboard's date-range selector | the `?dateRange=` query parameter | `references/hosting-and-http.md` |
 | Split one endpoint into several, or merge several into one | route shape, then the setup file | `references/endpoint-layout.md` |
+| Change how the endpoint authenticates, or add another method | the auth check in the handler **and** the credential on each datasource | `references/authentication.md` → "Changing or adding an authentication method on a live endpoint" |
 
 Two placements catch people out every time:
 
@@ -42,6 +43,7 @@ The widget is being polled right now, so a bad deploy shows up as a broken tile 
 - **Keep parallel arrays in step.** On a chart, `labels` and every dataset's `data` array must stay the same length. Adding a series means adding a whole `datasets` entry — not lengthening one array and leaving the others behind.
 - **Changing the widget *type* is not an edit.** A KPI that should become a LineChart is a different `data` contract, a different setup-file `type`, and a different widget in Dashboardbase. Treat it as a new widget and retire the old one.
 - **Ship the change and the styling together.** A new series with no `color` picks a default that may collide with an existing one; give every series its own `color` when you add the second.
+- **An auth change breaks every widget at once, or none.** Like alerting it is half code and half configuration — the check is in your handler, the credential is on each datasource — but here a wrong order is not an inert feature, it is a `401` on every poll. Widen first (accept both the old and the new), switch the datasources, then narrow (drop the old). Removing the old credential in the deploy that adds the new one 401s every dashboard polling the endpoint. See `references/authentication.md`.
 - **Do not change what the endpoint *means* without saying so.** Switching a KPI from all-time to last-30-days is invisible in the JSON and silently changes what the number on the wall means. Tell the user.
 
 ## 4. Does the setup file need updating?
@@ -53,6 +55,7 @@ The widget is being polled right now, so a bad deploy shows up as a broken tile 
 | A new widget on the dashboard | Yes | Re-import, or add the widget in the app |
 | Widget changed type | Yes | Re-import, or replace the widget in the app |
 | Turning on alerting | No | **Enable alerts on that widget in the editor** — see `references/alerting.md` |
+| How the endpoint authenticates | No — credentials never live in the setup file | Update the credential on **every** datasource pointing at the endpoint, unless the method is the Endpoint Secret (nothing to configure) |
 
 When the setup file does change, update `.dashboardbase/<slug>.json` in the repo in the same commit as the endpoint change, then hand it over the same way as a new dashboard (`references/setup-files.md` → "How to load your setup file into Dashboardbase"). Keeping the file in sync is what makes the dashboard reproducible; a repo whose setup file no longer matches the live dashboard is worse than no setup file.
 
@@ -69,4 +72,5 @@ When the setup file does change, update `.dashboardbase/<slug>.json` in the repo
 - **Adding `actions` or `alert` inside `data`.** Both are envelope keys.
 - **Adding a series without extending `labels`.** The chart renders with the new series truncated to the old label count.
 - **Enabling alerting in code only.** The endpoint returning `alert` is half the job; the widget's alert toggle is the other half.
+- **Swapping the auth method in a single deploy.** The new credential is not configured on the datasources yet, so every poll 401s until someone updates them by hand.
 - **Editing the live dashboard in the app and leaving the setup file behind.** The next import then undoes the change.

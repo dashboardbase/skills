@@ -28,6 +28,8 @@ Walk through this list before declaring the integration ready.
 - [ ] Endpoint returns `401` (not `302` redirect) on bad credentials.
 - [ ] An unauthenticated request to the endpoint returns `401`, not data — confirm with the datasource "Test" in the editor.
 - [ ] Key rotation procedure is documented.
+- [ ] If the auth method changed or a method was added: every datasource pointing at this endpoint was updated and re-tested, not just the first one.
+- [ ] Acceptance of the previous credential was removed only after those datasources were confirmed working.
 
 ## Refresh interval
 
