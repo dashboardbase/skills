@@ -225,6 +225,7 @@ Grid constraints (every layout slot below satisfies them):
 
 - The grid is **12 columns wide**. A widget's `size.w` must be **3–12** columns and `size.h` must be **1–8** rows.
 - If a mapping omits `size`, the widget gets its type's default: **3×1** for compact single-value widgets (KPI-style), **6×4** for everything else (charts, tables).
+- That fallback is deliberately coarse. Set `size` explicitly from the per-widget "Recommended widget sizes" table below, which is generated from the same values `GET /bff/v1/widget-types` publishes.
 - The bundled `assets/setup-file.schema.json` flags out-of-range values, but the server-side import does **not** reject them — they are clamped when the widget is added, so the imported dashboard silently differs from your file. Stay in range.
 
 How to use them:
@@ -245,6 +246,28 @@ Worked examples:
 | `Kpi` | Clock, Countdown, GaugeChart, KPI, Status |
 | `Primary` | BarChart, ContributionsGrid, Image, LineChart, ProgressList, Table, Text |
 | `Secondary` | BarChart, Clock, ContributionsGrid, DonutChart, GaugeChart, Image, PieChart, ProgressList, Table, Text |
+
+### Recommended widget sizes
+
+Below the minimum a widget stops reading properly — a line chart squeezed into a KPI
+tile has no room for its axis. Prefer the default when nothing else dictates the size.
+
+| Widget | Minimum | Default | Slot roles |
+| --- | --- | --- | --- |
+| BarChart | `w:4 h:3` | `w:6 h:4` | Primary, Secondary |
+| Clock | `w:3 h:1` | `w:3 h:1` | Kpi, Secondary |
+| ContributionsGrid | `w:6 h:3` | `w:12 h:3` | Primary, Secondary |
+| Countdown | `w:3 h:1` | `w:3 h:1` | Kpi |
+| DonutChart | `w:4 h:3` | `w:4 h:5` | Secondary |
+| GaugeChart | `w:3 h:2` | `w:4 h:3` | Kpi, Secondary |
+| Image | `w:3 h:2` | `w:6 h:4` | Primary, Secondary |
+| KPI | `w:3 h:1` | `w:3 h:1` | Kpi |
+| LineChart | `w:6 h:3` | `w:8 h:5` | Primary |
+| PieChart | `w:4 h:3` | `w:4 h:5` | Secondary |
+| ProgressList | `w:3 h:2` | `w:4 h:4` | Primary, Secondary |
+| Status | `w:3 h:1` | `w:3 h:1` | Kpi |
+| Table | `w:4 h:3` | `w:6 h:4` | Primary, Secondary |
+| Text | `w:3 h:2` | `w:4 h:3` | Primary, Secondary |
 
 ### Layouts
 

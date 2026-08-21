@@ -49,6 +49,15 @@ Walk through this list before declaring the integration ready.
 - [ ] Datasource baseUrls in the setup file are correct.
 - [ ] No credentials in the setup file.
 
+## Alerts (if used)
+
+- [ ] The endpoint raises `alert` on the threshold **and clears it** when the metric is healthy.
+- [ ] `alert.level` is lowercase, and `active` / `level` / `message` are all present.
+- [ ] The message carries the observed value and the threshold, not just "high".
+- [ ] Alerts are enabled on the widget in the dashboard editor — the endpoint alone does nothing.
+- [ ] The dashboard is published; drafts are not polled for alerts.
+- [ ] The people who should hear about it have alert notifications switched on.
+
 ## Events (if used)
 
 - [ ] Webhook secret is stored in a secret manager.
