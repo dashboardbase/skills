@@ -586,3 +586,4 @@ All values are case-sensitive (`"Success"`, not `"success"`).
 - Column widths in `headers` must sum to ~100 (they're treated as percentages).
 - Putting a URL in `text` instead of `link` — set `link` for clickable cells; `text` is the visible label.
 - Using `imageUrl` for inline icons — it renders as an image; for badges use `badge`.
+- Returning `rows: []` when there is no data — `Rows` requires at least one row and an empty list is rejected. Return `200` with a single placeholder row saying so (e.g. `No customers yet`), padded with empty cells to match the header count.
