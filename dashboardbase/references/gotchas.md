@@ -47,23 +47,31 @@ For PieChart and DonutChart datasets, `color` is `List<WidgetDataColor>` (one pe
 
 For `Table`, `"rows": []` is a validation error (must contain at least one row, and every row must contain at least one cell). For charts, an empty `"datasets": []` is likewise rejected. A dataset whose `data` is `[]` passes validation but draws an empty series.
 
-What to send when there is nothing to show depends on whether the data has a natural zero shape:
+**`204 No Content` is not an escape hatch.** It is tempting to answer "nothing to show" with an empty
+response, but Dashboardbase parses the body of every 2xx, and a 204 has no body to parse — the widget
+lands in an error state, not an empty one. There is no "empty" outcome in the contract. Always answer
+with `200` and a valid payload that *says* there is nothing:
 
-- **A chart bucketed over a date range** (LineChart / BarChart over days, weeks or months, ContributionsGrid) — emit **every** bucket in the requested window with `{ "value": 0 }`, including when every bucket is zero. A flat zero line is the honest answer and reads as intentional; a blank widget reads as broken. Never collapse a quiet period to `204`.
+- **A chart bucketed over a date range** (LineChart / BarChart over days, weeks or months, ContributionsGrid) — emit **every** bucket in the requested window with `{ "value": 0 }`, including when every bucket is zero. A flat zero line is the honest answer and reads as intentional; a blank widget reads as broken. Set `header.title` to `"0"` so the tile still says something.
 - **A gauge** — send `value: 0` against the real `maxValue`. Do not signal emptiness with `maxValue: 0`; that is rejected.
-- **Data with no zero shape** (a Table with no rows, a Pie/Donut with no categories) — return `204 No Content` and let Dashboardbase render the widget as empty. There is no honest way to draw a share-of-total of nothing.
+- **A Table with no rows** — send one placeholder row whose first cell carries the message (e.g. `"No customers yet"`), padded with `{ "text": "" }` cells so the row matches the header count.
+- **A Pie/Donut with no categories** — send a single slice labelled `"No data"` with value `0`. There is no honest way to draw a share-of-total of nothing, so draw the absence instead.
 
 ## 9. Non-finite numbers fail JSON
 
 `Infinity`, `-Infinity`, and `NaN` are not valid JSON. Convert these to numbers (e.g. `0` for `NaN`, your domain's maximum for `Infinity`) before serialising.
 
-## 10. Truncation of large payloads
+## 10. Oversized payloads
 
-Responses larger than ~256 KB may be truncated by intermediate proxies. Most widget payloads are well under this, but a Table with hundreds of rows can exceed it — paginate upstream and show the top N.
+A response body over **10 MB** is dropped and the widget errors — that is a hard cap on the client that
+fetches your endpoint. Nothing near that is normal for a widget: keep responses to a few KB. A Table
+with hundreds of rows or a chart with thousands of buckets is a design problem long before it is a size
+problem — the tile cannot show them, and the widget does not paginate. Aggregate upstream and return
+the top N.
 
 ## 11. Auth middleware that redirects (`302`)
 
-If your auth layer redirects unauthenticated requests to a login page, Dashboardbase does not follow the redirect — the widget shows an opaque error. Return `401` directly with a JSON body.
+If your auth layer redirects unauthenticated requests to a login page, Dashboardbase does not follow the redirect — the widget shows an opaque error. Return `401` directly with a JSON body. This applies to every redirect, not just auth: a `301` from a trailing-slash normaliser or an HTTP→HTTPS hop errors the widget just the same. Configure the widget with the URL that actually serves the data.
 
 ## 12. Non-deterministic sort order causes flicker
 
@@ -93,7 +101,7 @@ worth fixing together:
 - **A series that is entirely zeros.** This is usually correct (nothing happened in the window) but the
   line sits on the baseline and is easy to miss. Keep returning the zero-filled series — it is the
   honest answer — and let the `header` carry the meaning: `title` = `"0"`, `subtitle` = the window.
-  Do not switch to `204`; see gotcha 8.
+  Do not switch to `204` — it errors the widget; see gotcha 8.
 - **Dense axis ticks.** Thirty daily labels rotated 45° eat a third of the tile and swamp the plot. Set
   `ticksX: false` past roughly a dozen buckets; `header.subtitle` already states the window.
 
