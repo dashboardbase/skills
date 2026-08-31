@@ -87,7 +87,8 @@ Dashboardbase interprets responses as follows:
 | `401 Unauthorized` | Show auth error. **Do not redirect.** |
 | `403 Forbidden` | Show auth error. |
 | `404 Not Found` | Show "endpoint missing" error. |
-| `5xx` / `408` / `429` | Show server-error state — but see "Retries" below: these are retried immediately, not just on the next poll. |
+| `5xx` / `408` | Show server-error state — but see "Retries" below: these are retried immediately, not just on the next poll. |
+| `429 Too Many Requests` | Show server-error state. **Not retried** — the poll ends there and the widget waits for its next refresh. |
 
 Anything that is not `200` with a parseable JSON body puts the widget in an error state. There is no
 "empty" or "unchanged" outcome in the contract: when you have nothing to show, say so inside a `200`
@@ -95,18 +96,25 @@ response — gotcha 8 gives the shape per widget type.
 
 ## Retries
 
-A failed poll is not one request. Transient failures — `5xx`, `408`, `429`, and connection errors —
+A failed poll is not always one request. Transient failures — `5xx`, `408`, and connection errors —
 are retried **3 times** with 2s / 4s / 8s backoff, each attempt under its own 10-second timeout. So a
-single poll of a dead or rate-limiting endpoint means **4 requests over roughly 50 seconds**.
+single poll of a dead endpoint means **4 requests over roughly 50 seconds**.
 
-- Do not rate-limit Dashboardbase on a budget that assumes one request per poll.
-- Returning `429` does not slow Dashboardbase down — it is treated as transient and retried.
+`429 Too Many Requests` is the exception: it is **not** retried. It is not a fault but an instruction,
+and retrying it would aim four requests at an endpoint that just asked for fewer. The poll ends on the
+first `429` and the widget tries again on its next refresh.
+
+- **`429` is the way to slow Dashboardbase down.** Return it and the current poll stops immediately.
+- Size a rate-limit budget for **one request per poll per widget** on the happy path, and up to four
+  while your endpoint is erroring.
+- Send `Retry-After` when you have a number: it is honoured on the connections Dashboardbase makes to
+  its own providers, and Dashboardbase sends it on its own `429`s, so build against it in both directions.
 - Make the endpoint idempotent. It is a `GET`, so it should be anyway, but the retry makes it load-bearing.
 
 ## Latency budget
 
 - **Target:** p95 < 2 seconds end-to-end (TCP + TLS + your handler).
-- **Hard timeout:** 10 seconds per attempt. A slower response is a failed attempt and is retried (see "Retries" above), so a consistently slow endpoint burns ~50 seconds before the widget errors.
+- **Hard timeout:** 10 seconds per attempt. A slower response is a failed attempt and is retried (see "Retries" above), so a consistently slow endpoint burns ~50 seconds before the widget errors. The widget reports this as `504`.
 - **What this means in practice:** the widget endpoint should hit cache or a denormalised store; do not run expensive analytical queries on every poll. Aggregate upstream and serve the result.
 
 ## Refresh intervals
