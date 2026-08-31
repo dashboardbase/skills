@@ -1,10 +1,10 @@
 ---
 name: dashboardbase
-description: Use when creating a Dashboardbase dashboard end-to-end, or when building, wiring, or debugging an HTTP endpoint that Dashboardbase will poll to render a widget (BarChart, Clock, ContributionsGrid, Countdown, DonutChart, GaugeChart, Image, KPI, LineChart, PieChart, ProgressList, Status, Table, Text), writing a Dashboardbase setup file, configuring, changing or adding authentication, or sending events/notifications. Use it too when changing an endpoint that is already live: adding alerting, action links, a header or badge, another chart series, or wiring an event webhook. Covers the full create-a-dashboard workflow (choose widgets, pick a layout, build endpoints, write the setup file, validate, import), the response envelope, JSON schemas per widget, widget styling (header title/subtitle and colored badges), the recommended authentication method (verifying the `x-dashboardbase-secret` header Dashboardbase already sends), refresh intervals, hosting requirements, and a go-live checklist.
+description: Use when creating a Dashboardbase dashboard end-to-end, or when building, wiring, or debugging an HTTP endpoint that Dashboardbase will poll to render a widget (BarChart, Clock, ContributionsGrid, Countdown, DonutChart, GaugeChart, Image, KPI, LineChart, PieChart, ProgressList, Status, Table, Text), writing a Dashboardbase setup file, configuring, changing or adding authentication, or sending events/notifications. Use it too when changing an endpoint that is already live: adding alerting, action links, a header or badge, another chart series, or wiring an event webhook. Covers the full create-a-dashboard workflow (choose widgets, pick a layout, build endpoints, write the setup file, validate, import), the response envelope, JSON schemas per widget, widget styling (header title/subtitle and colored badges), the recommended authentication method (verifying the Ed25519 signature Dashboardbase already sends, against a public key you commit), refresh intervals, hosting requirements, and a go-live checklist.
 license: MIT
 metadata:
   source-repo: dashboardbase-api
-  generated-at: "2026-08-20T20:06:48Z"
+  generated-at: "2026-08-31T04:28:55Z"
   api-version: "1.0.0"
   spec-version: "1.0"
 ---
@@ -78,7 +78,7 @@ Load `references/modifying-endpoints.md` — it maps each kind of ask to the par
 Two things are worth knowing without loading anything:
 
 - **Adding alerting is half code, half configuration.** Returning `alert` in the envelope does nothing until the user enables alerts on that widget in the dashboard editor, and the dashboard is published. Always say so when you hand the change over. See `references/alerting.md`.
-- **Changing how an endpoint authenticates is code *and* configuration, in that order.** Deploy the endpoint accepting both the old and the new credential, update the credential on every datasource pointing at it, and only then drop the old one. Reverse that order and every widget on the endpoint 401s. The Endpoint Secret is the exception with nothing to configure — it is already sent on every request. See `references/authentication.md`.
+- **Changing how an endpoint authenticates is code *and* configuration, in that order.** Deploy the endpoint accepting both the old and the new credential, update the credential on every datasource pointing at it, and only then drop the old one. Reverse that order and every widget on the endpoint 401s. Request signing and the Endpoint Secret are the exceptions with nothing to configure — both are already sent on every request. See `references/authentication.md`.
 - **A payload-only change needs no re-import.** Anything inside `title`, `actions`, `data` or `alert` is picked up on the next poll. Only a new endpoint, a changed URL, or a new or retyped widget means updating `.dashboardbase/<slug>.json` and importing it again.
 
 ## Response envelope (always true)
@@ -120,7 +120,7 @@ Supported values:
 Not every widget has a period: **Clock**, **Countdown** and **Image** have no time window and no `header`, so their endpoints take no `dateRange`, and their payload carries no headline, badge or date semantics — ignore the parameter if it arrives. Everywhere else, your endpoint should map these values to a time window (e.g. `SevenDays` → "last 7 days, ending now") and filter the underlying data accordingly. `Today` means the current calendar day. If the parameter is absent, return your sensible default (typically `ThirtyDays` for trend widgets, "all-time" for KPI counts). Echo the selected window in the widget's `header.subtitle` (e.g. `"Last 7 days"`) so viewers can see which range is applied.
 
 ```bash
-curl -H "x-dashboardbase-secret: $DASHBOARDBASE_ENDPOINT_SECRET" "https://your-api.example.com/widgets/revenue?dateRange=SevenDays"
+curl "https://your-api.example.com/widgets/revenue?dateRange=SevenDays"
 ```
 
 See `references/hosting-and-http.md` for handling defaults, mapping the values to SQL window functions, and caching considerations.
@@ -132,8 +132,8 @@ import express from "express";
 const app = express();
 
 app.get("/widgets/mrr", (req, res) => {
-  // Dashboardbase sends your workspace Endpoint Secret on every request; just check it.
-  if (req.get("x-dashboardbase-secret") !== process.env.DASHBOARDBASE_ENDPOINT_SECRET) return res.sendStatus(401);
+  // Dashboardbase signs every request; verify it. See references/quickstart.md for verifyDashboardbase.
+  if (!verifyDashboardbase(req)) return res.sendStatus(401);
   res.json({
     title: "MRR",
     actions: [{ title: "Open Stripe", type: "link", url: "https://dashboard.stripe.com" }],
@@ -153,10 +153,10 @@ app.listen(3000);
 Verify it:
 
 ```bash
-curl -H "x-dashboardbase-secret: $DASHBOARDBASE_ENDPOINT_SECRET" https://your-api.example.com/widgets/mrr
+curl https://your-api.example.com/widgets/mrr
 ```
 
-Connect it in Dashboardbase: create a KPI widget, point it at this URL and save — no headers to configure, the Endpoint Secret is sent automatically. Find its value at app.dashboardbase.com/workspace and set it as `DASHBOARDBASE_ENDPOINT_SECRET`. See `references/quickstart.md` for an extended walkthrough including a Table widget.
+Connect it in Dashboardbase: create a KPI widget, point it at this URL and save — no headers to configure, the signature is sent automatically. Commit your workspace's public key from app.dashboardbase.com/workspace. See `references/quickstart.md` for the full walkthrough including a Table widget.
 
 ## Make it look good
 
@@ -206,7 +206,7 @@ The widget reference filenames are: `bar-chart.md`, `clock.md`, `contributions-g
 - **Know what the widget exposes.** Before settling on an auth method, state in one line what the endpoint actually returns. A widget serving personal data — names, email addresses, customer records — or anything else the project would not publish deserves a deliberate decision rather than the default, so call it out to the user; the project's own `SECURITY.md` may describe the feed as aggregate-only.
 - **An existing convention beats the recommended default.** Where the project already checks a particular auth header on its other widget endpoints, or already uses a route prefix or folder layout, reuse it and ask "reuse X?" rather than offering the menu below.
 - **Alerting needs a toggle you cannot set from code.** An `alert` in the envelope renders and feeds notifications only once the user enables alerts on that widget in the dashboard editor, on a published dashboard. Returning `alert` is never enough on its own — tell the user to switch it on.
-- **Recommended auth:** verify the `x-dashboardbase-secret` header. Dashboardbase already sends your workspace's Endpoint Secret on every request — find it at app.dashboardbase.com/workspace, set it as `DASHBOARDBASE_ENDPOINT_SECRET`, and compare. Nothing to configure on the datasource. API key and basic auth still work and are sent in addition. See `references/authentication.md`.
+- **Recommended auth:** verify the Ed25519 signature. Dashboardbase signs every request with your workspace's key and sends `x-dashboardbase-timestamp` and `x-dashboardbase-signature` — you verify against a public key committed to the repo, so there is no secret to hold and nothing to configure on the datasource. Prefer the Endpoint Secret instead if one environment variable suits you better; implement exactly one. API key and basic auth still work and are sent in addition. See `references/authentication.md`.
 
 ## Validation loop — before declaring done
 
@@ -312,4 +312,4 @@ Each has its own reference file under `references/` — see the filename list ab
 
 ---
 
-*Skill generated at `2026-08-20T20:06:48Z` from the Dashboardbase API contract.*
+*Skill generated at `2026-08-31T04:28:55Z` from the Dashboardbase API contract.*

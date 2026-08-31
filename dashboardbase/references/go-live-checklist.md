@@ -22,9 +22,14 @@ Walk through this list before declaring the integration ready.
 
 ## Authentication
 
-- [ ] Auth is enforced (recommended: verify the `x-dashboardbase-secret` header — see `references/authentication.md`).
-- [ ] Both `x-dashboardbase-secret` and `x-dashboardbase-secret-previous` are accepted, so a rotation does not 401 the endpoint.
-- [ ] Secret is stored in a secret manager or environment variable (`DASHBOARDBASE_ENDPOINT_SECRET`); not in committed config.
+- [ ] Auth is enforced (recommended: verify the Ed25519 signature — see `references/authentication.md`).
+- [ ] Exactly one mechanism is verified — the signature or the Endpoint Secret, not both.
+- [ ] If verifying the signature: "Validate signature verification" in the datasource editor reports **verifying**. Signature failures are silent `401`s, so this is the only way to know before go-live.
+- [ ] If verifying the signature: the committed public key matches the current one at `/keys/<workspace-id>.pem`, the clock-skew tolerance is at least 120 seconds, and `x-dashboardbase-signature-previous` is accepted so a rotation does not 401 the endpoint.
+- [ ] If verifying the signature: the canonical message uses **your own configured origin**, not the inbound `Host` header.
+- [ ] If verifying the signature: **no endpoint authorizes on a query parameter** — the query string is not covered by the signature.
+- [ ] If one endpoint serves more than one workspace: the key is selected by the `x-dashboardbase-workspace` header, not by trying every trusted key in turn.
+- [ ] If verifying the Endpoint Secret instead: both `x-dashboardbase-secret` and `x-dashboardbase-secret-previous` are accepted, and the value is stored in a secret manager or environment variable (`DASHBOARDBASE_ENDPOINT_SECRET`), not in committed config.
 - [ ] Endpoint returns `401` (not `302` redirect) on bad credentials.
 - [ ] An unauthenticated request to the endpoint returns `401`, not data — confirm with the datasource "Test" in the editor.
 - [ ] Key rotation procedure is documented.

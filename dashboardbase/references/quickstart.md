@@ -14,17 +14,39 @@ This guide builds a small Node.js service that exposes two widget endpoints — 
 
 ```js
 import express from "express";
+import { createPublicKey, verify } from "node:crypto";
 
 const app = express();
-// Your workspace's Endpoint Secret, from app.dashboardbase.com/workspace. Dashboardbase sends it on
-// every request already — you only have to check it. Both headers are accepted so a rotation does
-// not 401 this endpoint during its 24-hour grace window.
-const SECRET = process.env.DASHBOARDBASE_ENDPOINT_SECRET;
+// Dashboardbase signs every request with your workspace's Ed25519 key. Paste your public key below —
+// a generated plan already contains it, or print it with
+//   curl https://api.dashboardbase.com/keys/<workspace-id>.pem
+// (workspace id is at app.dashboardbase.com/workspace). This is a public key. It is safe to commit.
+const KEY = createPublicKey(`-----BEGIN PUBLIC KEY-----
+MCowBQYDK2VwAyEA<your workspace's key>
+-----END PUBLIC KEY-----`);
+const TOLERANCE_SECONDS = 300;
+// Your own public origin — never derive this from the request's Host header.
+const ORIGIN = "https://abc123.ngrok.app";
 
 function auth(req, res, next) {
-  const sent = req.get("x-dashboardbase-secret");
-  const previous = req.get("x-dashboardbase-secret-previous");
-  if (sent !== SECRET && previous !== SECRET) return res.sendStatus(401);
+  const ts = Number(req.get("x-dashboardbase-timestamp"));
+  const sig = req.get("x-dashboardbase-signature");
+  const prev = req.get("x-dashboardbase-signature-previous");
+  if (!ts || !sig) return res.sendStatus(401);
+  if (Math.abs(Date.now() / 1000 - ts) > TOLERANCE_SECONDS) return res.sendStatus(401);
+
+  const check = (path, signature) =>
+    signature && verify(null, Buffer.from(`${req.method.toUpperCase()}|${ORIGIN}${path}|${ts}`), KEY,
+                        Buffer.from(signature, "base64"));
+
+  // No query string, no trailing slash. Frameworks differ on whether the path they hand you is
+  // percent-decoded, so try both forms — for a plain ASCII path they are identical.
+  const raw = (req.originalUrl.split("?")[0] || "/").replace(/(.)\/$/, "$1");
+  // Skip the decoded form when it holds an encoded separator, or decoding could merge path segments.
+  const decoded = /%2f|%5c/i.test(raw) ? raw : decodeURIComponent(raw);
+  const ok = [raw, decoded].some(p => check(p, sig) || check(p, prev));
+
+  if (!ok) return res.sendStatus(401);
   next();
 }
 
@@ -70,6 +92,11 @@ app.get("/widgets/top-customers", auth, (_req, res) => {
 app.listen(3000);
 ```
 
+> **Prefer one environment variable to a committed key file?** Dashboardbase also sends your workspace's
+> Endpoint Secret as `x-dashboardbase-secret` on every request. Read `DASHBOARDBASE_ENDPOINT_SECRET`
+> from the environment and compare it instead — a few lines shorter, and equally supported. Implement
+> one or the other, never both. See `references/authentication.md`.
+
 ## Step 2 — Expose with HTTPS
 
 For local development:
@@ -83,7 +110,7 @@ Copy the `https://` URL ngrok prints (e.g. `https://abc123.ngrok.app`).
 ## Step 3 — Wire in Dashboardbase
 
 1. Create a new dashboard.
-2. Add a KPI widget. Set the URL to `https://abc123.ngrok.app/widgets/mrr` and save — no headers to configure, the Endpoint Secret is sent automatically.
+2. Add a KPI widget. Set the URL to `https://abc123.ngrok.app/widgets/mrr` and save — no headers to configure, the signature is sent automatically.
 3. Add a Table widget. Set the URL to `https://abc123.ngrok.app/widgets/top-customers`, save.
 
 Both widgets should render within a few seconds.
