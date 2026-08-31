@@ -328,4 +328,4 @@ All values are case-sensitive (`"Success"`, not `"success"`).
 - Returning `value` outside `[0, maxValue]` — Dashboardbase will reject the response. Clamp upstream.
 - Setting `maxValue` to `0` — must be strictly greater than `0`.
 - Forgetting the `prefix`/`postfix` on `value` (e.g. `$` or `%`) — these go on `WidgetDataValue`, not on the header.
-- Returning `204` when the measured quantity is zero — send `value: 0` against the real `maxValue` instead. An empty dial reads as broken; a dial sitting at zero reads as "nothing yet". Reserve `204` for when you genuinely cannot measure, and never signal it with `maxValue: 0` (that is rejected).
+- Returning `204` when the measured quantity is zero — send `value: 0` against the real `maxValue` instead. An empty dial reads as broken; a dial sitting at zero reads as "nothing yet". `204` is never the answer: an empty body cannot be parsed and renders the widget in an error state. Never signal emptiness with `maxValue: 0` either (that is rejected).

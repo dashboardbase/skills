@@ -401,4 +401,4 @@ All values are case-sensitive (`"Success"`, not `"success"`).
 - Confusing `color` as a single value — for Pie/Donut it is `List<WidgetDataColor>` (one per slice), not a single color.
 - Forgetting that slices sum visually — passing negative values produces undefined rendering.
 - Mismatched lengths between `labels`, `data`, and `color` arrays.
-- Sending `datasets: []` when there is nothing to break down — it is rejected. A share-of-total has no meaningful zero shape, so return `204 No Content` instead and let Dashboardbase render the widget as empty.
+- Sending `datasets: []` when there is nothing to break down — it is rejected. Do not reach for `204` either: an empty body cannot be parsed and renders the widget in an error state. Return `200` with a single placeholder slice (e.g. label `"No data"`, value `0`) so the widget says so plainly.
