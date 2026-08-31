@@ -4,7 +4,7 @@ description: Use when creating a Dashboardbase dashboard end-to-end, or when bui
 license: MIT
 metadata:
   source-repo: dashboardbase-api
-  generated-at: "2026-08-31T04:28:55Z"
+  generated-at: "2026-08-31T11:24:07Z"
   api-version: "1.0.0"
   spec-version: "1.0"
 ---
@@ -196,8 +196,8 @@ The widget reference filenames are: `bar-chart.md`, `clock.md`, `contributions-g
 ## Always-true rules (no need to read anything to apply these)
 
 - **HTTPS only.** Endpoints must be reachable over `https://` with a valid certificate.
-- **Respond within 5 seconds.** Dashboardbase treats slow responses as failures.
-- **Return `200 OK` with valid JSON** on success. `204 No Content` renders the widget as empty, and `304 Not Modified` keeps previous data — both are valid non-error responses (see `references/hosting-and-http.md`). Any `4xx` / `5xx` status renders the widget in an error state.
+- **Respond within 10 seconds.** A slower attempt is a failure. Transient failures are retried 3 times with backoff, so one poll of a struggling endpoint is 4 requests over ~50 seconds — budget rate limits accordingly (`references/hosting-and-http.md`).
+- **`200 OK` with a JSON body is the only success.** There is no "empty" or "unchanged" outcome: `204 No Content` and `304 Not Modified` both render the widget in an error state, redirects are never followed, and any `4xx` / `5xx` errors too. When you have nothing to show, say so inside a `200` — see gotcha 8 in `references/gotchas.md`.
 - **Refresh intervals** are limited to `1m`, `5m`, `10m`, `30m`.
 - **Enums are case-sensitive.** Use `"Success"`, not `"success"`. See the styling tables below. (The one lowercase enum is the envelope's `alert.level`: `"critical"`, not `"Critical"`.)
 - **`additionalProperties: false`.** Extra fields not in the schema cause render failures. Strip them before responding.
@@ -210,7 +210,7 @@ The widget reference filenames are: `bar-chart.md`, `clock.md`, `contributions-g
 
 ## Validation loop — before declaring done
 
-1. `curl` the endpoint and confirm it returns `200` in under 5 seconds.
+1. `curl` the endpoint and confirm it returns `200` with a JSON body, in under 10 seconds.
 2. Validate the response. If `validate_widget_response` is available, call it with the **full response body** — it checks the envelope and the `data` payload against the live contract. Otherwise JSON-validate the response's `data` field against the bundled schema at `assets/schemas/<widget>.json` (the same schema is shown in `references/<widget>.md`).
 3. Open the widget in Dashboardbase and confirm it renders. If it doesn't, load `references/gotchas.md`.
 4. Confirm the configured `refreshInterval` is realistic given upstream rate limits.
@@ -312,4 +312,4 @@ Each has its own reference file under `references/` — see the filename list ab
 
 ---
 
-*Skill generated at `2026-08-31T04:28:55Z` from the Dashboardbase API contract.*
+*Skill generated at `2026-08-31T11:24:07Z` from the Dashboardbase API contract.*

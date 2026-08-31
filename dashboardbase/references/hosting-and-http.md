@@ -9,7 +9,7 @@ Your widget endpoint must be:
 - **Publicly reachable.** Dashboardbase polls from its own infrastructure; localhost or private-network URLs do not work.
 - **HTTPS-only** with a valid (non-self-signed) TLS certificate. `http://` is rejected.
 - **DNS-stable.** Use a stable hostname; IP-only URLs are accepted but discouraged.
-- **Fast.** Aim for a p95 response time under 2 seconds. Hard timeout is 5 seconds.
+- **Fast.** Aim for a p95 response time under 2 seconds. Hard timeout is 10 seconds per attempt.
 
 ## HTTP method and idempotency
 
@@ -52,8 +52,9 @@ Whichever window you resolve, echo it in the response's `header.subtitle` (e.g. 
 ```js
 app.get("/widgets/revenue", auth, async (req, res) => {
   const range = req.query.dateRange ?? "ThirtyDays";
-  const days = { Today: 0, SevenDays: 7, ThirtyDays: 30, SixtyDays: 60, NinetyDays: 90 }[range];
-  if (days === undefined) return res.status(400).json({ error: "Unknown dateRange" });
+  // Fall back rather than reject: a 400 puts the widget in an error state, and an
+  // unrecognised value should degrade to your default window, not break the tile.
+  const days = { Today: 0, SevenDays: 7, ThirtyDays: 30, SixtyDays: 60, NinetyDays: 90 }[range] ?? 30;
 
   const since = days === 0
     ? new Date(new Date().setHours(0, 0, 0, 0))
@@ -79,18 +80,33 @@ Dashboardbase interprets responses as follows:
 
 | Status | Effect on widget |
 |---|---|
-| `200 OK` | Render the widget with the returned data. |
-| `204 No Content` | Render the widget as empty / "no data". Reserve this for data with no zero shape (a table with no rows, a pie with no categories) — a time series with nothing in the window should return `200` with every bucket zero-filled. See gotcha 8. |
-| `304 Not Modified` | Keep previous data. Use with `ETag` / `If-None-Match` to save bandwidth (optional). |
+| `200 OK` with a JSON body | Render the widget with the returned data. **This is the only success.** |
+| `204 No Content` | Error state. A 204 has no body, and Dashboardbase parses the body of every 2xx — an empty one fails to parse. See gotcha 8 for what to send instead. |
+| `304 Not Modified` | Error state. Only 2xx is treated as a response at all; a 304 is handled as a failed poll. Do not build conditional-request handling against Dashboardbase. |
+| `3xx` redirects | Error state. Redirects are never followed (a redirect would be fetched after the SSRF guard passed). Serve the data at the configured URL. |
 | `401 Unauthorized` | Show auth error. **Do not redirect.** |
 | `403 Forbidden` | Show auth error. |
 | `404 Not Found` | Show "endpoint missing" error. |
-| `5xx` | Show server-error state. Dashboardbase will retry on the next poll. |
+| `5xx` / `408` / `429` | Show server-error state — but see "Retries" below: these are retried immediately, not just on the next poll. |
+
+Anything that is not `200` with a parseable JSON body puts the widget in an error state. There is no
+"empty" or "unchanged" outcome in the contract: when you have nothing to show, say so inside a `200`
+response — gotcha 8 gives the shape per widget type.
+
+## Retries
+
+A failed poll is not one request. Transient failures — `5xx`, `408`, `429`, and connection errors —
+are retried **3 times** with 2s / 4s / 8s backoff, each attempt under its own 10-second timeout. So a
+single poll of a dead or rate-limiting endpoint means **4 requests over roughly 50 seconds**.
+
+- Do not rate-limit Dashboardbase on a budget that assumes one request per poll.
+- Returning `429` does not slow Dashboardbase down — it is treated as transient and retried.
+- Make the endpoint idempotent. It is a `GET`, so it should be anyway, but the retry makes it load-bearing.
 
 ## Latency budget
 
 - **Target:** p95 < 2 seconds end-to-end (TCP + TLS + your handler).
-- **Hard timeout:** 5 seconds. Slower responses are treated as failures.
+- **Hard timeout:** 10 seconds per attempt. A slower response is a failed attempt and is retried (see "Retries" above), so a consistently slow endpoint burns ~50 seconds before the widget errors.
 - **What this means in practice:** the widget endpoint should hit cache or a denormalised store; do not run expensive analytical queries on every poll. Aggregate upstream and serve the result.
 
 ## Refresh intervals
@@ -105,9 +121,9 @@ Dashboardbase polls every connected dashboard at this interval, so an endpoint b
 
 ## Caching
 
-- **Server-side caching is your responsibility.** A 30-second cache in front of an expensive query is often enough to handle Dashboardbase's poll cadence and any human refreshes.
-- **`Cache-Control: max-age=N`** is honoured for re-poll suppression in some cases; do not rely on it for correctness.
-- **`ETag` + `If-None-Match`** with `304` responses is supported and saves bandwidth.
+- **Server-side caching is your responsibility, and it is the only caching there is.** A 30-second cache in front of an expensive query is usually enough to absorb Dashboardbase's poll cadence, any human refreshes, and the retry burst above.
+- **Response cache headers are ignored.** Dashboardbase does not keep an HTTP cache: `Cache-Control`, `Expires`, `ETag` and `Last-Modified` have no effect on polling, and `If-None-Match` is never sent. Serving `304` will error the widget (see the status table).
+- **Key your own cache by `dateRange`** — see gotcha 13. Two windows sharing a cache entry serves the wrong data.
 
 ## Compression
 
