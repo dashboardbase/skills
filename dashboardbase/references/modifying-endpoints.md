@@ -55,7 +55,7 @@ The widget is being polled right now, so a bad deploy shows up as a broken tile 
 | A new widget on the dashboard | Yes | Re-import, or add the widget in the app |
 | Widget changed type | Yes | Re-import, or replace the widget in the app |
 | Turning on alerting | No | **Enable alerts on that widget in the editor** — see `references/alerting.md` |
-| How the endpoint authenticates | No — credentials never live in the setup file | Update the credential on **every** datasource pointing at the endpoint, unless the method is the Endpoint Secret (nothing to configure) |
+| How the endpoint authenticates | No — credentials never live in the setup file | Update the credential on **every** datasource pointing at the endpoint, unless the method is request signing or the Endpoint Secret (nothing to configure) |
 
 When the setup file does change, update `.dashboardbase/<slug>.json` in the repo in the same commit as the endpoint change, then hand it over the same way as a new dashboard (`references/setup-files.md` → "How to load your setup file into Dashboardbase"). Keeping the file in sync is what makes the dashboard reproducible; a repo whose setup file no longer matches the live dashboard is worse than no setup file.
 
