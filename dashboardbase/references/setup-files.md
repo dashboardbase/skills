@@ -238,6 +238,7 @@ Worked examples:
 
 - **LineChart + Table** → *Two Columns*: the line chart takes the `Primary` slot (`position {x:0,y:0}`, `size {w:8,h:6}`), the table the `Secondary` slot (`position {x:8,y:0}`, `size {w:4,h:6}`).
 - **LineChart + Table + KPI** → *Spotlight*: the KPI drops into the small `Kpi` slot, the line chart into `Primary`, the table into `Secondary`.
+- **One widget on its own** → *Single Panel*: whatever its role, give it the whole board (`position {x:0,y:0}`, `size {w:12,h:6}`) rather than a default-sized tile — a lone `w:6 h:4` chart leaves three quarters of the screen empty.
 
 ### Which widget fits which slot
 
@@ -270,6 +271,14 @@ tile has no room for its axis. Prefer the default when nothing else dictates the
 | Text | `w:3 h:2` | `w:4 h:3` | Primary, Secondary |
 
 ### Layouts
+
+#### Single Panel
+
+One widget filling the entire board — nothing else on screen.
+
+| Slot | position | size | role |
+| --- | --- | --- | --- |
+| 1 | `x:0 y:0` | `w:12 h:6` | `Primary` |
 
 #### Starter Kit
 
