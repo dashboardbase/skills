@@ -184,13 +184,13 @@
               },
               "size": {
                 "type": "object",
-                "description": "Widget size on the 12-column grid. Omit to use the widget type\u0027s default (3\u00D71 for compact single-value widgets like KPI, 6\u00D74 otherwise). Out-of-range values are clamped when the widget is added.",
+                "description": "Widget size on the 12-column grid. Omit to use the widget type\u0027s default (3\u00D71 for compact single-value widgets like KPI, 6\u00D74 otherwise). Out-of-range values are rejected; a size below the widget type\u0027s own minimum is a warning.",
                 "properties": {
                   "w": {
                     "type": "integer",
-                    "minimum": 3,
+                    "minimum": 2,
                     "maximum": 12,
-                    "description": "Width in grid columns (3-12)."
+                    "description": "Width in grid columns (2-12). Only the compact single-value types (kpi, status) read well at 2; everything else needs at least 3."
                   },
                   "h": {
                     "type": "integer",
@@ -304,13 +304,13 @@
               },
               "size": {
                 "type": "object",
-                "description": "Widget size on the 12-column grid. Omit to use the widget type\u0027s default (3\u00D71 for compact single-value widgets like KPI, 6\u00D74 otherwise). Out-of-range values are clamped when the widget is added.",
+                "description": "Widget size on the 12-column grid. Omit to use the widget type\u0027s default (3\u00D71 for compact single-value widgets like KPI, 6\u00D74 otherwise). Out-of-range values are rejected; a size below the widget type\u0027s own minimum is a warning.",
                 "properties": {
                   "w": {
                     "type": "integer",
-                    "minimum": 3,
+                    "minimum": 2,
                     "maximum": 12,
-                    "description": "Width in grid columns (3-12)."
+                    "description": "Width in grid columns (2-12). Only the compact single-value types (kpi, status) read well at 2; everything else needs at least 3."
                   },
                   "h": {
                     "type": "integer",
@@ -445,13 +445,13 @@
               },
               "size": {
                 "type": "object",
-                "description": "Widget size on the 12-column grid. Omit to use the widget type\u0027s default (3\u00D71 for compact single-value widgets like KPI, 6\u00D74 otherwise). Out-of-range values are clamped when the widget is added.",
+                "description": "Widget size on the 12-column grid. Omit to use the widget type\u0027s default (3\u00D71 for compact single-value widgets like KPI, 6\u00D74 otherwise). Out-of-range values are rejected; a size below the widget type\u0027s own minimum is a warning.",
                 "properties": {
                   "w": {
                     "type": "integer",
-                    "minimum": 3,
+                    "minimum": 2,
                     "maximum": 12,
-                    "description": "Width in grid columns (3-12)."
+                    "description": "Width in grid columns (2-12). Only the compact single-value types (kpi, status) read well at 2; everything else needs at least 3."
                   },
                   "h": {
                     "type": "integer",
