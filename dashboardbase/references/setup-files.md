@@ -223,10 +223,11 @@ When you are **creating new widgets** (mapping State B or State C), don't invent
 
 Grid constraints (every layout slot below satisfies them):
 
-- The grid is **12 columns wide**. A widget's `size.w` must be **3–12** columns and `size.h` must be **1–8** rows.
+- The grid is **12 columns wide**. A widget's `size.w` must be **2–12** columns and `size.h` must be **1–8** rows.
+- **2 columns is only for the compact single-value types** — KPI, Status, Clock and Countdown. Six of those fit across one row, which is how a payments-status or web-analytics strip is built. Every other type declares a higher minimum in the table below and looks squeezed under it.
 - If a mapping omits `size`, the widget gets its type's default: **3×1** for compact single-value widgets (KPI-style), **6×4** for everything else (charts, tables).
 - That fallback is deliberately coarse. Set `size` explicitly from the per-widget "Recommended widget sizes" table below, which is generated from the same values `GET /bff/v1/widget-types` publishes.
-- The bundled `assets/setup-file.schema.json` flags out-of-range values, but the server-side import does **not** reject them — they are clamped when the widget is added, so the imported dashboard silently differs from your file. Stay in range.
+- A size outside 2–12 × 1–8, or one that puts `position.x + size.w` past column 12, is **rejected** by the validator and by the save itself. A size inside that range but below the widget type's own minimum is accepted with a **warning** — the dashboard imports, it just reads poorly.
 
 How to use them:
 
@@ -376,9 +377,10 @@ A stacked pair in a narrow column beside a wide full-height panel.
 
 ### When no layout fits
 
-The layouts above top out at four `Kpi` slots, one `Primary`, and two `Secondary` slots. When the widget mix is bigger, extend the closest layout instead of inventing a grid from scratch — keep the existing slots as-is and add rows below them:
+The layouts above top out at six `Kpi` slots, one `Primary`, and two `Secondary` slots. When the widget mix is bigger, extend the closest layout instead of inventing a grid from scratch — keep the existing slots as-is and add rows below them:
 
 - **More than four KPI-role widgets** → repeat the KPI row: four more `w:3 h:1` slots at `x:0 / 3 / 6 / 9` on the next row, shifting every later row's `y` down by 1.
+- **Five or six KPI-role widgets that belong on one row** → use six `w:2 h:1` slots at `x:0 / 2 / 4 / 6 / 8 / 10` (the *Six Across* layout). Compact types only — a Gauge or Table at `w:2` is below its minimum.
 - **More than one Primary-role widget** → give each extra one its own full-width row (`w:12 h:5`), or pair two side by side as `w:6 h:5`.
 - **More Secondary-role widgets than slots** → tile the extras in rows of three `w:4 h:5` or two `w:6 h:5` below the layout.
 
