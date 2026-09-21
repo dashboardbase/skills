@@ -157,6 +157,107 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
         },
         "additionalProperties": false
       }
+    },
+    "headers": {
+      "maxItems": 6,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "subtitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "align": {
+            "enum": [
+              "Left",
+              "Center",
+              "Right"
+            ],
+            "type": "string",
+            "nullable": true
+          },
+          "badge": {
+            "required": [
+              "text"
+            ],
+            "type": "object",
+            "properties": {
+              "text": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "icon": {
+                "enum": [
+                  "ArrowUp",
+                  "ArrowDown"
+                ],
+                "type": "string",
+                "nullable": true
+              },
+              "color": {
+                "enum": [
+                  "Success",
+                  "Warning",
+                  "Danger",
+                  "Blue",
+                  "Green",
+                  "Red",
+                  "Yellow",
+                  "Orange",
+                  "Light",
+                  "Dark"
+                ],
+                "type": "string",
+                "nullable": true
+              },
+              "fill": {
+                "enum": [
+                  "Solid",
+                  "Clear",
+                  "Outline"
+                ],
+                "type": "string",
+                "nullable": true
+              }
+            },
+            "additionalProperties": false,
+            "nullable": true
+          },
+          "color": {
+            "enum": [
+              "Success",
+              "Warning",
+              "Danger",
+              "Blue",
+              "Green",
+              "Red",
+              "Yellow",
+              "Orange",
+              "Light",
+              "Dark"
+            ],
+            "type": "string",
+            "nullable": true
+          },
+          "size": {
+            "enum": [
+              "S",
+              "M",
+              "L",
+              "XL"
+            ],
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "nullable": true
     }
   },
   "additionalProperties": false
@@ -225,6 +326,31 @@ The `header` block is **optional**, and this widget reads fine without one — s
 }
 ```
 
+### More than one header — the header strip
+
+`headers` takes an array of the same block, so one endpoint can carry several headline numbers
+above the widget instead of needing a separate KPI widget for each. `header` is merged in **first**,
+so `header` plus `headers` is one list: send only `header`, only `headers`, or both.
+
+The strip lays its blocks out in **equal columns**, and `header` plus `headers` may total at most
+**6** — one per pair of grid columns. A seventh is a validation error, not a silent truncation. On a
+phone the strip wraps to two per row and the widget grows taller to fit, so a six-block strip stays
+readable there too.
+
+```json
+{
+  "header": { "title": "395", "subtitle": "Visitors", "badge": { "text": "+348.9%", "icon": "ArrowUp", "color": "Success" } },
+  "headers": [
+    { "title": "932", "subtitle": "New visitors", "badge": { "text": "+565.7%", "icon": "ArrowUp", "color": "Success" } },
+    { "title": "1m 50s", "subtitle": "Avg. engagement" },
+    { "title": "150K", "subtitle": "Total visitors" }
+  ]
+}
+```
+
+Every block in `headers` needs a `title` — an entry without one renders as an empty column, so it is
+rejected.
+
 
 
 ## Variations
@@ -260,6 +386,60 @@ Progress toward a set of goals or quotas, one bar per owner.
 }
 ```
 
+### Bars under a header strip
+
+A list of capacity bars that should be read against the aggregate — total used and remaining above the rows.
+
+```json
+{
+  "title": "Storage by service",
+  "actions": [
+    {
+      "title": "Open storage",
+      "type": "link",
+      "url": "https://example.com/storage"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "1.8 TB",
+      "subtitle": "Used",
+      "badge": {
+        "text": "72%",
+        "color": "Warning"
+      }
+    },
+    "items": [
+      {
+        "value": 820,
+        "max": 1000,
+        "label": "Media"
+      },
+      {
+        "value": 640,
+        "max": 1000,
+        "label": "Backups"
+      },
+      {
+        "value": 340,
+        "max": 500,
+        "label": "Logs"
+      }
+    ],
+    "headers": [
+      {
+        "title": "700 GB",
+        "subtitle": "Free"
+      },
+      {
+        "title": "2.5 TB",
+        "subtitle": "Quota"
+      }
+    ]
+  }
+}
+```
+
 ## Validation
 
 The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate the response. If the `validate_widget_response` tool is available, call it with the full response body — that checks against the live contract. Otherwise validate the response's `data` field against `assets/schemas/progress-list.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
@@ -281,3 +461,4 @@ All values are case-sensitive (`"Success"`, not `"success"`).
 - Leaving a row's `label` empty — every bar in the list must be labelled.
 - Sending `value` greater than `max`, or a `max` of `0` — when `max` is set it must be `> 0` and `0 <= value <= max`.
 - Using this for a single bar — a single goal bar belongs on the KPI widget's `progress` field.
+- Sending more than 6 header blocks — `header` and `headers` together may hold at most 6, one per pair of grid columns. Everything past the sixth is a validation error, not a silent truncation.

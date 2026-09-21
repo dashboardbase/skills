@@ -130,6 +130,107 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
       ],
       "type": "string",
       "nullable": true
+    },
+    "headers": {
+      "maxItems": 6,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "subtitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "align": {
+            "enum": [
+              "Left",
+              "Center",
+              "Right"
+            ],
+            "type": "string",
+            "nullable": true
+          },
+          "badge": {
+            "required": [
+              "text"
+            ],
+            "type": "object",
+            "properties": {
+              "text": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "icon": {
+                "enum": [
+                  "ArrowUp",
+                  "ArrowDown"
+                ],
+                "type": "string",
+                "nullable": true
+              },
+              "color": {
+                "enum": [
+                  "Success",
+                  "Warning",
+                  "Danger",
+                  "Blue",
+                  "Green",
+                  "Red",
+                  "Yellow",
+                  "Orange",
+                  "Light",
+                  "Dark"
+                ],
+                "type": "string",
+                "nullable": true
+              },
+              "fill": {
+                "enum": [
+                  "Solid",
+                  "Clear",
+                  "Outline"
+                ],
+                "type": "string",
+                "nullable": true
+              }
+            },
+            "additionalProperties": false,
+            "nullable": true
+          },
+          "color": {
+            "enum": [
+              "Success",
+              "Warning",
+              "Danger",
+              "Blue",
+              "Green",
+              "Red",
+              "Yellow",
+              "Orange",
+              "Light",
+              "Dark"
+            ],
+            "type": "string",
+            "nullable": true
+          },
+          "size": {
+            "enum": [
+              "S",
+              "M",
+              "L",
+              "XL"
+            ],
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "nullable": true
     }
   },
   "additionalProperties": false
@@ -177,6 +278,31 @@ The `header` block is **optional**, and this widget reads fine without one — s
   }
 }
 ```
+
+### More than one header — the header strip
+
+`headers` takes an array of the same block, so one endpoint can carry several headline numbers
+above the widget instead of needing a separate KPI widget for each. `header` is merged in **first**,
+so `header` plus `headers` is one list: send only `header`, only `headers`, or both.
+
+The strip lays its blocks out in **equal columns**, and `header` plus `headers` may total at most
+**6** — one per pair of grid columns. A seventh is a validation error, not a silent truncation. On a
+phone the strip wraps to two per row and the widget grows taller to fit, so a six-block strip stays
+readable there too.
+
+```json
+{
+  "header": { "title": "395", "subtitle": "Visitors", "badge": { "text": "+348.9%", "icon": "ArrowUp", "color": "Success" } },
+  "headers": [
+    { "title": "932", "subtitle": "New visitors", "badge": { "text": "+565.7%", "icon": "ArrowUp", "color": "Success" } },
+    { "title": "1m 50s", "subtitle": "Avg. engagement" },
+    { "title": "150K", "subtitle": "Total visitors" }
+  ]
+}
+```
+
+Every block in `headers` needs a `title` — an entry without one renders as an empty column, so it is
+rejected.
 
 
 
@@ -287,6 +413,40 @@ A service is fully down — pair the Error indicator with a critical alert spell
 }
 ```
 
+### Healthy with a header strip
+
+A health tile that should also carry uptime and time-since-last-incident, instead of three separate tiles.
+
+```json
+{
+  "title": "Platform health",
+  "actions": [
+    {
+      "title": "Check Logs",
+      "type": "link",
+      "url": "https://example.com/status-logs"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "Operational",
+      "subtitle": "All checks passing"
+    },
+    "status": "Ok",
+    "headers": [
+      {
+        "title": "99.98%",
+        "subtitle": "Uptime, 30d"
+      },
+      {
+        "title": "42 days",
+        "subtitle": "Since last incident"
+      }
+    ]
+  }
+}
+```
+
 ## Validation
 
 The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate the response. If the `validate_widget_response` tool is available, call it with the full response body — that checks against the live contract. Otherwise validate the response's `data` field against `assets/schemas/status.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
@@ -308,3 +468,4 @@ All values are case-sensitive (`"Success"`, not `"success"`).
 - Sending a string for `status` outside `Ok` / `Error` — values are case-sensitive and limited to the `WidgetStatusIndicator` enum.
 - Using KPI shape for a binary indicator — Status renders an explicit Ok/Error pill, KPI does not.
 - Sending a `mode` outside `Default` / `Heartbeat` — it is nullable, so omit it for the default rendering.
+- Sending more than 6 header blocks — `header` and `headers` together may hold at most 6, one per pair of grid columns. Everything past the sixth is a validation error, not a silent truncation.

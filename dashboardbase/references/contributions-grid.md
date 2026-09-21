@@ -137,6 +137,107 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
         },
         "additionalProperties": false
       }
+    },
+    "headers": {
+      "maxItems": 6,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "subtitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "align": {
+            "enum": [
+              "Left",
+              "Center",
+              "Right"
+            ],
+            "type": "string",
+            "nullable": true
+          },
+          "badge": {
+            "required": [
+              "text"
+            ],
+            "type": "object",
+            "properties": {
+              "text": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "icon": {
+                "enum": [
+                  "ArrowUp",
+                  "ArrowDown"
+                ],
+                "type": "string",
+                "nullable": true
+              },
+              "color": {
+                "enum": [
+                  "Success",
+                  "Warning",
+                  "Danger",
+                  "Blue",
+                  "Green",
+                  "Red",
+                  "Yellow",
+                  "Orange",
+                  "Light",
+                  "Dark"
+                ],
+                "type": "string",
+                "nullable": true
+              },
+              "fill": {
+                "enum": [
+                  "Solid",
+                  "Clear",
+                  "Outline"
+                ],
+                "type": "string",
+                "nullable": true
+              }
+            },
+            "additionalProperties": false,
+            "nullable": true
+          },
+          "color": {
+            "enum": [
+              "Success",
+              "Warning",
+              "Danger",
+              "Blue",
+              "Green",
+              "Red",
+              "Yellow",
+              "Orange",
+              "Light",
+              "Dark"
+            ],
+            "type": "string",
+            "nullable": true
+          },
+          "size": {
+            "enum": [
+              "S",
+              "M",
+              "L",
+              "XL"
+            ],
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "nullable": true
     }
   },
   "additionalProperties": false
@@ -246,9 +347,132 @@ The `header` block is **optional**, and this widget reads fine without one — s
 }
 ```
 
+### More than one header — the header strip
+
+`headers` takes an array of the same block, so one endpoint can carry several headline numbers
+above the widget instead of needing a separate KPI widget for each. `header` is merged in **first**,
+so `header` plus `headers` is one list: send only `header`, only `headers`, or both.
+
+The strip lays its blocks out in **equal columns**, and `header` plus `headers` may total at most
+**6** — one per pair of grid columns. A seventh is a validation error, not a silent truncation. On a
+phone the strip wraps to two per row and the widget grows taller to fit, so a six-block strip stays
+readable there too.
+
+```json
+{
+  "header": { "title": "395", "subtitle": "Visitors", "badge": { "text": "+348.9%", "icon": "ArrowUp", "color": "Success" } },
+  "headers": [
+    { "title": "932", "subtitle": "New visitors", "badge": { "text": "+565.7%", "icon": "ArrowUp", "color": "Success" } },
+    { "title": "1m 50s", "subtitle": "Avg. engagement" },
+    { "title": "150K", "subtitle": "Total visitors" }
+  ]
+}
+```
+
+Every block in `headers` needs a `title` — an entry without one renders as an empty column, so it is
+rejected.
 
 
 
+## Variations
+
+Other shapes and styling for this widget — pick the one closest to your data:
+
+### Activity grid with a header strip
+
+A per-day activity heatmap that should also state the total, the current streak and the best day.
+
+```json
+{
+  "title": "Deploys",
+  "actions": [
+    {
+      "title": "Open pipeline",
+      "type": "link",
+      "url": "https://example.com/pipeline"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "142",
+      "subtitle": "Last 14 days",
+      "badge": {
+        "text": "+18%",
+        "icon": "ArrowUp",
+        "color": "Success"
+      }
+    },
+    "cells": [
+      {
+        "date": "2026-01-01",
+        "value": 4
+      },
+      {
+        "date": "2026-01-02",
+        "value": 0
+      },
+      {
+        "date": "2026-01-03",
+        "value": 6
+      },
+      {
+        "date": "2026-01-04",
+        "value": 9
+      },
+      {
+        "date": "2026-01-05",
+        "value": 12
+      },
+      {
+        "date": "2026-01-06",
+        "value": 8
+      },
+      {
+        "date": "2026-01-07",
+        "value": 14
+      },
+      {
+        "date": "2026-01-08",
+        "value": 11
+      },
+      {
+        "date": "2026-01-09",
+        "value": 17
+      },
+      {
+        "date": "2026-01-10",
+        "value": 21
+      },
+      {
+        "date": "2026-01-11",
+        "value": 13
+      },
+      {
+        "date": "2026-01-12",
+        "value": 9
+      },
+      {
+        "date": "2026-01-13",
+        "value": 10
+      },
+      {
+        "date": "2026-01-14",
+        "value": 8
+      }
+    ],
+    "headers": [
+      {
+        "title": "9 days",
+        "subtitle": "Current streak"
+      },
+      {
+        "title": "21",
+        "subtitle": "Best day"
+      }
+    ]
+  }
+}
+```
 
 ## Validation
 
@@ -271,3 +495,4 @@ All values are case-sensitive (`"Success"`, not `"success"`).
 - Sending `value` as a string — cell values must be numbers.
 - Using a negative `value` — intensities must be `>= 0` (0 renders as the empty cell).
 - Sending fewer than one cell — `cells` must contain at least one `{ date, value }` entry.
+- Sending more than 6 header blocks — `header` and `headers` together may hold at most 6, one per pair of grid columns. Everything past the sixth is a validation error, not a silent truncation.
