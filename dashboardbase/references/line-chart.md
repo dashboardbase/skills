@@ -209,6 +209,107 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
     "ticksY": {
       "type": "boolean",
       "nullable": true
+    },
+    "headers": {
+      "maxItems": 6,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "subtitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "align": {
+            "enum": [
+              "Left",
+              "Center",
+              "Right"
+            ],
+            "type": "string",
+            "nullable": true
+          },
+          "badge": {
+            "required": [
+              "text"
+            ],
+            "type": "object",
+            "properties": {
+              "text": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "icon": {
+                "enum": [
+                  "ArrowUp",
+                  "ArrowDown"
+                ],
+                "type": "string",
+                "nullable": true
+              },
+              "color": {
+                "enum": [
+                  "Success",
+                  "Warning",
+                  "Danger",
+                  "Blue",
+                  "Green",
+                  "Red",
+                  "Yellow",
+                  "Orange",
+                  "Light",
+                  "Dark"
+                ],
+                "type": "string",
+                "nullable": true
+              },
+              "fill": {
+                "enum": [
+                  "Solid",
+                  "Clear",
+                  "Outline"
+                ],
+                "type": "string",
+                "nullable": true
+              }
+            },
+            "additionalProperties": false,
+            "nullable": true
+          },
+          "color": {
+            "enum": [
+              "Success",
+              "Warning",
+              "Danger",
+              "Blue",
+              "Green",
+              "Red",
+              "Yellow",
+              "Orange",
+              "Light",
+              "Dark"
+            ],
+            "type": "string",
+            "nullable": true
+          },
+          "size": {
+            "enum": [
+              "S",
+              "M",
+              "L",
+              "XL"
+            ],
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "nullable": true
     }
   },
   "additionalProperties": false
@@ -302,6 +403,31 @@ The `header` block is optional in the schema — **always include it anyway**. W
   }
 }
 ```
+
+### More than one header — the header strip
+
+`headers` takes an array of the same block, so one endpoint can carry several headline numbers
+above the widget instead of needing a separate KPI widget for each. `header` is merged in **first**,
+so `header` plus `headers` is one list: send only `header`, only `headers`, or both.
+
+The strip lays its blocks out in **equal columns**, and `header` plus `headers` may total at most
+**6** — one per pair of grid columns. A seventh is a validation error, not a silent truncation. On a
+phone the strip wraps to two per row and the widget grows taller to fit, so a six-block strip stays
+readable there too.
+
+```json
+{
+  "header": { "title": "395", "subtitle": "Visitors", "badge": { "text": "+348.9%", "icon": "ArrowUp", "color": "Success" } },
+  "headers": [
+    { "title": "932", "subtitle": "New visitors", "badge": { "text": "+565.7%", "icon": "ArrowUp", "color": "Success" } },
+    { "title": "1m 50s", "subtitle": "Avg. engagement" },
+    { "title": "150K", "subtitle": "Total visitors" }
+  ]
+}
+```
+
+Every block in `headers` needs a `title` — an entry without one renders as an empty column, so it is
+rejected.
 
 ## Multiple series
 
@@ -555,6 +681,150 @@ A trend where a spike has a known cause — add an info alert so viewers don't m
 }
 ```
 
+### Trend with a header strip
+
+One endpoint should carry several headline numbers above a single trend — visitors, new visitors, engagement and the running total, instead of four separate KPI widgets.
+
+```json
+{
+  "title": "Audience",
+  "actions": [
+    {
+      "title": "Analyze Traffic",
+      "type": "link",
+      "url": "https://example.com/traffic-analysis"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "395",
+      "subtitle": "Visitors",
+      "badge": {
+        "text": "+348.9%",
+        "icon": "ArrowUp",
+        "color": "Success"
+      }
+    },
+    "labels": [
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 20
+          },
+          {
+            "value": 24
+          },
+          {
+            "value": 28
+          },
+          {
+            "value": 26
+          },
+          {
+            "value": 38
+          },
+          {
+            "value": 40
+          },
+          {
+            "value": 42
+          },
+          {
+            "value": 62
+          },
+          {
+            "value": 58
+          },
+          {
+            "value": 64
+          },
+          {
+            "value": 70
+          }
+        ],
+        "label": "Visitors"
+      },
+      {
+        "data": [
+          {
+            "value": 12
+          },
+          {
+            "value": 16
+          },
+          {
+            "value": 18
+          },
+          {
+            "value": 22
+          },
+          {
+            "value": 30
+          },
+          {
+            "value": 32
+          },
+          {
+            "value": 30
+          },
+          {
+            "value": 34
+          },
+          {
+            "value": 36
+          },
+          {
+            "value": 44
+          },
+          {
+            "value": 40
+          }
+        ],
+        "label": "New visitors"
+      }
+    ],
+    "fill": true,
+    "headers": [
+      {
+        "title": "932",
+        "subtitle": "New visitors",
+        "badge": {
+          "text": "+565.7%",
+          "icon": "ArrowUp",
+          "color": "Success"
+        }
+      },
+      {
+        "title": "1m 50s",
+        "subtitle": "Avg. engagement",
+        "badge": {
+          "text": "+250.1%",
+          "icon": "ArrowUp",
+          "color": "Success"
+        }
+      },
+      {
+        "title": "150K",
+        "subtitle": "Total visitors"
+      }
+    ]
+  }
+}
+```
+
 ## Validation
 
 The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate the response. If the `validate_widget_response` tool is available, call it with the full response body — that checks against the live contract. Otherwise validate the response's `data` field against `assets/schemas/line-chart.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
@@ -578,3 +848,4 @@ All values are case-sensitive (`"Success"`, not `"success"`).
 - Returning `null` between values to indicate a gap — Dashboardbase expects every index to have a `{ "value": <number> }` entry.
 - Returning `204` (or an empty series) for a period with no activity — emit every bucket in the window with `{ "value": 0 }` instead. A flat zero line is the honest answer and reads as intentional; a blank widget reads as broken.
 - Leaving axis ticks on for a long daily series — thirty rotated date labels crowd the axis and swamp the plot. Set `ticksX: false` past roughly a dozen buckets and let `header.subtitle` carry the window ("Last 30 days").
+- Sending more than 6 header blocks — `header` and `headers` together may hold at most 6, one per pair of grid columns. Everything past the sixth is a validation error, not a silent truncation.

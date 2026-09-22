@@ -4,7 +4,7 @@ description: Use when creating a Dashboardbase dashboard end-to-end, or when bui
 license: MIT
 metadata:
   source-repo: dashboardbase-api
-  generated-at: "2026-09-09T06:02:52Z"
+  generated-at: "2026-09-21T08:35:03Z"
   api-version: "1.0.0"
   spec-version: "1.0"
 ---
@@ -163,6 +163,7 @@ Connect it in Dashboardbase: create a KPI widget, point it at this URL and save 
 Dashboards read dramatically better when every widget uses the styling surface the contract provides:
 
 - **Always include `header` on KPI, LineChart and BarChart** (`title` + `subtitle` + `badge`), even though the schema marks it optional on the charts: `title` = the headline aggregate for the period, `subtitle` = the context line (`"Last 7 days"`), `badge` = the colored trend (`{ "text": "+8%", "icon": "ArrowUp", "color": "Success" }`). A plotted series without a headline and a period is the single biggest cause of a dashboard looking unfinished. On every other widget a `header` is genuinely optional — a pie, gauge, table or status tile reads fine without one, so add it only when there is a headline worth showing. Clock, Countdown and Image have no `header` at all in their contract; adding one there fails `additionalProperties: false`.
+- **Reach for `headers` before you reach for another widget.** Every widget that takes a `header` also takes `headers` — an array of the same block, rendered as an equal-width strip above the content. `header` merges in front of it, so `header` plus `headers` may total at most **6**. Four numbers above one line chart is one endpoint and one widget, not four KPI tiles and four endpoints; it is usually the right shape when the numbers describe the same thing the chart plots. On a phone the strip wraps to two per row and the widget grows taller to fit.
 - **Color lives on badges and datasets, not in text.** `subtitle` renders as plain text; use `badge.color` with `ArrowUp` / `ArrowDown` for the colored accent, and per-dataset `color` to distinguish chart series.
 - **Echo the active date range in `header.subtitle`** when handling `?dateRange=` — it shows users their filter is applied.
 - **Turn off crowded axis labels.** LineChart and BarChart take `ticksX` / `ticksY`. Omitting them shows the labels, which is right for a short axis (roughly a dozen buckets or fewer). Past that — any daily series over 30 or 90 days — set `ticksX: false`: thirty rotated date strings crowd the axis and swamp the plot, and `header.subtitle` already tells the viewer the window.
@@ -183,7 +184,7 @@ Load only what the current task needs — these files are progressive disclosure
 | **Handing a finished dashboard to the user** — sharing it as a link, or the drag-drop / paste alternatives | `references/setup-files.md` → "How to load your setup file into Dashboardbase" |
 | Deciding between **one endpoint per widget** and **one shared endpoint** (`?widget=`) | `references/endpoint-layout.md` |
 | Choosing, changing or adding **authentication** — a new method, a second method alongside it, or a rotation | `references/authentication.md` |
-| **Changing an endpoint that is already live** — adding a header, badge, action link, colour, another series or column | `references/modifying-endpoints.md` |
+| **Changing an endpoint that is already live** — adding a header or a header strip, badge, action link, colour, another series or column | `references/modifying-endpoints.md` |
 | Adding **alerting** to a widget, or an alert that isn't firing | `references/alerting.md` |
 | Pushing **events / notifications / sounds** to a dashboard, or wiring an event webhook into an existing codebase | `references/events.md` |
 | Production **hosting** / TLS / status codes / latency | `references/hosting-and-http.md` |
@@ -312,4 +313,4 @@ Each has its own reference file under `references/` — see the filename list ab
 
 ---
 
-*Skill generated at `2026-09-09T06:02:52Z` from the Dashboardbase API contract.*
+*Skill generated at `2026-09-21T08:35:03Z` from the Dashboardbase API contract.*

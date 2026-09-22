@@ -4,7 +4,7 @@
 
 ## Purpose
 
-Render rows of structured data with optional column headers — ideal for top-N lists, ranked items, status grids, recent activity.
+Render rows of structured data with optional column labels — ideal for top-N lists, ranked items, status grids, recent activity.
 
 In a setup file, this widget's `type` is `table` (see `references/setup-files.md`).
 
@@ -116,7 +116,7 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
       "additionalProperties": false,
       "nullable": true
     },
-    "headers": {
+    "columns": {
       "type": "array",
       "items": {
         "type": "object",
@@ -207,6 +207,107 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
           "additionalProperties": false
         }
       }
+    },
+    "headers": {
+      "maxItems": 6,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "subtitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "align": {
+            "enum": [
+              "Left",
+              "Center",
+              "Right"
+            ],
+            "type": "string",
+            "nullable": true
+          },
+          "badge": {
+            "required": [
+              "text"
+            ],
+            "type": "object",
+            "properties": {
+              "text": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "icon": {
+                "enum": [
+                  "ArrowUp",
+                  "ArrowDown"
+                ],
+                "type": "string",
+                "nullable": true
+              },
+              "color": {
+                "enum": [
+                  "Success",
+                  "Warning",
+                  "Danger",
+                  "Blue",
+                  "Green",
+                  "Red",
+                  "Yellow",
+                  "Orange",
+                  "Light",
+                  "Dark"
+                ],
+                "type": "string",
+                "nullable": true
+              },
+              "fill": {
+                "enum": [
+                  "Solid",
+                  "Clear",
+                  "Outline"
+                ],
+                "type": "string",
+                "nullable": true
+              }
+            },
+            "additionalProperties": false,
+            "nullable": true
+          },
+          "color": {
+            "enum": [
+              "Success",
+              "Warning",
+              "Danger",
+              "Blue",
+              "Green",
+              "Red",
+              "Yellow",
+              "Orange",
+              "Light",
+              "Dark"
+            ],
+            "type": "string",
+            "nullable": true
+          },
+          "size": {
+            "enum": [
+              "S",
+              "M",
+              "L",
+              "XL"
+            ],
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "nullable": true
     }
   },
   "additionalProperties": false
@@ -226,7 +327,11 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
     }
   ],
   "data": {
-    "headers": [
+    "header": {
+      "title": "128",
+      "subtitle": "Products in stock"
+    },
+    "columns": [
       {
         "text": "Product",
         "width": 40
@@ -337,6 +442,31 @@ The `header` block is **optional**, and this widget reads fine without one — s
 }
 ```
 
+### More than one header — the header strip
+
+`headers` takes an array of the same block, so one endpoint can carry several headline numbers
+above the widget instead of needing a separate KPI widget for each. `header` is merged in **first**,
+so `header` plus `headers` is one list: send only `header`, only `headers`, or both.
+
+The strip lays its blocks out in **equal columns**, and `header` plus `headers` may total at most
+**6** — one per pair of grid columns. A seventh is a validation error, not a silent truncation. On a
+phone the strip wraps to two per row and the widget grows taller to fit, so a six-block strip stays
+readable there too.
+
+```json
+{
+  "header": { "title": "395", "subtitle": "Visitors", "badge": { "text": "+348.9%", "icon": "ArrowUp", "color": "Success" } },
+  "headers": [
+    { "title": "932", "subtitle": "New visitors", "badge": { "text": "+565.7%", "icon": "ArrowUp", "color": "Success" } },
+    { "title": "1m 50s", "subtitle": "Avg. engagement" },
+    { "title": "150K", "subtitle": "Total visitors" }
+  ]
+}
+```
+
+Every block in `headers` needs a `title` — an entry without one renders as an empty column, so it is
+rejected.
+
 
 
 ## Variations
@@ -358,7 +488,7 @@ A leaderboard / top-N list of text values with one badge column for a status or 
     }
   ],
   "data": {
-    "headers": [
+    "columns": [
       {
         "text": "Customer",
         "width": 45
@@ -441,7 +571,7 @@ A grid of services/checks where each row's badge colour communicates health.
     }
   ],
   "data": {
-    "headers": [
+    "columns": [
       {
         "text": "Service",
         "width": 55
@@ -508,7 +638,7 @@ A grid of services where some are degraded — summarise the impact in a warning
     }
   ],
   "data": {
-    "headers": [
+    "columns": [
       {
         "text": "Service",
         "width": 55
@@ -564,6 +694,101 @@ A grid of services where some are degraded — summarise the impact in a warning
 }
 ```
 
+### Rows under a header strip
+
+A list that should be read against its totals — put the summary numbers in the header strip instead of building separate KPI widgets beside the table.
+
+```json
+{
+  "title": "Open invoices",
+  "actions": [
+    {
+      "title": "Open billing",
+      "type": "link",
+      "url": "https://example.com/billing"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "$18,420",
+      "subtitle": "Outstanding",
+      "badge": {
+        "text": "+4.2%",
+        "icon": "ArrowUp",
+        "color": "Warning"
+      }
+    },
+    "columns": [
+      {
+        "text": "Customer",
+        "width": 50
+      },
+      {
+        "text": "Due",
+        "width": 25
+      },
+      {
+        "text": "Amount",
+        "width": 25
+      }
+    ],
+    "rows": [
+      [
+        {
+          "text": "Nimbus"
+        },
+        {
+          "badge": {
+            "text": "Overdue",
+            "color": "Danger",
+            "fill": "Outline"
+          }
+        },
+        {
+          "text": "$8,200"
+        }
+      ],
+      [
+        {
+          "text": "Fernway"
+        },
+        {
+          "text": "in 4 days"
+        },
+        {
+          "text": "$6,100"
+        }
+      ],
+      [
+        {
+          "text": "Orbit Labs"
+        },
+        {
+          "text": "in 11 days"
+        },
+        {
+          "text": "$4,120"
+        }
+      ]
+    ],
+    "headers": [
+      {
+        "title": "3",
+        "subtitle": "Invoices"
+      },
+      {
+        "title": "$8,200",
+        "subtitle": "Overdue",
+        "badge": {
+          "text": "1 customer",
+          "color": "Danger"
+        }
+      }
+    ]
+  }
+}
+```
+
 ## Validation
 
 The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate the response. If the `validate_widget_response` tool is available, call it with the full response body — that checks against the live contract. Otherwise validate the response's `data` field against `assets/schemas/table.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
@@ -583,7 +808,9 @@ All values are case-sensitive (`"Success"`, not `"success"`).
 ## Common mistakes
 
 - Rows is `List<List<Column>>` (a 2-D array), not a list of objects — each row is an array of column cells.
-- Column widths in `headers` must sum to ~100 (they're treated as percentages).
+- Putting column labels in `headers` — that is now the header strip. Column labels live in `columns`; a legacy `headers: [{text, width}]` is still accepted and read as `columns`, but new endpoints should send `columns`.
+- Column widths in `columns` must sum to ~100 (they're treated as percentages).
 - Putting a URL in `text` instead of `link` — set `link` for clickable cells; `text` is the visible label.
 - Using `imageUrl` for inline icons — it renders as an image; for badges use `badge`.
-- Returning `rows: []` when there is no data — `Rows` requires at least one row and an empty list is rejected. Return `200` with a single placeholder row saying so (e.g. `No customers yet`), padded with empty cells to match the header count.
+- Returning `rows: []` when there is no data — `Rows` requires at least one row and an empty list is rejected. Return `200` with a single placeholder row saying so (e.g. `No customers yet`), padded with empty cells to match the column count.
+- Sending more than 6 header blocks — `header` and `headers` together may hold at most 6, one per pair of grid columns. Everything past the sixth is a validation error, not a silent truncation.

@@ -257,17 +257,17 @@ tile has no room for its axis. Prefer the default when nothing else dictates the
 | Widget | Minimum | Default | Slot roles |
 | --- | --- | --- | --- |
 | BarChart | `w:4 h:3` | `w:6 h:4` | Primary, Secondary |
-| Clock | `w:3 h:1` | `w:3 h:1` | Kpi, Secondary |
+| Clock | `w:2 h:1` | `w:3 h:1` | Kpi, Secondary |
 | ContributionsGrid | `w:6 h:3` | `w:12 h:3` | Primary, Secondary |
-| Countdown | `w:3 h:1` | `w:3 h:1` | Kpi |
+| Countdown | `w:2 h:1` | `w:3 h:1` | Kpi |
 | DonutChart | `w:4 h:3` | `w:4 h:5` | Secondary |
 | GaugeChart | `w:3 h:2` | `w:4 h:3` | Kpi, Secondary |
 | Image | `w:3 h:2` | `w:6 h:4` | Primary, Secondary |
-| KPI | `w:3 h:1` | `w:3 h:1` | Kpi |
+| KPI | `w:2 h:1` | `w:3 h:1` | Kpi |
 | LineChart | `w:6 h:3` | `w:8 h:5` | Primary |
 | PieChart | `w:4 h:3` | `w:4 h:5` | Secondary |
 | ProgressList | `w:3 h:2` | `w:4 h:4` | Primary, Secondary |
-| Status | `w:3 h:1` | `w:3 h:1` | Kpi |
+| Status | `w:2 h:1` | `w:3 h:1` | Kpi |
 | Table | `w:4 h:3` | `w:6 h:4` | Primary, Secondary |
 | Text | `w:3 h:2` | `w:4 h:3` | Primary, Secondary |
 
@@ -318,6 +318,20 @@ A starter kit with a single large column in the second row.
 | 3 | `x:6 y:0` | `w:3 h:1` | `Kpi` |
 | 4 | `x:9 y:0` | `w:3 h:1` | `Kpi` |
 | 5 | `x:0 y:1` | `w:12 h:5` | `Primary` |
+
+#### Six Across
+
+Six compact tiles across the top with a single large panel below.
+
+| Slot | position | size | role |
+| --- | --- | --- | --- |
+| 1 | `x:0 y:0` | `w:2 h:1` | `Kpi` |
+| 2 | `x:2 y:0` | `w:2 h:1` | `Kpi` |
+| 3 | `x:4 y:0` | `w:2 h:1` | `Kpi` |
+| 4 | `x:6 y:0` | `w:2 h:1` | `Kpi` |
+| 5 | `x:8 y:0` | `w:2 h:1` | `Kpi` |
+| 6 | `x:10 y:0` | `w:2 h:1` | `Kpi` |
+| 7 | `x:0 y:1` | `w:12 h:5` | `Primary` |
 
 #### Starter Kit - Two Rows
 
