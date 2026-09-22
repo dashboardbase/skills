@@ -4,7 +4,7 @@ description: Use when creating a Dashboardbase dashboard end-to-end, or when bui
 license: MIT
 metadata:
   source-repo: dashboardbase-api
-  generated-at: "2026-09-21T08:35:03Z"
+  generated-at: "2026-09-22T06:27:43Z"
   api-version: "1.0.0"
   spec-version: "1.0"
 ---
@@ -21,7 +21,7 @@ Dashboardbase periodically polls each widget's configured HTTPS endpoint at the 
 
 When the task is a whole dashboard (not a single widget), follow this workflow:
 
-1. **Choose widgets.** Pick one widget type per metric:
+1. **Choose widgets.** Pick one widget type per *thing being shown* — not one per number. Several numbers describing the same data belong in one widget's `headers` strip above it (up to 6 blocks including `header`), so "pageviews per day, plus totals for pages, users and organizations" is **one** LineChart, not a LineChart and three KPI tiles. Reach for a second widget when the second thing has its own shape — a list, a breakdown, a status — not when it is another number about the first. Then pick the type per widget:
 
 - **BarChart** (setup-file type `bar`) — building a bar chart / grouped bars / comparison by category.
 - **Clock** (setup-file type `clock`) — building a clock / current-time / timezone tile.
@@ -37,6 +37,33 @@ When the task is a whole dashboard (not a single widget), follow this workflow:
 - **Status** (setup-file type `status`) — building a status / health / up-or-down indicator.
 - **Table** (setup-file type `table`) — building a table / list / rows-and-columns widget.
 - **Text** (setup-file type `text`) — building a text / quote / announcement / message-of-the-day tile.
+
+<details>
+<summary><b>One widget or four? — a worked example</b></summary>
+
+> "Line chart of pageviews per day, also summarize total pages, total users, total organizations"
+
+That is one LineChart. The series is pageviews per day; the three totals are the header strip:
+
+```json
+{
+  "title": "Traffic",
+  "data": {
+    "header": { "title": "12,480", "subtitle": "Pageviews", "badge": { "text": "+8%", "icon": "ArrowUp", "color": "Success" } },
+    "headers": [
+      { "title": "1,284", "subtitle": "Total pages" },
+      { "title": "318", "subtitle": "Total users" },
+      { "title": "96", "subtitle": "Total organizations" }
+    ],
+    "labels": ["2026-05-15", "2026-05-16"],
+    "datasets": [{ "label": "Pageviews", "data": [{ "value": 1840 }, { "value": 1610 }] }]
+  }
+}
+```
+
+One endpoint, one widget, one slot on the grid — instead of four endpoints and four tiles.
+
+</details>
 
 2. **Pick a layout.** Load `references/setup-files.md` → "Recommended layouts". Choose the smallest layout whose slots cover your widget mix and copy each slot's `position` / `size` into the setup file — don't invent grid values. If no layout covers the mix, extend the closest one per that file's "When no layout fits". Name the layout you picked when handing over (e.g. "arranged as *Spotlight*") so the user knows what to expect and can ask for a different arrangement.
 3. **Choose an endpoint layout, then build or plan each endpoint.** Default to **one endpoint per widget** — dedicated endpoints can back the same widget on several dashboards, keep each handler to one response shape, and make wiring a single obvious step. Switch to **one shared endpoint** taking `?widget=<slug>` when the project is a single serverless function or one handler file, or when the user asks for it. Ask which they want when the project doesn't make it obvious, and load `references/endpoint-layout.md` before implementing the shared layout.
@@ -313,4 +340,4 @@ Each has its own reference file under `references/` — see the filename list ab
 
 ---
 
-*Skill generated at `2026-09-21T08:35:03Z` from the Dashboardbase API contract.*
+*Skill generated at `2026-09-22T06:27:43Z` from the Dashboardbase API contract.*

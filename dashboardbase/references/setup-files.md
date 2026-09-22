@@ -393,8 +393,10 @@ A stacked pair in a narrow column beside a wide full-height panel.
 
 The layouts above top out at six `Kpi` slots, one `Primary`, and two `Secondary` slots. When the widget mix is bigger, extend the closest layout instead of inventing a grid from scratch — keep the existing slots as-is and add rows below them:
 
-- **More than four KPI-role widgets** → repeat the KPI row: four more `w:3 h:1` slots at `x:0 / 3 / 6 / 9` on the next row, shifting every later row's `y` down by 1.
-- **Five or six KPI-role widgets that belong on one row** → use six `w:2 h:1` slots at `x:0 / 2 / 4 / 6 / 8 / 10` (the *Six Across* layout). Compact types only — a Gauge or Table at `w:2` is below its minimum.
+Before extending the grid, check that the extra widgets really are extra *widgets*. Several numbers that come from one endpoint and describe one dataset belong in that widget's `headers` strip (up to 6 blocks including `header`), which costs no slots at all — see `SKILL.md` → "Make it look good". Extend the layout only for widgets that genuinely have their own data.
+
+- **More than four KPI-role widgets that each have their own endpoint** → repeat the KPI row: four more `w:3 h:1` slots at `x:0 / 3 / 6 / 9` on the next row, shifting every later row's `y` down by 1.
+- **Five or six such KPI-role widgets that belong on one row** → use six `w:2 h:1` slots at `x:0 / 2 / 4 / 6 / 8 / 10` (the *Six Across* layout). Compact types only — a Gauge or Table at `w:2` is below its minimum.
 - **More than one Primary-role widget** → give each extra one its own full-width row (`w:12 h:5`), or pair two side by side as `w:6 h:5`.
 - **More Secondary-role widgets than slots** → tile the extras in rows of three `w:4 h:5` or two `w:6 h:5` below the layout.
 
