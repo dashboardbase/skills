@@ -19,6 +19,7 @@ Do not guess the widget type from the endpoint's name. A route called `/widgets/
 | The ask | What changes | Where to look |
 | --- | --- | --- |
 | Headline number, subtitle, or a coloured trend badge | `data.header` — `title`, `subtitle`, `badge` | `references/<widget>.md` → "Header" |
+| A second, third or fourth headline number above the widget | `data.headers` — an array of the same block; `header` merges in front, 6 in total | `references/<widget>.md` → "More than one header" |
 | A badge icon (`ArrowUp` / `ArrowDown`) | `data.header.badge.icon` | `SKILL.md` → `WidgetDataIcon` |
 | A click-through link on the widget | envelope `actions` (**not** inside `data`) | `SKILL.md` → "Response envelope" |
 | Change a colour | `badge.color`, dataset `color`, indicator `color` | `SKILL.md` → `WidgetDataColor` |
@@ -40,6 +41,7 @@ The widget is being polled right now, so a bad deploy shows up as a broken tile 
 
 - **Keep the envelope to its four keys** — `title`, `actions`, `data`, `alert`. Adding a fifth is the most common way to break a working widget.
 - **Adding is safer than renaming.** A new optional field inside `data` renders on the next poll. Renaming or removing a key the widget already renders blanks that part of the tile.
+- **Adding `headers` is purely additive.** The strip appears above the widget on the next poll and nothing else moves — no setup-file change, no re-import. It is the cheapest answer to "can we also show X"; check the 6-block total first.
 - **Keep parallel arrays in step.** On a chart, `labels` and every dataset's `data` array must stay the same length. Adding a series means adding a whole `datasets` entry — not lengthening one array and leaving the others behind.
 - **Changing the widget *type* is not an edit.** A KPI that should become a LineChart is a different `data` contract, a different setup-file `type`, and a different widget in Dashboardbase. Treat it as a new widget and retire the old one.
 - **Ship the change and the styling together.** A new series with no `color` picks a default that may collide with an existing one; give every series its own `color` when you add the second.

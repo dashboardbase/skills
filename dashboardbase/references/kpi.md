@@ -493,6 +493,48 @@ A headline number that is tracking toward a goal or cap — 'MRR $8.2k / $10k'. 
 }
 ```
 
+### Several totals in one tile
+
+Several totals that belong together — pages, users, organizations, dashboards — in one widget and one endpoint instead of a row of separate KPI tiles.
+
+```json
+{
+  "title": "Platform totals",
+  "actions": [
+    {
+      "title": "View Details",
+      "type": "link",
+      "url": "https://example.com/platform-totals"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "1,284",
+      "subtitle": "Total pages",
+      "badge": {
+        "text": "+64",
+        "icon": "ArrowUp",
+        "color": "Success"
+      }
+    },
+    "headers": [
+      {
+        "title": "318",
+        "subtitle": "Total users"
+      },
+      {
+        "title": "96",
+        "subtitle": "Total organizations"
+      },
+      {
+        "title": "42",
+        "subtitle": "Total dashboards"
+      }
+    ]
+  }
+}
+```
+
 ## Validation
 
 The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate the response. If the `validate_widget_response` tool is available, call it with the full response body — that checks against the live contract. Otherwise validate the response's `data` field against `assets/schemas/kpi.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
