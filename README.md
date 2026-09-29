@@ -29,12 +29,12 @@ This is the official [Agent Skill](https://agentskills.io) for [dashboardbase](h
 
 When this skill is active, your AI agent knows:
 
-- **The JSON response contract** — the `title` / `actions` / `data` envelope every endpoint returns.
-- **Per-widget schemas** — exactly what shape a KPI, Line Chart, Bar Chart, Pie Chart, Donut Chart, Gauge Chart, Table, or Status widget expects.
-- **Authentication patterns** — API key via `x-api-key`, Basic Auth, and custom Authorization headers.
+- **The JSON response contract** — the `title` / `actions` / `data` / `alert` envelope every endpoint returns.
+- **Per-widget schemas** — exactly what shape each of the 14 widgets expects: KPI, Line Chart, Bar Chart, Pie Chart, Donut Chart, Gauge Chart, Table, Status, Progress List, Contributions Grid, Text, Clock, Countdown and Image.
+- **Authentication** — verifying the Ed25519 signature Dashboardbase sends on every request (recommended: nothing to configure, no secret to hold), the Endpoint Secret, API keys and Basic Auth — and how to change methods on a live endpoint without breaking it.
 - **Error handling** — status codes, the `dateRange` query parameter, and how widgets degrade gracefully.
-- **Webhook reactions** — the payload format for triggering real-time reactions on a live dashboard.
-- **Setup files** — the declarative JSON format that provisions an entire dashboard's widgets and datasources in one drop.
+- **Alerts and events** — the `alert` object that turns a widget red and sends notifications, and the payload for pushing real-time events to a live dashboard.
+- **Setup files** — the declarative JSON format that provisions an entire dashboard's widgets and datasources in one drop, plus recommended layouts and a one-call import link to hand the finished dashboard over.
 
 Ask your agent _"build a dashboardbase KPI endpoint for monthly revenue in Node"_ and you get a working, correctly-shaped endpoint — not a guess.
 
@@ -123,7 +123,7 @@ This skill is **auto-generated from the dashboardbase backend**. Widget schemas 
 
 - **[Dashboardbase](https://dashboardbase.com)** — the product. Build, host, and share dashboards from your APIs.
 - **[Documentation](https://app.dashboardbase.com/documentation)** — widget reference, JSON contract, webhook setup.
-- **Dashboardbase MCP server** _(coming soon)_ — lets an agent talk to your dashboardbase workspace directly, rather than just scaffold endpoints.
+- **[Dashboardbase MCP server](https://github.com/dashboardbase/mcp)** — lets your agent check its own work: it validates widget responses and setup files against the live contract. Install with `claude mcp add dashboardbase -- npx -y @dashboardbase/mcp`. The skill uses it automatically when it is available.
 
 ## Contributing
 
