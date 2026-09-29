@@ -80,7 +80,7 @@ One endpoint, one widget, one slot on the grid — instead of four endpoints and
 
    > The dashboard config is ready. I can upload it and give you a link that opens straight into the import preview, or you can drag `.dashboardbase/<slug>.json` into Dashboardbase yourself. Shall I create the link?
 
-   **If they take the link:** `POST` the file as the raw body to `https://api.dashboardbase.com/tools/v1/setup-links` — no account, no API key, no org ID, and no `{"content": …}` wrapper. You get back `id`, `url` (e.g. `https://app.dashboardbase.com/i/V1v3rZ8Qk2mN4pR6tY8uWx`) and `expiresAt`. Full request/response and failure cases are in `references/setup-files.md` → "How to load your setup file into Dashboardbase".
+   **If they take the link:** if the `create_setup_link` tool is available (the Dashboardbase MCP server), call it with the file — it posts it and hands back the link with what to tell the user. Otherwise `POST` the file as the raw body to `https://api.dashboardbase.com/tools/v1/setup-links` — no account, no API key, no org ID, and no `{"content": …}` wrapper. You get back `id`, `url` (e.g. `https://app.dashboardbase.com/i/V1v3rZ8Qk2mN4pR6tY8uWx`) and `expiresAt`. Full request/response and failure cases are in `references/setup-files.md` → "How to load your setup file into Dashboardbase".
 
    **If they'd rather do it themselves:** nothing to upload — point them at the saved file and let them drag it onto the import area or paste its contents. Same result; credentials are entered in the import flow either way.
 
