@@ -4,7 +4,7 @@
 
 ## Purpose
 
-Render rows of structured data with optional column labels — ideal for top-N lists, ranked items, status grids, recent activity.
+Render rows of structured data with optional column labels — ideal for top-N lists, ranked items, status grids, recent activity. A ranked list can carry a quiet bar behind each row (`bar` on one cell, 0–100) so every row reads against the top one.
 
 In a setup file, this widget's `type` is `table` (see `references/setup-files.md`).
 
@@ -201,6 +201,13 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             },
             "link": {
               "type": "string",
+              "nullable": true
+            },
+            "bar": {
+              "maximum": 100,
+              "minimum": 0,
+              "type": "number",
+              "format": "double",
               "nullable": true
             }
           },
@@ -556,6 +563,101 @@ A leaderboard / top-N list of text values with one badge column for a status or 
 }
 ```
 
+### Ranked list with row bars
+
+A ranked breakdown (top pages, referrers, countries, customers) where the reader should see each row's size relative to the others at a glance — set `bar` on the cell holding the number, scaled so the top row is 100.
+
+```json
+{
+  "title": "Top pages",
+  "actions": [
+    {
+      "title": "View all pages",
+      "type": "link",
+      "url": "https://example.com/analytics/pages"
+    }
+  ],
+  "data": {
+    "columns": [
+      {
+        "text": "Page",
+        "width": 60
+      },
+      {
+        "text": "Visitors",
+        "width": 20
+      },
+      {
+        "text": "Views",
+        "width": 20
+      }
+    ],
+    "rows": [
+      [
+        {
+          "text": "/pricing"
+        },
+        {
+          "text": "2,480",
+          "bar": 100
+        },
+        {
+          "text": "3,915"
+        }
+      ],
+      [
+        {
+          "text": "/"
+        },
+        {
+          "text": "1,962",
+          "bar": 79.1
+        },
+        {
+          "text": "2,604"
+        }
+      ],
+      [
+        {
+          "text": "/docs/getting-started"
+        },
+        {
+          "text": "1,105",
+          "bar": 44.6
+        },
+        {
+          "text": "1,870"
+        }
+      ],
+      [
+        {
+          "text": "/blog/launch-week"
+        },
+        {
+          "text": "640",
+          "bar": 25.8
+        },
+        {
+          "text": "712"
+        }
+      ],
+      [
+        {
+          "text": "/changelog"
+        },
+        {
+          "text": "318",
+          "bar": 12.8
+        },
+        {
+          "text": "455"
+        }
+      ]
+    ]
+  }
+}
+```
+
 ### Status grid (coloured badges)
 
 A grid of services/checks where each row's badge colour communicates health.
@@ -814,3 +916,5 @@ All values are case-sensitive (`"Success"`, not `"success"`).
 - Using `imageUrl` for inline icons — it renders as an image; for badges use `badge`.
 - Returning `rows: []` when there is no data — `Rows` requires at least one row and an empty list is rejected. Return `200` with a single placeholder row saying so (e.g. `No customers yet`), padded with empty cells to match the column count.
 - Sending more than 6 header blocks — `header` and `headers` together may hold at most 6, one per pair of grid columns. Everything past the sixth is a validation error, not a silent truncation.
+- Sending a raw count in `bar` — it is a percentage of the row's width (0–100), not the value itself. Scale each row against your largest one (`value / max * 100`) so the top row fills the row and the rest read relative to it.
+- Setting `bar` on more than one cell in a row — the bar fills the whole row, so a row carries at most one. Put it on the cell holding the number it measures.

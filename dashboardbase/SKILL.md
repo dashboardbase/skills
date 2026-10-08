@@ -4,7 +4,7 @@ description: Use when creating a Dashboardbase dashboard end-to-end, or when bui
 license: MIT
 metadata:
   source-repo: dashboardbase-api
-  generated-at: "2026-09-22T06:27:43Z"
+  generated-at: "2026-10-08T11:12:35Z"
   api-version: "1.0.0"
   spec-version: "1.0"
 ---
@@ -193,7 +193,8 @@ Dashboards read dramatically better when every widget uses the styling surface t
 - **Reach for `headers` before you reach for another widget.** Every widget that takes a `header` also takes `headers` — an array of the same block, rendered as an equal-width strip above the content. `header` merges in front of it, so `header` plus `headers` may total at most **6**. Four numbers above one line chart is one endpoint and one widget, not four KPI tiles and four endpoints; it is usually the right shape when the numbers describe the same thing the chart plots. On a phone the strip wraps to two per row and the widget grows taller to fit.
 - **Color lives on badges and datasets, not in text.** `subtitle` renders as plain text; use `badge.color` with `ArrowUp` / `ArrowDown` for the colored accent, and per-dataset `color` to distinguish chart series.
 - **Echo the active date range in `header.subtitle`** when handling `?dateRange=` — it shows users their filter is applied.
-- **Turn off crowded axis labels.** LineChart and BarChart take `ticksX` / `ticksY`. Omitting them shows the labels, which is right for a short axis (roughly a dozen buckets or fewer). Past that — any daily series over 30 or 90 days — set `ticksX: false`: thirty rotated date strings crowd the axis and swamp the plot, and `header.subtitle` already tells the viewer the window.
+- **Keep axis labels on, and short.** LineChart and BarChart show the category labels by default; they stay level and thin themselves to fit, so a 30- or 90-day daily series reads fine. Send short labels (`"Sep 9"`, `"Mon"`, `"Jan"`), not timestamps. `ticksX: false` is for a sparkline-style tile with no room for an axis; `ticksY: true` adds value labels to the left.
+- **Leave the chart's look to the defaults.** A LineChart is filled, drawn with straight segments, shows dots only on a short series and carries faint value gridlines without being asked; a BarChart carries the same gridlines. `fill`, `smooth`, `points` and `grid` exist to opt out (or into curves) — omit them unless the developer asks for a different look.
 - **Add link `actions`** so a widget clicks through to the underlying tool (Stripe, your admin, a runbook).
 - **Design for the big screen too.** A dashboard can be shown on a wall-mounted TV (paired as a display device) and viewed from across a room. Nothing extra to build — a TV renders the same widget endpoints — but the styling above is exactly what makes it read at a distance: large headline numbers, high-contrast badges, and an echoed date range beat dense tables and tiny labels on a 55" screen.
 
@@ -340,4 +341,4 @@ Each has its own reference file under `references/` — see the filename list ab
 
 ---
 
-*Skill generated at `2026-09-22T06:27:43Z` from the Dashboardbase API contract.*
+*Skill generated at `2026-10-08T11:12:35Z` from the Dashboardbase API contract.*

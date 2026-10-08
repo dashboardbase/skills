@@ -295,6 +295,18 @@
         "additionalProperties": false
       },
       "nullable": true
+    },
+    "smooth": {
+      "type": "boolean",
+      "nullable": true
+    },
+    "points": {
+      "type": "boolean",
+      "nullable": true
+    },
+    "grid": {
+      "type": "boolean",
+      "nullable": true
     }
   },
   "additionalProperties": false
