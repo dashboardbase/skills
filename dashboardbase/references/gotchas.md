@@ -91,9 +91,8 @@ When one endpoint serves several widgets via `?widget=<slug>`, a widget that ren
 
 ## 16. The chart is correct but the widget looks broken
 
-A time-series widget that returns valid, accurate data can still render as an empty box with a crowd of
-rotated date labels along the bottom. Three independent omissions compound into it, and all three are
-worth fixing together:
+A time-series widget that returns valid, accurate data can still render as an empty box with no
+context. Three independent omissions compound into it, and all three are worth fixing together:
 
 - **No `header`.** The widget has no headline and no context line, so there is nothing to read when the
   plot itself is flat. LineChart and BarChart should always carry one — see "Make it look good" in
@@ -102,8 +101,9 @@ worth fixing together:
   line sits on the baseline and is easy to miss. Keep returning the zero-filled series — it is the
   honest answer — and let the `header` carry the meaning: `title` = `"0"`, `subtitle` = the window.
   Do not switch to `204` — it errors the widget; see gotcha 8.
-- **Dense axis ticks.** Thirty daily labels rotated 45° eat a third of the tile and swamp the plot. Set
-  `ticksX: false` past roughly a dozen buckets; `header.subtitle` already states the window.
+- **No readable axis.** `ticksX: false`, or labels sent as full timestamps, leaves a trend with no dates
+  under it. Keep `ticksX` on (the default) and send short labels — `"Sep 9"`, not
+  `"2026-09-09T00:00:00Z"`. The labels stay level and thin themselves to fit a long series.
 
-A widget with a header reading "0" over "Last 30 days" and a clean axis says "nothing happened,
+A widget with a header reading "0" over "Last 30 days" and a dated axis says "nothing happened,
 and we know it". The same endpoint without those three says "this is broken".
