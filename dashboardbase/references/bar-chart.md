@@ -317,6 +317,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
         "additionalProperties": false
       },
       "nullable": true
+    },
+    "grid": {
+      "type": "boolean",
+      "nullable": true
     }
   },
   "additionalProperties": false
@@ -832,5 +836,6 @@ All values are case-sensitive (`"Success"`, not `"success"`).
 - Setting `color` inside `data` items when you meant the whole series — series color goes on the dataset.
 - Wanting horizontal bars? Set `indexAxis` to `y` — do not look for a separate horizontal-bar widget type.
 - Returning `204` (or an empty series) for a period with no activity — emit every bucket in the window with `{ "value": 0 }` instead. Flat zero bars are the honest answer and read as intentional; a blank widget reads as broken.
-- Leaving axis ticks on for a long daily series — thirty rotated date labels crowd the axis and swamp the plot. Set `ticksX: false` past roughly a dozen buckets and let `header.subtitle` carry the window ("Last 30 days").
+- Turning `ticksX` off for a long daily series — the labels stay level and thin themselves to fit, so thirty or ninety dates read fine. Leave them on and keep each label short (`"Sep 9"`, not `"2026-09-09T00:00:00Z"`); the dates are what make the trend readable.
+- Setting `grid` just to make the chart look finished — omit it. Faint value gridlines are the default; `grid: false` only exists to switch them off.
 - Sending more than 6 header blocks — `header` and `headers` together may hold at most 6, one per pair of grid columns. Everything past the sixth is a validation error, not a silent truncation.

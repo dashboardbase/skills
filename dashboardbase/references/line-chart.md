@@ -310,6 +310,18 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
         "additionalProperties": false
       },
       "nullable": true
+    },
+    "smooth": {
+      "type": "boolean",
+      "nullable": true
+    },
+    "points": {
+      "type": "boolean",
+      "nullable": true
+    },
+    "grid": {
+      "type": "boolean",
+      "nullable": true
     }
   },
   "additionalProperties": false
@@ -431,7 +443,7 @@ rejected.
 
 ## Multiple series
 
-The canonical example shows a single dataset because colors and multi-series are optional. To draw multiple lines, pass several entries in `datasets`; each has its own `label` and an optional `color`. `labels` is shared across all datasets. Set `fill: true` to fill the area beneath each line.
+The canonical example shows a single dataset because colors and multi-series are optional. To draw multiple lines, pass several entries in `datasets`; each has its own `label` and an optional `color`. `labels` is shared across all datasets. The area beneath each line is filled by default; set `fill: false` for bare lines.
 
 ```json
 {
@@ -843,9 +855,10 @@ All values are case-sensitive (`"Success"`, not `"success"`).
 
 ## Common mistakes
 
-- Treating `labels` as datetime stamps — Dashboardbase renders them as opaque strings; format them upstream (e.g. `'2026-05-19'` or `'Mon'`).
+- Sending `labels` as timestamps (`'2026-05-19T00:00:00Z'`) — labels are shown as sent, except that a set made entirely of plain `YYYY-MM-DD` dates is shortened to `'May 19'`. Send plain dates or your own short text (`'Mon'`, `'May 19'`).
 - Sending uneven dataset lengths — every dataset's `data` length should match `labels`.
 - Returning `null` between values to indicate a gap — Dashboardbase expects every index to have a `{ "value": <number> }` entry.
 - Returning `204` (or an empty series) for a period with no activity — emit every bucket in the window with `{ "value": 0 }` instead. A flat zero line is the honest answer and reads as intentional; a blank widget reads as broken.
-- Leaving axis ticks on for a long daily series — thirty rotated date labels crowd the axis and swamp the plot. Set `ticksX: false` past roughly a dozen buckets and let `header.subtitle` carry the window ("Last 30 days").
+- Turning `ticksX` off for a long daily series — the labels stay level and thin themselves to fit, so thirty or ninety dates read fine. Leave them on and keep each label short (`"Sep 9"`, not `"2026-09-09T00:00:00Z"`); the dates are what make the trend readable.
+- Setting `fill`, `grid` or `points` just to make the chart look finished — omit them. The defaults (filled area, faint value gridlines, dots only on short series, straight segments) are the designed look; the fields exist only to switch an effect off (`fill: false`, `grid: false`, `points: false`) or to ask for curves (`smooth: true`).
 - Sending more than 6 header blocks — `header` and `headers` together may hold at most 6, one per pair of grid columns. Everything past the sixth is a validation error, not a silent truncation.

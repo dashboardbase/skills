@@ -302,6 +302,10 @@
         "additionalProperties": false
       },
       "nullable": true
+    },
+    "grid": {
+      "type": "boolean",
+      "nullable": true
     }
   },
   "additionalProperties": false
