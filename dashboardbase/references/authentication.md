@@ -28,14 +28,17 @@ Each method below is written the same way — what arrives, when to use it, how 
 > twice the surface to get subtly wrong, and a signature check that fails does so silently and closed:
 > you get a `401` with no explanation, and it will look like our bug rather than yours.
 
-> **You need your workspace's public key.** A plan or issue generated from Dashboardbase already
-> contains it — look for "Verification key" in the Security section and use that. Working without one?
-> Ask for the key itself: it is shown at **app.dashboardbase.com/workspace**, ready to copy, and can
-> also be printed with `curl https://api.dashboardbase.com/keys/<workspace-id>.pem`. Either way you want
-> the three-line `-----BEGIN PUBLIC KEY-----` block, not an id.
+> **You need your workspace's public key — ask for it before writing the verification code.** A plan or
+> issue generated from Dashboardbase already contains it: look for "Verification key" in the Security
+> section and use that. Working without one? Ask the user to paste it, in these words or close to them:
 >
-> Get it before writing the verification code. Scaffolding around a placeholder produces something that
-> cannot verify, and the failure is a silent `401`.
+> *"Paste your workspace's public key: in Dashboardbase, open **Workspace → Secrets → Signing Key**
+> (app.dashboardbase.com/workspace) and press the copy button next to **Public key**. The **Public key
+> URL** below it works too."*
+>
+> Whatever comes back, run it through "Accepting a pasted key" below before it goes into code.
+> Scaffolding around a placeholder produces something that cannot verify, and the failure is a silent
+> `401`.
 
 **What Dashboardbase sends.** Every request carries two extra headers, whether or not the datasource
 has any credentials configured:
@@ -76,7 +79,8 @@ e.g.  GET|https://your-api.example.com/widgets/mrr|1754812800
 and be done — the Endpoint Secret is a few lines shorter to write and needs no key file.
 
 **Verify it.** A plan or issue generated from Dashboardbase already contains your workspace's public
-key — paste it straight into the constant below. Working without one? Print it and copy the output:
+key — paste it straight into the constant below. Working without one? Use the key the user pasted from
+the workspace page, or print it and copy the output:
 
 ```bash
 curl https://api.dashboardbase.com/keys/<workspace-id>.pem
@@ -148,11 +152,34 @@ Endpoint Secret.
 datasource editor. It sends one correctly signed request and one with a deliberately broken signature,
 and tells you whether your endpoint accepted the right one and rejected the wrong one.
 
+### Accepting a pasted key
+
+The copy button on the workspace page hands over the exact three-line block, but a chat box, a terminal
+or a ticket can mangle it on the way, and the same Secrets section holds other values a user can grab by
+mistake. Normalise and check what arrives before it goes into code — a wrong or malformed key is not an
+error you will see, it is a `401` on every poll.
+
+| What was pasted | Recognise it by | Do this |
+| --- | --- | --- |
+| **The PEM block, intact** | `-----BEGIN PUBLIC KEY-----`, one line of base64, `-----END PUBLIC KEY-----` | Use it as is |
+| **The PEM block on one line** | The same, with spaces where the line breaks were | Rebuild the three lines. Node's `createPublicKey` and Python's `load_pem_public_key` both reject a one-line PEM |
+| **The key body alone** | 60 characters of base64 starting `MCowBQYDK2VwAyEA` | Wrap it in the `BEGIN` / `END` lines |
+| **The Public key URL** | `https://api.dashboardbase.com/keys/org_….pem` | Fetch it (`curl -fsS <url>`) and use the response |
+| **The workspace id** | `org_…` | Fetch `https://api.dashboardbase.com/keys/<workspace-id>.pem` |
+| **The Endpoint Secret** | `dbb_` followed by 40 letters and digits | **Not the key — and a secret.** Do not write it into code or repeat it back. Ask whether they would rather verify the Endpoint Secret instead (see "Endpoint Secret" below); if not, ask again for the **Public key** |
+| **Anything else** — the Webhook ID or secret, a private key | Does not match a row above | Not the key. Say which value it looks like and ask again for the **Public key** under Signing Key. A `PRIVATE KEY` block is never ours to hold: Dashboardbase keeps the private half |
+
+Before the key goes in, strip whatever wrapped it on the way — surrounding quotes or backticks, literal
+`\n` escapes, a leading `>` from a quoted reply — and check that what is left is exactly one line of 60
+base64 characters between the `BEGIN` and `END` lines, starting `MCowBQYDK2VwAyEA`. Every Ed25519
+public key in this format starts with that prefix, so a body that does not is not the signing key.
+
 ### Rotating the signing key
 
 1. Rotate in the workspace settings. Dashboardbase immediately starts signing with the new key and
    keeps sending a signature from the old one in `x-dashboardbase-signature-previous` for **24 hours**.
-2. Re-fetch `/keys/<workspace-id>.pem` and replace the constant, any time inside that window. You only
+2. Copy the new key from **Workspace → Secrets → Signing Key** (or re-fetch `/keys/<workspace-id>.pem`)
+   and replace the constant, any time inside that window. You only
    ever need the one key: while the window is open we send a signature from the new key *and* one from
    the old, and the verifier above checks both — so whichever key you are holding, requests verify.
 3. After 24 hours only the new key is used.
@@ -193,6 +220,11 @@ function verifyDashboardbase(req, res, next) {
 - **Accept either header.** During a rotation Dashboardbase sends the new value in `x-dashboardbase-secret` and the old one in `x-dashboardbase-secret-previous`. Checking both is what lets you redeploy at your own pace.
 - Return `401 Unauthorized` on mismatch; **do not redirect** (HTTP redirects on auth failure break the poll).
 - Read it from the environment. Never commit it, and never log it.
+- **If the user pastes the value to you** (it starts `dbb_`, and is copied from **Workspace → Secrets →
+  Endpoint Secret**), write it where the endpoint already reads its environment — the hosting platform's
+  secret settings, the secret manager, or a local `.env` that you have confirmed is in `.gitignore`.
+  Never inline it in code the way the public key is inlined, never repeat it back, and never put it in
+  the setup file.
 
 **Configure on the datasource.** Nothing at all. This is the whole point of the method — there is no datasource field to fill in, and adding one changes nothing about what arrives.
 

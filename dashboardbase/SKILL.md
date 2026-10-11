@@ -183,7 +183,7 @@ Verify it:
 curl https://your-api.example.com/widgets/mrr
 ```
 
-Connect it in Dashboardbase: create a KPI widget, point it at this URL and save — no headers to configure, the signature is sent automatically. Commit your workspace's public key from app.dashboardbase.com/workspace. See `references/quickstart.md` for the full walkthrough including a Table widget.
+Connect it in Dashboardbase: create a KPI widget, point it at this URL and save — no headers to configure, the signature is sent automatically. The `KEY` constant needs your workspace's public key: ask the user to paste it from **Workspace → Secrets → Signing Key** (app.dashboardbase.com/workspace) before you write the verifier, and check what they paste per `references/authentication.md` → "Accepting a pasted key". See `references/quickstart.md` for the full walkthrough including a Table widget.
 
 ## Make it look good
 
@@ -235,7 +235,7 @@ The widget reference filenames are: `bar-chart.md`, `clock.md`, `contributions-g
 - **Know what the widget exposes.** Before settling on an auth method, state in one line what the endpoint actually returns. A widget serving personal data — names, email addresses, customer records — or anything else the project would not publish deserves a deliberate decision rather than the default, so call it out to the user; the project's own `SECURITY.md` may describe the feed as aggregate-only.
 - **An existing convention beats the recommended default.** Where the project already checks a particular auth header on its other widget endpoints, or already uses a route prefix or folder layout, reuse it and ask "reuse X?" rather than offering the menu below.
 - **Alerting needs a toggle you cannot set from code.** An `alert` in the envelope renders and feeds notifications only once the user enables alerts on that widget in the dashboard editor, on a published dashboard. Returning `alert` is never enough on its own — tell the user to switch it on.
-- **Recommended auth:** verify the Ed25519 signature. Dashboardbase signs every request with your workspace's key and sends `x-dashboardbase-timestamp` and `x-dashboardbase-signature` — you verify against a public key committed to the repo, so there is no secret to hold and nothing to configure on the datasource. Prefer the Endpoint Secret instead if one environment variable suits you better; implement exactly one. API key and basic auth still work and are sent in addition. See `references/authentication.md`.
+- **Recommended auth:** verify the Ed25519 signature. Dashboardbase signs every request with your workspace's key and sends `x-dashboardbase-timestamp` and `x-dashboardbase-signature` — you verify against a public key committed to the repo, so there is no secret to hold and nothing to configure on the datasource. **Get the key before writing the verifier:** a generated plan or issue already carries it; otherwise ask the user to paste it from **Workspace → Secrets → Signing Key** (app.dashboardbase.com/workspace), and normalise what arrives per `references/authentication.md` → "Accepting a pasted key" — never scaffold around a placeholder. Prefer the Endpoint Secret instead if one environment variable suits you better; implement exactly one. API key and basic auth still work and are sent in addition. See `references/authentication.md`.
 
 ## Validation loop — before declaring done
 
