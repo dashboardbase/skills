@@ -306,6 +306,25 @@
     "grid": {
       "type": "boolean",
       "nullable": true
+    },
+    "target": {
+      "required": [
+        "value"
+      ],
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "number",
+          "format": "double"
+        },
+        "label": {
+          "maxLength": 40,
+          "type": "string",
+          "nullable": true
+        }
+      },
+      "additionalProperties": false,
+      "nullable": true
     }
   },
   "additionalProperties": false

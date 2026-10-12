@@ -4,7 +4,7 @@ description: Use when creating a Dashboardbase dashboard end-to-end, or when bui
 license: MIT
 metadata:
   source-repo: dashboardbase-api
-  generated-at: "2026-10-08T11:12:35Z"
+  generated-at: "2026-10-12T16:21:56Z"
   api-version: "1.0.0"
   spec-version: "1.0"
 ---
@@ -183,7 +183,7 @@ Verify it:
 curl https://your-api.example.com/widgets/mrr
 ```
 
-Connect it in Dashboardbase: create a KPI widget, point it at this URL and save — no headers to configure, the signature is sent automatically. Commit your workspace's public key from app.dashboardbase.com/workspace. See `references/quickstart.md` for the full walkthrough including a Table widget.
+Connect it in Dashboardbase: create a KPI widget, point it at this URL and save — no headers to configure, the signature is sent automatically. The `KEY` constant needs your workspace's public key: ask the user to paste it from **Workspace → Secrets → Signing Key** (app.dashboardbase.com/workspace) before you write the verifier, and check what they paste per `references/authentication.md` → "Accepting a pasted key". See `references/quickstart.md` for the full walkthrough including a Table widget.
 
 ## Make it look good
 
@@ -195,6 +195,8 @@ Dashboards read dramatically better when every widget uses the styling surface t
 - **Echo the active date range in `header.subtitle`** when handling `?dateRange=` — it shows users their filter is applied.
 - **Keep axis labels on, and short.** LineChart and BarChart show the category labels by default; they stay level and thin themselves to fit, so a 30- or 90-day daily series reads fine. Send short labels (`"Sep 9"`, `"Mon"`, `"Jan"`), not timestamps. `ticksX: false` is for a sparkline-style tile with no room for an axis; `ticksY: true` adds value labels to the left.
 - **Leave the chart's look to the defaults.** A LineChart is filled, drawn with straight segments, shows dots only on a short series and carries faint value gridlines without being asked; a BarChart carries the same gridlines. `fill`, `smooth`, `points` and `grid` exist to opt out (or into curves) — omit them unless the developer asks for a different look.
+- **Give a KPI its recent shape with `trend`** when the endpoint has the readings anyway: a plain array of numbers, oldest first, ending with the headline value. It draws a sparkline beside the number where the tile has room and is left out where it doesn't — never move a number into a chart to get one.
+- **Show a goal or a baseline as data, not decoration.** A goal, quota, budget or SLA goes in `target: { "value": 50000, "label": "Q3 goal" }` on a LineChart or BarChart — one labelled line the axis always stretches to include. A previous period on a LineChart is an extra dataset with `"style": "Comparison"` (a dashed grey line behind the current one, compared in the tooltip). Send either only when the goal asks for it; never fake one with a flat or duplicate series.
 - **Add link `actions`** so a widget clicks through to the underlying tool (Stripe, your admin, a runbook).
 - **Design for the big screen too.** A dashboard can be shown on a wall-mounted TV (paired as a display device) and viewed from across a room. Nothing extra to build — a TV renders the same widget endpoints — but the styling above is exactly what makes it read at a distance: large headline numbers, high-contrast badges, and an echoed date range beat dense tables and tiny labels on a 55" screen.
 
@@ -235,7 +237,7 @@ The widget reference filenames are: `bar-chart.md`, `clock.md`, `contributions-g
 - **Know what the widget exposes.** Before settling on an auth method, state in one line what the endpoint actually returns. A widget serving personal data — names, email addresses, customer records — or anything else the project would not publish deserves a deliberate decision rather than the default, so call it out to the user; the project's own `SECURITY.md` may describe the feed as aggregate-only.
 - **An existing convention beats the recommended default.** Where the project already checks a particular auth header on its other widget endpoints, or already uses a route prefix or folder layout, reuse it and ask "reuse X?" rather than offering the menu below.
 - **Alerting needs a toggle you cannot set from code.** An `alert` in the envelope renders and feeds notifications only once the user enables alerts on that widget in the dashboard editor, on a published dashboard. Returning `alert` is never enough on its own — tell the user to switch it on.
-- **Recommended auth:** verify the Ed25519 signature. Dashboardbase signs every request with your workspace's key and sends `x-dashboardbase-timestamp` and `x-dashboardbase-signature` — you verify against a public key committed to the repo, so there is no secret to hold and nothing to configure on the datasource. Prefer the Endpoint Secret instead if one environment variable suits you better; implement exactly one. API key and basic auth still work and are sent in addition. See `references/authentication.md`.
+- **Recommended auth:** verify the Ed25519 signature. Dashboardbase signs every request with your workspace's key and sends `x-dashboardbase-timestamp` and `x-dashboardbase-signature` — you verify against a public key committed to the repo, so there is no secret to hold and nothing to configure on the datasource. **Get the key before writing the verifier:** a generated plan or issue already carries it; otherwise ask the user to paste it from **Workspace → Secrets → Signing Key** (app.dashboardbase.com/workspace), and normalise what arrives per `references/authentication.md` → "Accepting a pasted key" — never scaffold around a placeholder. Prefer the Endpoint Secret instead if one environment variable suits you better; implement exactly one. API key and basic auth still work and are sent in addition. See `references/authentication.md`.
 
 ## Validation loop — before declaring done
 
@@ -341,4 +343,4 @@ Each has its own reference file under `references/` — see the filename list ab
 
 ---
 
-*Skill generated at `2026-10-08T11:12:35Z` from the Dashboardbase API contract.*
+*Skill generated at `2026-10-12T16:21:56Z` from the Dashboardbase API contract.*

@@ -239,6 +239,16 @@
         "additionalProperties": false
       },
       "nullable": true
+    },
+    "trend": {
+      "maxItems": 120,
+      "minItems": 2,
+      "type": "array",
+      "items": {
+        "type": "number",
+        "format": "double"
+      },
+      "nullable": true
     }
   },
   "additionalProperties": false

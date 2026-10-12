@@ -321,6 +321,25 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
     "grid": {
       "type": "boolean",
       "nullable": true
+    },
+    "target": {
+      "required": [
+        "value"
+      ],
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "number",
+          "format": "double"
+        },
+        "label": {
+          "maxLength": 40,
+          "type": "string",
+          "nullable": true
+        }
+      },
+      "additionalProperties": false,
+      "nullable": true
     }
   },
   "additionalProperties": false
@@ -470,6 +489,16 @@ The canonical example shows two datasets ("Series A" and "Series B") with no exp
     { "label": "Series A", "color": "Blue", "data": [{"value": 65}, {"value": 59}] },
     { "label": "Series B", "color": "Green", "data": [{"value": 28}, {"value": 48}] }
   ]
+}
+```
+
+**Mark a goal or quota** with `target`: a labelled line across the bars at that value (a vertical line when `indexAxis` is `y`), which the value axis always stretches to include.
+
+```json
+{
+  "labels": ["Alice", "Bob", "Chen"],
+  "datasets": [{ "label": "Deals closed", "data": [{"value": 14}, {"value": 9}, {"value": 12}] }],
+  "target": { "value": 12, "label": "Quota" }
 }
 ```
 
@@ -813,6 +842,66 @@ A wide chart that should also carry the board's summary row — up to six headli
 }
 ```
 
+### Comparison against a quota
+
+Categories measured against one shared goal — deals per rep against quota, tickets per agent against an SLA.
+
+```json
+{
+  "title": "Deals closed",
+  "actions": [
+    {
+      "title": "Open pipeline",
+      "type": "link",
+      "url": "https://example.com/pipeline"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "58",
+      "subtitle": "This quarter",
+      "badge": {
+        "text": "3 of 5 at quota",
+        "color": "Success"
+      }
+    },
+    "labels": [
+      "Alice",
+      "Bob",
+      "Chen",
+      "Dana",
+      "Eli"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 14
+          },
+          {
+            "value": 9
+          },
+          {
+            "value": 12
+          },
+          {
+            "value": 15
+          },
+          {
+            "value": 8
+          }
+        ],
+        "label": "Deals"
+      }
+    ],
+    "target": {
+      "value": 12,
+      "label": "Quota"
+    }
+  }
+}
+```
+
 ## Validation
 
 The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate the response. If the `validate_widget_response` tool is available, call it with the full response body — that checks against the live contract. Otherwise validate the response's `data` field against `assets/schemas/bar-chart.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
@@ -838,4 +927,5 @@ All values are case-sensitive (`"Success"`, not `"success"`).
 - Returning `204` (or an empty series) for a period with no activity — emit every bucket in the window with `{ "value": 0 }` instead. Flat zero bars are the honest answer and read as intentional; a blank widget reads as broken.
 - Turning `ticksX` off for a long daily series — the labels stay level and thin themselves to fit, so thirty or ninety dates read fine. Leave them on and keep each label short (`"Sep 9"`, not `"2026-09-09T00:00:00Z"`); the dates are what make the trend readable.
 - Setting `grid` just to make the chart look finished — omit it. Faint value gridlines are the default; `grid: false` only exists to switch them off.
+- Drawing a goal as an extra dataset of identical bars — send `target: { "value": 12, "label": "Quota" }` instead. It draws one labelled line across every bar and keeps it in view even when no bar reaches it.
 - Sending more than 6 header blocks — `header` and `headers` together may hold at most 6, one per pair of grid columns. Everything past the sixth is a validation error, not a silent truncation.

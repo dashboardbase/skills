@@ -193,6 +193,14 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             ],
             "type": "string",
             "nullable": true
+          },
+          "style": {
+            "enum": [
+              "Solid",
+              "Comparison"
+            ],
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -321,6 +329,25 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
     },
     "grid": {
       "type": "boolean",
+      "nullable": true
+    },
+    "target": {
+      "required": [
+        "value"
+      ],
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "number",
+          "format": "double"
+        },
+        "label": {
+          "maxLength": 40,
+          "type": "string",
+          "nullable": true
+        }
+      },
+      "additionalProperties": false,
       "nullable": true
     }
   },
@@ -452,6 +479,28 @@ The canonical example shows a single dataset because colors and multi-series are
     { "label": "Page Views", "color": "Blue", "data": [{"value": 100}, {"value": 120}] },
     { "label": "Unique Visitors", "color": "Green", "data": [{"value": 40}, {"value": 55}] }
   ]
+}
+```
+
+**Compare with a previous period** by adding the earlier series with `style: "Comparison"`. It is drawn as a dashed grey line behind the others — no fill, no dots — and the tooltip shows the change against it ("▲ 12% vs Last week"). Give it a label that names the period, and the same number of points as `labels`.
+
+```json
+{
+  "labels": ["Mon", "Tue", "Wed"],
+  "datasets": [
+    { "label": "This week", "data": [{"value": 120}, {"value": 150}, {"value": 170}] },
+    { "label": "Last week", "style": "Comparison", "data": [{"value": 100}, {"value": 130}, {"value": 140}] }
+  ]
+}
+```
+
+**Mark a goal** with `target`: a labelled line across the chart at that value, which the value axis always stretches to include.
+
+```json
+{
+  "labels": ["Jul", "Aug", "Sep"],
+  "datasets": [{ "label": "MRR", "data": [{"value": 41000, "prefix": "$"}, {"value": 44500, "prefix": "$"}, {"value": 47200, "prefix": "$"}] }],
+  "target": { "value": 50000, "label": "Q3 goal" }
 }
 ```
 
@@ -837,6 +886,169 @@ One endpoint should carry several headline numbers above a single trend — visi
 }
 ```
 
+### This period vs the last one
+
+A trend that should be read against the same window before it — this week vs last week, this year vs last year.
+
+```json
+{
+  "title": "Signups",
+  "actions": [
+    {
+      "title": "Open funnel",
+      "type": "link",
+      "url": "https://example.com/signups"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "1,234",
+      "subtitle": "This week",
+      "badge": {
+        "text": "+18%",
+        "icon": "ArrowUp",
+        "color": "Success"
+      }
+    },
+    "labels": [
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sat",
+      "Sun"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 142
+          },
+          {
+            "value": 168
+          },
+          {
+            "value": 181
+          },
+          {
+            "value": 176
+          },
+          {
+            "value": 204
+          },
+          {
+            "value": 186
+          },
+          {
+            "value": 177
+          }
+        ],
+        "label": "This week"
+      },
+      {
+        "data": [
+          {
+            "value": 128
+          },
+          {
+            "value": 139
+          },
+          {
+            "value": 150
+          },
+          {
+            "value": 161
+          },
+          {
+            "value": 158
+          },
+          {
+            "value": 150
+          },
+          {
+            "value": 160
+          }
+        ],
+        "label": "Last week",
+        "style": "Comparison"
+      }
+    ]
+  }
+}
+```
+
+### Trend toward a target
+
+A metric tracked against a goal, quota or budget — MRR toward this quarter's target, spend against a monthly budget.
+
+```json
+{
+  "title": "MRR",
+  "actions": [
+    {
+      "title": "Open billing",
+      "type": "link",
+      "url": "https://example.com/billing"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "$47,200",
+      "subtitle": "Toward the $50k Q3 goal",
+      "badge": {
+        "text": "+6.1%",
+        "icon": "ArrowUp",
+        "color": "Success"
+      }
+    },
+    "labels": [
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 36800,
+            "prefix": "$"
+          },
+          {
+            "value": 38900,
+            "prefix": "$"
+          },
+          {
+            "value": 41000,
+            "prefix": "$"
+          },
+          {
+            "value": 42700,
+            "prefix": "$"
+          },
+          {
+            "value": 44500,
+            "prefix": "$"
+          },
+          {
+            "value": 47200,
+            "prefix": "$"
+          }
+        ],
+        "label": "MRR"
+      }
+    ],
+    "target": {
+      "value": 50000,
+      "label": "Q3 goal"
+    }
+  }
+}
+```
+
 ## Validation
 
 The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate the response. If the `validate_widget_response` tool is available, call it with the full response body — that checks against the live contract. Otherwise validate the response's `data` field against `assets/schemas/line-chart.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
@@ -861,4 +1073,6 @@ All values are case-sensitive (`"Success"`, not `"success"`).
 - Returning `204` (or an empty series) for a period with no activity — emit every bucket in the window with `{ "value": 0 }` instead. A flat zero line is the honest answer and reads as intentional; a blank widget reads as broken.
 - Turning `ticksX` off for a long daily series — the labels stay level and thin themselves to fit, so thirty or ninety dates read fine. Leave them on and keep each label short (`"Sep 9"`, not `"2026-09-09T00:00:00Z"`); the dates are what make the trend readable.
 - Setting `fill`, `grid` or `points` just to make the chart look finished — omit them. The defaults (filled area, faint value gridlines, dots only on short series, straight segments) are the designed look; the fields exist only to switch an effect off (`fill: false`, `grid: false`, `points: false`) or to ask for curves (`smooth: true`).
+- Sending a previous period as an ordinary second series — set `style: "Comparison"` on it so it reads as the baseline (a dashed grey ghost) rather than a competing line, and label it with the period (`"Last week"`, `"2025"`).
+- Using a flat second series, or a header block, to show a goal — send `target: { "value": 50000, "label": "Q3 goal" }` instead. It draws one labelled line and keeps it on the chart even when every reading is below it.
 - Sending more than 6 header blocks — `header` and `headers` together may hold at most 6, one per pair of grid columns. Everything past the sixth is a validation error, not a silent truncation.
