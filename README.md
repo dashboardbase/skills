@@ -6,300 +6,131 @@
   </picture>
 </p>
 
-<h1 align="center">dashboardbase MCP</h1>
+<h1 align="center">dashboardbase Skill</h1>
 
 <p align="center">
-  <strong>Stop guessing whether your dashboard JSON is right. Ask.</strong>
+  <strong>Turn your backend into dashboards — no frontend required.</strong>
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/@dashboardbase/mcp"><img src="https://img.shields.io/npm/v/@dashboardbase/mcp?color=2563eb" alt="npm version"></a>
-  <a href="https://registry.modelcontextprotocol.io"><img src="https://img.shields.io/badge/MCP%20Registry-com.dashboardbase%2Fmcp-2563eb" alt="MCP Registry"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-22c55e" alt="MIT License"></a>
+  <a href="https://skills.sh/dashboardbase/skills"><img src="https://skills.sh/b/dashboardbase/skills" alt="skills.sh install count"></a>
+  <a href="https://agentskills.io"><img src="https://img.shields.io/badge/Agent%20Skills-compatible-2563eb" alt="Agent Skills compatible"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-free%20to%20use%2C%20not%20open%20source-6b7280" alt="License: free to use, not open source"></a>
   <a href="https://www.dashboardbase.com"><img src="https://img.shields.io/badge/dashboardbase.com-0a0a0a" alt="dashboardbase"></a>
 </p>
 
-This is the official [MCP server](https://modelcontextprotocol.io) for [dashboardbase](https://www.dashboardbase.com). Add it to your AI tool and it can check a widget endpoint's response — or a whole dashboard setup file — against the contract dashboardbase actually enforces, before you ever open the app.
+This is the official [Agent Skill](https://agentskills.io) for [dashboardbase](https://www.dashboardbase.com). Add it to your AI tool (Claude Code, Cursor, or any skills-compatible agent) and it will scaffold API endpoints that return data correctly shaped for dashboardbase widgets — KPIs, charts, tables, gauges, and more — on the first try.
 
-> The [dashboardbase skill](https://github.com/dashboardbase/skills) teaches your agent the JSON contract. This MCP lets it **check its own work**. Use both: the skill gets the shape right, the MCP proves it.
+> Generating a dashboard takes 5 minutes. Owning one takes forever. dashboardbase hosts, renders, and ships your dashboards to mobile. This skill teaches your AI tool the JSON contract so the endpoints are right the first time.
 
 ---
 
-## What this MCP does
+## What this skill does
 
-It gives your agent three tools:
+When this skill is active, your AI agent knows:
 
-| Tool | What it checks |
-| --- | --- |
-| `validate_setup_file` | A dashboardbase setup file — the JSON that provisions a whole dashboard's widgets and datasources. Reports errors and warnings with the field, line and column. |
-| `validate_widget_response` | The JSON body a widget endpoint returns, against the widget contract. Reports the path and message for each problem. |
-| `create_setup_link` | Uploads a finished setup file and returns a link that opens straight into its import preview — only when you ask for one. Refuses a file carrying credentials and lists the offending fields. |
+- **The JSON response contract** — the `title` / `actions` / `data` / `alert` envelope every endpoint returns.
+- **Per-widget schemas** — exactly what shape each of the 14 widgets expects: KPI, Line Chart, Bar Chart, Pie Chart, Donut Chart, Gauge Chart, Table, Status, Progress List, Contributions Grid, Text, Clock, Countdown and Image.
+- **Authentication** — verifying the Ed25519 signature dashboardbase sends on every request (recommended: nothing to configure, no secret to hold), the Endpoint Secret, API keys and Basic Auth — and how to change methods on a live endpoint without breaking it.
+- **Error handling** — status codes, the `dateRange` query parameter, and how widgets degrade gracefully.
+- **Alerts and events** — the `alert` object that turns a widget red and sends notifications, and the payload for pushing real-time events to a live dashboard.
+- **Setup files** — the declarative JSON format that provisions an entire dashboard's widgets and datasources in one drop, plus recommended layouts and a one-call import link to hand the finished dashboard over.
 
-All three call the public dashboardbase tools API. **No account, no API key, nothing to configure.**
+Ask your agent _"build a dashboardbase KPI endpoint for monthly revenue in Node"_ and you get a working, correctly-shaped endpoint — not a guess.
 
 ## Before / after
 
-**Without it** — your agent writes an endpoint, you deploy it, you wire it into dashboardbase, the widget shows an error, you go read the docs, you fix it, you deploy again.
+**Without the skill** — your agent invents a JSON shape, you paste it into dashboardbase, the widget shows an error, you go read the docs, you fix it, repeat.
 
-**With it** — your agent writes the endpoint, validates the response, fixes the two things that were wrong, and hands you something that renders the first time.
-
-```
-Invalid setup file — 2 errors, 1 warning
-
-  mappings[0].type  14:9  Unknown widget type "guage"
-  mappings[1].path  22:5  Path must start with "/"
-
-  warning  mappings[2]  No refreshInterval set
-```
+**With the skill** — your agent returns the exact contract, the widget renders live data immediately.
 
 ---
 
 ## Install
 
-### Claude Code
+### Recommended: one command
 
 ```bash
-claude mcp add dashboardbase -- npx -y @dashboardbase/mcp
+npx skills add dashboardbase/skills
 ```
 
-### One click
+This installs the skill into the correct directory for your agent (Claude Code, Cursor, and [70+ others](https://github.com/vercel-labs/skills#supported-agents)) and keeps it up to date. Pick a specific agent with `--agent`, e.g. `npx skills add dashboardbase/skills --agent claude-code`. See [skills](https://github.com/vercel-labs/skills) / [skills.sh](https://skills.sh) for details.
 
-<a href="https://insiders.vscode.dev/redirect/mcp/install?name=dashboardbase&config=%7B%22name%22%3A%22dashboardbase%22%2C%22type%22%3A%22stdio%22%2C%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22%40dashboardbase%2Fmcp%22%5D%7D"><img src="https://img.shields.io/badge/VS_Code-Install-0098FF?logo=visualstudiocode&logoColor=white" alt="Install in VS Code"></a>
-<a href="cursor://anysphere.cursor-deeplink/mcp/install?name=dashboardbase&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyIteSIsIkBkYXNoYm9hcmRiYXNlL21jcCJdfQ=="><img src="https://img.shields.io/badge/Cursor-Install-000000?logo=cursor&logoColor=white" alt="Install in Cursor"></a>
+> The skill lives in the [`dashboardbase/`](dashboardbase/) folder of this repo. The folder name matches the skill's `name:` field, as required by the Agent Skills spec.
 
-### Claude Desktop
+### Claude Code (manual)
 
-Download `dashboardbasemcp.mcpb` from the [latest release](https://github.com/dashboardbase/mcp/releases/latest) and drag it into Claude Desktop's extensions settings. The bundle is self-contained — you don't even need Node.
-
-### Cursor, Windsurf, and most other clients
-
-These use the `mcpServers` shape. Add it to `~/.cursor/mcp.json` (Cursor), `~/.codeium/windsurf/mcp_config.json` (Windsurf), or your client's equivalent:
-
-```json
-{
-  "mcpServers": {
-    "dashboardbase": {
-      "command": "npx",
-      "args": ["-y", "@dashboardbase/mcp"]
-    }
-  }
-}
-```
-
-### VS Code
-
-VS Code is the exception — it uses `servers` rather than `mcpServers`, and requires an explicit `type`. In `.vscode/mcp.json` (workspace) or your user profile:
-
-```json
-{
-  "servers": {
-    "dashboardbase": {
-      "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "@dashboardbase/mcp"]
-    }
-  }
-}
-```
-
-### Codex CLI
-
-Codex uses TOML. Easiest is the CLI:
+Clone the repo and copy the skill into your skills directory:
 
 ```bash
-codex mcp add dashboardbase -- npx -y @dashboardbase/mcp
+git clone https://github.com/dashboardbase/skills
+cp -r skills/dashboardbase ~/.claude/skills/
 ```
 
-Or by hand in `~/.codex/config.toml`:
+To share the skill with a team instead, copy it into a project's `.claude/skills/` directory — it then ships with the repo and is picked up by everyone working in it.
 
-```toml
-[mcp_servers.dashboardbase]
-command = "npx"
-args = ["-y", "@dashboardbase/mcp"]
-```
+The skill activates automatically when you ask Claude Code to build a dashboardbase endpoint.
 
-Requires **Node.js 20 or newer** — that's the only prerequisite, and only for the `npx` routes. Nothing else to configure: the validation API is public, so there's no account, key or environment variable to set.
+> Skills directory paths can change between releases — check the [Claude Code skills docs](https://docs.claude.com) for the current location if the above doesn't pick it up.
 
-### Staying up to date
+### Cursor
 
-Two different things arrive by two different routes, which is worth knowing:
-
-**Better error messages arrive on their own.** The server holds no schemas — it calls the live API — so as validation messages improve, you see them immediately. Nothing to update.
-
-**New tools need a package update.** If a release adds a tool, you get it once the package updates *and* your client restarts the server. A running server's tool list is fixed for the session.
-
-| How you installed | How you update |
-| --- | --- |
-| `npx` (Claude Code, Cursor, VS Code, Windsurf, Codex) | Automatic — restart your client and the next server start picks up the newest version. |
-| Claude Desktop `.mcpb` | Pinned at install. Download the new bundle from [releases](https://github.com/dashboardbase/mcp/releases/latest) and drag it in again. |
-| Docker | `docker pull` / rebuild the image. |
-
-Check what you're running:
+Clone the repo and point Cursor at the skill folder:
 
 ```bash
-npx -y @dashboardbase/mcp --version
+git clone https://github.com/dashboardbase/skills
 ```
 
-If that reports an older version than [the latest release](https://github.com/dashboardbase/mcp/releases/latest), npm is serving cached registry metadata — a just-published version can take a few minutes to show up. Force it:
+Then load `skills/dashboardbase/SKILL.md` into your Cursor skills/rules setup. See the [Agent Skills client showcase](https://agentskills.io) for your client's exact configuration.
 
-```bash
-npx -y @dashboardbase/mcp@latest --version
-```
+### Any other skills-compatible agent
 
-Releases follow [semver](https://semver.org): new tools are a minor bump and never break existing calls, so updating is safe by default.
+The skill is a standard [Agent Skills](https://agentskills.io) folder. Clone the repo and load the `dashboardbase/` directory however your client loads skills.
 
----
+### No skills support? Paste it in.
 
-## Using it
+If your AI tool doesn't support Agent Skills, paste the contents of [`dashboardbase/SKILL.md`](dashboardbase/SKILL.md) into the chat before asking it to build an endpoint. It works as a plain prompt.
 
-### First, check it's connected
+### Reference by URL
 
-```bash
-claude mcp list
-```
-
-You should see `dashboardbase` listed as connected. Inside a Claude Code session, `/mcp` shows the server and its three tools. In other clients, look for `dashboardbase` in the MCP or tools panel.
-
-If it isn't there, the server never started — check that `node --version` is 20 or newer, and that your config file has valid JSON.
-
-### Then just ask
-
-**You don't call these tools yourself.** Describe what you want and the agent decides to call them, the same way it decides to read a file. There's no special syntax and nothing to remember.
-
-Validating something you already have:
-
-- _"Validate my dashboardbase setup file"_
-- _"Is `.dashboardbase/revenue.json` valid?"_
-- _"Check this against the dashboardbase contract"_ — then paste the JSON
-
-Validating as part of building:
-
-- _"Build a KPI endpoint for MRR, then validate the response it returns"_
-- _"Add a gauge widget to my setup file and make sure it still validates"_
-
-Debugging something broken:
-
-- _"My gauge widget shows an error in dashboardbase — check what my endpoint returns against the contract"_
-- _"Why is dashboardbase rejecting my setup file?"_
-
-### What it looks like
-
-> **You:** My revenue widget isn't rendering. Check `.dashboardbase/revenue.json`.
->
-> **Agent:** *calls `validate_setup_file`*
->
-> ```
-> Invalid setup file — 2 errors
->
->   mappings[0].type  14:9  Unknown widget type "guage"
->   mappings[1].path  22:5  Path must start with "/"
-> ```
->
-> **Agent:** Two problems — `guage` is a typo for `gauge`, and the second mapping's
-> path is missing its leading slash. Fixing both now.
->
-> *edits the file, calls `validate_setup_file` again*
->
-> ```
-> Valid setup file — no errors.
-> ```
-
-That loop — validate, fix, re-validate — is the whole point. The agent closes it without you opening dashboardbase.
-
-### Or invoke it directly
-
-In Claude Code, the server adds a slash command — type `/` and it's in the menu:
+The skill is fetchable directly. Point an agent at the raw file:
 
 ```
-/mcp__dashboardbase__validate .dashboardbase/revenue.json
+https://raw.githubusercontent.com/dashboardbase/skills/main/dashboardbase/SKILL.md
 ```
-
-Leave the path off and it validates whatever you're working on, or whatever you paste next. This is the deterministic route: it doesn't depend on the agent deciding the tool is relevant.
-
-> The middle segment comes from the name you installed under. If you ran `claude mcp add dashboardbase …` it's `/mcp__dashboardbase__validate`; install it as something else and that segment changes to match.
-
-In clients that don't support MCP prompts, just name the tool in plain language:
-
-- _"Use validate_setup_file on .dashboardbase/revenue.json"_
-- _"Use validate_widget_response to check this"_
-
-Agents sometimes need the nudge the first time; after that they usually pick it up on their own.
-
-### The three tools
-
-| Tool | Arguments | Notes |
-| --- | --- | --- |
-| `validate_setup_file` | `content` — the file text<br>`path` — read from disk instead | Give one or the other. |
-| `validate_widget_response` | `response` — the endpoint's JSON body<br>`path` — read from disk instead<br>`widgetType` — optional, e.g. `kpi` | Inferred from the response when `widgetType` is omitted. |
-| `create_setup_link` | `content` — the file text<br>`path` — read from disk instead | The link expires after 48 hours and anyone holding it can read the file, so share it directly. |
-
-Two things worth knowing:
-
-- **`path` only exists over stdio.** A hosted HTTP deployment has no access to your disk, so the parameter isn't offered there — pass `content` / `response` instead.
-- **`validate_widget_response` wants the full response body** — the `title` / `actions` / `data` / `alert` envelope your endpoint actually returns, not just the inner `data` payload.
-
-### Configuration
-
-Everything is optional.
-
-| Variable | Default | Purpose |
-| --- | --- | --- |
-| `DASHBOARDBASE_API_URL` | `https://api.dashboardbase.com` | Point at a different environment. |
-| `DASHBOARDBASE_API_KEY` | _unset_ | Sent as `x-api-key`. Not needed for the public API. |
-| `DASHBOARDBASE_TIMEOUT_MS` | `15000` | Request timeout in milliseconds. |
-
-### Running it as an HTTP server
-
-For containers or a shared internal deployment:
-
-```bash
-npx @dashboardbase/mcp --http --port 3000
-# or
-docker build -t dashboardbase-mcp . && docker run -p 3000:3000 dashboardbase-mcp
-```
-
-Serves Streamable HTTP at `/mcp` and a health check at `/health`. It's fully stateless, so it scales horizontally with no session affinity. Browser origins are refused unless you allowlist them with `--allowed-origin https://example.com`. The file-reading `path` parameter is **not** exposed in this mode.
 
 ---
 
 ## What's in the repo
 
 ```
-mcp/
-├── src/
-│   ├── index.ts            # CLI entry — stdio by default, --http optional
-│   ├── server.ts           # Registers the three tools
-│   ├── api.ts              # Client for the dashboardbase Tools API
-│   ├── format.ts           # Renders results as readable text
-│   ├── http.ts             # Stateless Streamable HTTP handler
-│   └── tools/              # One file per tool
-├── test/                   # Unit tests, no network required
-├── tools.json              # OpenAPI spec for the validation API
-├── server.json             # MCP Registry manifest
-├── manifest.json           # Claude Desktop bundle manifest
-└── Dockerfile
+skills/
+├── dashboardbase/              # The skill itself (auto-generated)
+│   ├── SKILL.md                # Metadata + core instructions
+│   ├── references/             # Per-widget guides, setup files, auth, events, gotchas
+│   └── assets/                 # JSON schemas (per-widget + setup file)
+├── logo-dark.png               # Repo branding
+├── logo-light.png
+├── README.md
+└── LICENSE
 ```
 
-## How validation works
+## Keeping it current
 
-The server doesn't carry a copy of the schemas — it calls the live dashboardbase validation API. So it **can't drift from what the platform accepts**, and error messages get better as the API does, with nothing to upgrade on your side.
-
-That applies to the validation rules and messages, not to the server itself — a release that adds a tool still needs a package update. See [Staying up to date](#staying-up-to-date).
+This skill is **auto-generated from the dashboardbase backend**. Widget schemas and example responses come straight from the production API contract, so the skill never drifts from what the platform actually accepts. Track `main` for the latest — it updates automatically as the contract evolves.
 
 ## Related
 
 - **[dashboardbase](https://www.dashboardbase.com)** — the product. Build, host, and share dashboards from your APIs.
-- **[dashboardbase skill](https://github.com/dashboardbase/skills)** — free to install; teaches your agent the JSON contract so it writes correct endpoints in the first place. Pairs directly with this MCP.
 - **[Documentation](https://app.dashboardbase.com/documentation)** — widget reference, JSON contract, webhook setup.
+- **[dashboardbase MCP server](https://github.com/dashboardbase/mcp)** — lets your agent check its own work: it validates widget responses and setup files against the live contract. Install with `claude mcp add dashboardbase -- npx -y @dashboardbase/mcp`. The skill uses it automatically when it is available.
 
 ## Contributing
 
-Found a gap or a confusing error? Open an issue. Note that the validation rules themselves live in the dashboardbase backend — if a *message* is unclear that's still worth reporting here, and we'll fix it upstream.
+Found a gap or an error? Open an issue. The skill files are generated upstream — fixes to schemas or examples land in the dashboardbase backend, so we don't take pull requests here, but issues are the right place to report them.
 
 ## License
 
-MIT — see [LICENSE](LICENSE). Fork it, adapt it, ship it.
+Free to download, install and use. **Public, but not open source** — the skill files are not licensed for modification or redistribution. See [LICENSE](LICENSE) for the terms.
 
-The MIT license covers the code in this repo — not the dashboardbase name or logo, which belong to Kompile ApS. You're free to use and adapt the server; please don't use the name or branding in a way that implies official affiliation.
-
-The [dashboardbase skill](https://github.com/dashboardbase/skills) is licensed differently: free to install and use, but not open source.
+Copyright © Kompile ApS. The dashboardbase name and logo belong to Kompile ApS.
