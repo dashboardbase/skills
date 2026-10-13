@@ -18,9 +18,10 @@ import { createPublicKey, verify } from "node:crypto";
 
 const app = express();
 // Dashboardbase signs every request with your workspace's Ed25519 key. Paste your public key below —
-// a generated plan already contains it, or print it with
+// copy it from Workspace → Secrets → Signing Key at app.dashboardbase.com/workspace (a generated plan
+// already contains it), or print it with
 //   curl https://api.dashboardbase.com/keys/<workspace-id>.pem
-// (workspace id is at app.dashboardbase.com/workspace). This is a public key. It is safe to commit.
+// Keep the three lines. This is a public key. It is safe to commit.
 const KEY = createPublicKey(`-----BEGIN PUBLIC KEY-----
 MCowBQYDK2VwAyEA<your workspace's key>
 -----END PUBLIC KEY-----`);

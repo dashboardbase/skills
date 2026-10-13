@@ -4,7 +4,7 @@
 
 ## Purpose
 
-Show a single headline number with optional subtitle and trend badge — ideal for MRR, active users, conversion rate, error count, anything you'd put in a 'big number' tile. Add an optional `progress` field to turn it into a progress-to-goal tile (e.g. 'MRR $8.2k / $10k') with a right-aligned cap label and a thin bar under the number.
+Show a single headline number with optional subtitle and trend badge — ideal for MRR, active users, conversion rate, error count, anything you'd put in a 'big number' tile. Add an optional `progress` field to turn it into a progress-to-goal tile (e.g. 'MRR $8.2k / $10k') with a right-aligned cap label and a thin bar under the number. Add an optional `trend` (the recent readings, oldest first) to draw a sparkline beside the number.
 
 In a setup file, this widget's `type` is `kpi` (see `references/setup-files.md`).
 
@@ -254,6 +254,16 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
         "additionalProperties": false
       },
       "nullable": true
+    },
+    "trend": {
+      "maxItems": 120,
+      "minItems": 2,
+      "type": "array",
+      "items": {
+        "type": "number",
+        "format": "double"
+      },
+      "nullable": true
     }
   },
   "additionalProperties": false
@@ -336,7 +346,16 @@ readable there too.
 Every block in `headers` needs a `title` — an entry without one renders as an empty column, so it is
 rejected.
 
+## Sparkline
 
+`trend` is a plain array of numbers, oldest first, ending with the reading the headline shows — the last 7 days, the last 12 weeks. It is drawn as a small line beside the headline (or under it on a taller card), coloured like the badge, with the latest point marked. It is decoration on top of the number: it is left out where the tile has no room for it (a narrow 2-column tile, a phone showing two KPIs side by side), and it is not drawn next to `progress` or a `headers` strip.
+
+```json
+{
+  "header": { "title": "$12,345", "subtitle": "vs last month", "badge": { "text": "+8%", "icon": "ArrowUp", "color": "Success" } },
+  "trend": [9800, 10150, 10400, 10900, 11300, 11800, 12345]
+}
+```
 
 ## Variations
 
@@ -535,6 +554,46 @@ Several totals that belong together — pages, users, organizations, dashboards 
 }
 ```
 
+### Headline with a sparkline
+
+A headline number whose recent shape matters as much as its value — MRR over the last weeks, signups over the last days — without giving it a whole chart.
+
+```json
+{
+  "title": "MRR",
+  "actions": [
+    {
+      "title": "View Details",
+      "type": "link",
+      "url": "https://example.com/mrr-details"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "$12,345",
+      "subtitle": "vs last month",
+      "badge": {
+        "text": "+8%",
+        "icon": "ArrowUp",
+        "color": "Success"
+      }
+    },
+    "trend": [
+      9800,
+      10150,
+      10050,
+      10400,
+      10900,
+      10750,
+      11300,
+      11800,
+      11650,
+      12345
+    ]
+  }
+}
+```
+
 ## Validation
 
 The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, Dashboardbase renders the widget in an error state. Before declaring done, validate the response. If the `validate_widget_response` tool is available, call it with the full response body — that checks against the live contract. Otherwise validate the response's `data` field against `assets/schemas/kpi.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
@@ -557,4 +616,6 @@ All values are case-sensitive (`"Success"`, not `"success"`).
 - Forgetting `badge.text` when including a badge — `text` is required; icon and color are decoration.
 - Putting the trend percentage in `header.subtitle` instead of `header.badge.text` — only badges render with color and icon.
 - Setting `progress.max` to `0` or a `value` above `max` — when `progress` is present `max` must be `> 0` and `value` non-negative.
+- Sending `trend` as objects (`[{ "value": 9800 }]`) or as formatted strings — it is a plain array of numbers, oldest first. Send 2 to 120 points; 7–30 reads best.
+- Ending `trend` on a different period than the headline — its last point is marked as "now", so it should be the reading `header.title` shows.
 - Sending more than 6 header blocks — `header` and `headers` together may hold at most 6, one per pair of grid columns. Everything past the sixth is a validation error, not a silent truncation.
