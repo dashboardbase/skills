@@ -6,19 +6,19 @@
 
 Your widget endpoint must be:
 
-- **Publicly reachable.** Dashboardbase polls from its own infrastructure; localhost or private-network URLs do not work.
+- **Publicly reachable.** dashboardbase polls from its own infrastructure; localhost or private-network URLs do not work.
 - **HTTPS-only** with a valid (non-self-signed) TLS certificate. `http://` is rejected.
 - **DNS-stable.** Use a stable hostname; IP-only URLs are accepted but discouraged.
 - **Fast.** Aim for a p95 response time under 2 seconds. Hard timeout is 10 seconds per attempt.
 
 ## HTTP method and idempotency
 
-- Dashboardbase uses `GET` for widget polls. Other methods are not used.
+- dashboardbase uses `GET` for widget polls. Other methods are not used.
 - Your endpoint **must be idempotent**: the same request at the same time should yield the same data. Do not mutate state from a widget endpoint.
 
 ## The `dateRange` query parameter
 
-When the dashboard has a date range selector active, Dashboardbase appends `?dateRange=<value>` to every poll. Supported values:
+When the dashboard has a date range selector active, dashboardbase appends `?dateRange=<value>` to every poll. Supported values:
 
 | `DateRange` value |
 | --- |
@@ -72,17 +72,17 @@ app.get("/widgets/revenue", auth, async (req, res) => {
 
 ### Backward compatibility
 
-If you ship an endpoint without `dateRange` handling and add it later, no API change is needed — Dashboardbase always sends it (when active) regardless of whether you read it. Simply start reading the parameter when ready.
+If you ship an endpoint without `dateRange` handling and add it later, no API change is needed — dashboardbase always sends it (when active) regardless of whether you read it. Simply start reading the parameter when ready.
 
 ## Status codes
 
-Dashboardbase interprets responses as follows:
+dashboardbase interprets responses as follows:
 
 | Status | Effect on widget |
 |---|---|
 | `200 OK` with a JSON body | Render the widget with the returned data. **This is the only success.** |
-| `204 No Content` | Error state. A 204 has no body, and Dashboardbase parses the body of every 2xx — an empty one fails to parse. See gotcha 8 for what to send instead. |
-| `304 Not Modified` | Error state. Only 2xx is treated as a response at all; a 304 is handled as a failed poll. Do not build conditional-request handling against Dashboardbase. |
+| `204 No Content` | Error state. A 204 has no body, and dashboardbase parses the body of every 2xx — an empty one fails to parse. See gotcha 8 for what to send instead. |
+| `304 Not Modified` | Error state. Only 2xx is treated as a response at all; a 304 is handled as a failed poll. Do not build conditional-request handling against dashboardbase. |
 | `3xx` redirects | Error state. Redirects are never followed (a redirect would be fetched after the SSRF guard passed). Serve the data at the configured URL. |
 | `401 Unauthorized` | Show auth error. **Do not redirect.** |
 | `403 Forbidden` | Show auth error. |
@@ -104,11 +104,11 @@ single poll of a dead endpoint means **4 requests over roughly 50 seconds**.
 and retrying it would aim four requests at an endpoint that just asked for fewer. The poll ends on the
 first `429` and the widget tries again on its next refresh.
 
-- **`429` is the way to slow Dashboardbase down.** Return it and the current poll stops immediately.
+- **`429` is the way to slow dashboardbase down.** Return it and the current poll stops immediately.
 - Size a rate-limit budget for **one request per poll per widget** on the happy path, and up to four
   while your endpoint is erroring.
-- Send `Retry-After` when you have a number: it is honoured on the connections Dashboardbase makes to
-  its own providers, and Dashboardbase sends it on its own `429`s, so build against it in both directions.
+- Send `Retry-After` when you have a number: it is honoured on the connections dashboardbase makes to
+  its own providers, and dashboardbase sends it on its own `429`s, so build against it in both directions.
 - Make the endpoint idempotent. It is a `GET`, so it should be anyway, but the retry makes it load-bearing.
 
 ## Latency budget
@@ -125,12 +125,12 @@ Pick the smallest interval that satisfies the data's freshness needs without ove
 - `5m` — the default. Suitable for most operational metrics.
 - `10m` / `30m` — for slow-moving business metrics (MRR, churn, daily totals).
 
-Dashboardbase polls every connected dashboard at this interval, so an endpoint backing 100 dashboards on `1m` receives ~100 requests per minute. Account for fan-out.
+dashboardbase polls every connected dashboard at this interval, so an endpoint backing 100 dashboards on `1m` receives ~100 requests per minute. Account for fan-out.
 
 ## Caching
 
-- **Server-side caching is your responsibility, and it is the only caching there is.** A 30-second cache in front of an expensive query is usually enough to absorb Dashboardbase's poll cadence, any human refreshes, and the retry burst above.
-- **Response cache headers are ignored.** Dashboardbase does not keep an HTTP cache: `Cache-Control`, `Expires`, `ETag` and `Last-Modified` have no effect on polling, and `If-None-Match` is never sent. Serving `304` will error the widget (see the status table).
+- **Server-side caching is your responsibility, and it is the only caching there is.** A 30-second cache in front of an expensive query is usually enough to absorb dashboardbase's poll cadence, any human refreshes, and the retry burst above.
+- **Response cache headers are ignored.** dashboardbase does not keep an HTTP cache: `Cache-Control`, `Expires`, `ETag` and `Last-Modified` have no effect on polling, and `If-None-Match` is never sent. Serving `304` will error the widget (see the status table).
 - **Key your own cache by `dateRange`** — see gotcha 13. Two windows sharing a cache entry serves the wrong data.
 
 ## Compression
@@ -140,7 +140,7 @@ Dashboardbase polls every connected dashboard at this interval, so an endpoint b
 
 ## CORS
 
-Dashboardbase polls server-to-server, so **CORS headers are not needed** on the widget endpoint. Browser-side fetches (e.g. for local testing) need CORS, but that's a development concern, not a production one.
+dashboardbase polls server-to-server, so **CORS headers are not needed** on the widget endpoint. Browser-side fetches (e.g. for local testing) need CORS, but that's a development concern, not a production one.
 
 ## Error responses
 
@@ -150,19 +150,19 @@ Return a problem payload alongside non-`200` status codes for easier debugging:
 { "error": "Invalid x-api-key" }
 ```
 
-The body is not rendered by Dashboardbase, but it surfaces in logs and integration tests.
+The body is not rendered by dashboardbase, but it surfaces in logs and integration tests.
 
 ## Rate limiting your own endpoint
 
-If you expose the same endpoint publicly, apply rate limiting **before** Dashboardbase's request — but be careful to allow Dashboardbase's poll rate. Either:
+If you expose the same endpoint publicly, apply rate limiting **before** dashboardbase's request — but be careful to allow dashboardbase's poll rate. Either:
 
-- **Allowlist Dashboardbase's IP range** in your rate limiter, OR
-- **Use a separate hostname** for Dashboardbase polls (e.g. `dashboardbase.your-api.example.com`) without a rate limit.
+- **Allowlist dashboardbase's IP range** in your rate limiter, OR
+- **Use a separate hostname** for dashboardbase polls (e.g. `dashboardbase.your-api.example.com`) without a rate limit.
 
 ## Common mistakes
 
-- **Returning HTML on auth failure.** Auth middleware that returns a login HTML page makes Dashboardbase render garbage. Return JSON + `401`.
-- **Redirecting (`301` / `302`) on auth failure.** Dashboardbase does not follow auth redirects. Return `401` directly.
+- **Returning HTML on auth failure.** Auth middleware that returns a login HTML page makes dashboardbase render garbage. Return JSON + `401`.
+- **Redirecting (`301` / `302`) on auth failure.** dashboardbase does not follow auth redirects. Return `401` directly.
 - **Slow synchronous queries.** Running an analytical query on every poll exhausts your database. Cache or denormalise.
 - **Returning ISO-8601 dates as JavaScript `Date` toString output.** Some libraries serialise as `"Mon May 19 2026 …"`; stick to `"2026-05-19T12:00:00Z"`.
 - **Non-deterministic order.** Sorting rows differently on each poll causes flicker. Sort consistently.

@@ -1,10 +1,10 @@
 # Authentication
 
-> **Load this file when:** choosing an authentication method, adding or changing the method on an endpoint that is already live, rotating a key, debugging a 401 from Dashboardbase, or configuring a datasource.
+> **Load this file when:** choosing an authentication method, adding or changing the method on an endpoint that is already live, rotating a key, debugging a 401 from dashboardbase, or configuring a datasource.
 
-Dashboardbase polls your endpoint over HTTPS at a fixed `refreshInterval`. You decide how Dashboardbase authenticates to you.
+dashboardbase polls your endpoint over HTTPS at a fixed `refreshInterval`. You decide how dashboardbase authenticates to you.
 
-**Every request Dashboardbase makes is already signed with your workspace's Ed25519 key**, and already carries your workspace's Endpoint Secret. You configure nothing for either to happen. Verifying one of them is how you protect an endpoint.
+**Every request dashboardbase makes is already signed with your workspace's Ed25519 key**, and already carries your workspace's Endpoint Secret. You configure nothing for either to happen. Verifying one of them is how you protect an endpoint.
 
 **Start with request signing.** You verify against a public key committed to your repository — there is no shared secret to store, leak, or rotate on your side, and a signature is bound to the method, path and timestamp rather than being one static value that works anywhere. The Endpoint Secret is the alternative if you would rather set a single environment variable and be done; it is genuinely simpler to write, and it remains fully supported.
 
@@ -12,7 +12,7 @@ Both arrive on every request. Verify whichever one you implemented and ignore th
 
 ## Methods at a glance
 
-| Method | What Dashboardbase sends | Configure on the datasource? | Use when |
+| Method | What dashboardbase sends | Configure on the datasource? | Use when |
 | --- | --- | --- | --- |
 | **Request signing (Ed25519)** (recommended) | `x-dashboardbase-workspace`, `x-dashboardbase-timestamp` and `x-dashboardbase-signature` on every request, plus `x-dashboardbase-signature-previous` during a rotation | **No** — it is already being sent | **The default.** No secret to hold: you verify against a public key committed to your repository |
 | **Endpoint Secret** | `x-dashboardbase-secret` on every request, plus `x-dashboardbase-secret-previous` during a rotation | **No** — it is already being sent | You would rather set one environment variable than commit a key file. Fewer lines to write, and rotation has a built-in grace window |
@@ -20,7 +20,7 @@ Both arrive on every request. Verify whichever one you implemented and ignore th
 | **Basic auth** | `Authorization: Basic <base64(user:pass)>` | Yes — username and password per datasource | The system you are exposing already speaks Basic auth |
 | **Custom `Authorization` header** | Whatever you configure, e.g. `Authorization: Bearer <token>` | Yes — one header per datasource | You already issue Bearer tokens or a vendor-specific scheme |
 
-Each method below is written the same way — what arrives, when to use it, how to verify it, what to configure in Dashboardbase, and how to rotate it — so they can be compared line by line. Methods combine: an endpoint may accept more than one, which is what makes the migration in "Changing or adding an authentication method on a live endpoint" possible.
+Each method below is written the same way — what arrives, when to use it, how to verify it, what to configure in dashboardbase, and how to rotate it — so they can be compared line by line. Methods combine: an endpoint may accept more than one, which is what makes the migration in "Changing or adding an authentication method on a live endpoint" possible.
 
 ## Request signing (Ed25519) — recommended default
 
@@ -29,10 +29,10 @@ Each method below is written the same way — what arrives, when to use it, how 
 > you get a `401` with no explanation, and it will look like our bug rather than yours.
 
 > **You need your workspace's public key — ask for it before writing the verification code.** A plan or
-> issue generated from Dashboardbase already contains it: look for "Verification key" in the Security
+> issue generated from dashboardbase already contains it: look for "Verification key" in the Security
 > section and use that. Working without one? Ask the user to paste it, in these words or close to them:
 >
-> *"Paste your workspace's public key: in Dashboardbase, open **Workspace → Secrets → Signing Key**
+> *"Paste your workspace's public key: in dashboardbase, open **Workspace → Secrets → Signing Key**
 > (app.dashboardbase.com/workspace) and press the copy button next to **Public key**. The **Public key
 > URL** below it works too."*
 >
@@ -40,7 +40,7 @@ Each method below is written the same way — what arrives, when to use it, how 
 > Scaffolding around a placeholder produces something that cannot verify, and the failure is a silent
 > `401`.
 
-**What Dashboardbase sends.** Every request carries two extra headers, whether or not the datasource
+**What dashboardbase sends.** Every request carries two extra headers, whether or not the datasource
 has any credentials configured:
 
 ```
@@ -75,10 +75,10 @@ e.g.  GET|https://your-api.example.com/widgets/mrr|1754812800
   Endpoint Secret header is the same value on every request to every endpoint, forever.
 - **Your workspace has more than one team deploying endpoints.** Nobody has to be handed a secret.
 
-**Avoid when.** You have no Dashboardbase account yet, or you would rather set one environment variable
+**Avoid when.** You have no dashboardbase account yet, or you would rather set one environment variable
 and be done — the Endpoint Secret is a few lines shorter to write and needs no key file.
 
-**Verify it.** A plan or issue generated from Dashboardbase already contains your workspace's public
+**Verify it.** A plan or issue generated from dashboardbase already contains your workspace's public
 key — paste it straight into the constant below. Working without one? Use the key the user pasted from
 the workspace page, or print it and copy the output:
 
@@ -167,7 +167,7 @@ error you will see, it is a `401` on every poll.
 | **The Public key URL** | `https://api.dashboardbase.com/keys/org_….pem` | Fetch it (`curl -fsS <url>`) and use the response |
 | **The workspace id** | `org_…` | Fetch `https://api.dashboardbase.com/keys/<workspace-id>.pem` |
 | **The Endpoint Secret** | `dbb_` followed by 40 letters and digits | **Not the key — and a secret.** Do not write it into code or repeat it back. Ask whether they would rather verify the Endpoint Secret instead (see "Endpoint Secret" below); if not, ask again for the **Public key** |
-| **Anything else** — the Webhook ID or secret, a private key | Does not match a row above | Not the key. Say which value it looks like and ask again for the **Public key** under Signing Key. A `PRIVATE KEY` block is never ours to hold: Dashboardbase keeps the private half |
+| **Anything else** — the Webhook ID or secret, a private key | Does not match a row above | Not the key. Say which value it looks like and ask again for the **Public key** under Signing Key. A `PRIVATE KEY` block is never ours to hold: dashboardbase keeps the private half |
 
 Before the key goes in, strip whatever wrapped it on the way — surrounding quotes or backticks, literal
 `\n` escapes, a leading `>` from a quoted reply — and check that what is left is exactly one line of 60
@@ -176,7 +176,7 @@ public key in this format starts with that prefix, so a body that does not is no
 
 ### Rotating the signing key
 
-1. Rotate in the workspace settings. Dashboardbase immediately starts signing with the new key and
+1. Rotate in the workspace settings. dashboardbase immediately starts signing with the new key and
    keeps sending a signature from the old one in `x-dashboardbase-signature-previous` for **24 hours**.
 2. Copy the new key from **Workspace → Secrets → Signing Key** (or re-fetch `/keys/<workspace-id>.pem`)
    and replace the constant, any time inside that window. You only
@@ -191,7 +191,7 @@ recover on their own.
 
 ## Endpoint Secret
 
-**What Dashboardbase sends.** Your workspace has one generated secret, shown at **app.dashboardbase.com/workspace**. It arrives in the `x-dashboardbase-secret` header on every poll, whether or not the datasource has any credentials configured. During a rotation the previous value arrives alongside it in `x-dashboardbase-secret-previous`.
+**What dashboardbase sends.** Your workspace has one generated secret, shown at **app.dashboardbase.com/workspace**. It arrives in the `x-dashboardbase-secret` header on every poll, whether or not the datasource has any credentials configured. During a rotation the previous value arrives alongside it in `x-dashboardbase-secret-previous`.
 
 **Use when.** You want the shortest possible implementation, and holding one secret value is not a
 problem for you:
@@ -217,7 +217,7 @@ function verifyDashboardbase(req, res, next) {
 ```
 
 - Compare with a constant-time comparison where your language offers one (`crypto.timingSafeEqual`, `hmac.compare_digest`, `CryptographicOperations.FixedTimeEquals`).
-- **Accept either header.** During a rotation Dashboardbase sends the new value in `x-dashboardbase-secret` and the old one in `x-dashboardbase-secret-previous`. Checking both is what lets you redeploy at your own pace.
+- **Accept either header.** During a rotation dashboardbase sends the new value in `x-dashboardbase-secret` and the old one in `x-dashboardbase-secret-previous`. Checking both is what lets you redeploy at your own pace.
 - Return `401 Unauthorized` on mismatch; **do not redirect** (HTTP redirects on auth failure break the poll).
 - Read it from the environment. Never commit it, and never log it.
 - **If the user pastes the value to you** (it starts `dbb_`, and is copied from **Workspace → Secrets →
@@ -232,7 +232,7 @@ function verifyDashboardbase(req, res, next) {
 
 ### Rotating the Endpoint Secret
 
-1. Regenerate in the workspace settings. Dashboardbase immediately starts sending the new value, and keeps sending the old one as `x-dashboardbase-secret-previous` for **24 hours**.
+1. Regenerate in the workspace settings. dashboardbase immediately starts sending the new value, and keeps sending the old one as `x-dashboardbase-secret-previous` for **24 hours**.
 2. Update `DASHBOARDBASE_ENDPOINT_SECRET` in your environment and deploy, any time inside that window.
 3. After 24 hours only the new value is sent.
 
@@ -240,7 +240,7 @@ If your endpoint checks both headers as shown above, there is no window in which
 
 ## API key header
 
-**What Dashboardbase sends.** A custom header you choose, carrying the value you configured on the datasource. `x-api-key` is the convention; any header name works.
+**What dashboardbase sends.** A custom header you choose, carrying the value you configured on the datasource. `x-api-key` is the convention; any header name works.
 
 ```bash
 curl -H "x-api-key: $DASHBOARDBASE_KEY" https://your-api.example.com/widgets/mrr
@@ -262,7 +262,7 @@ curl -H "x-api-key: $DASHBOARDBASE_KEY" https://your-api.example.com/widgets/mrr
 
 ## Basic auth
 
-**What Dashboardbase sends.** `Authorization: Basic <base64(user:pass)>`, built from the username and password configured on the datasource.
+**What dashboardbase sends.** `Authorization: Basic <base64(user:pass)>`, built from the username and password configured on the datasource.
 
 ```bash
 curl -u "user:pass" https://your-api.example.com/widgets/mrr
@@ -278,7 +278,7 @@ curl -u "user:pass" https://your-api.example.com/widgets/mrr
 
 **Verify it.**
 - Let your framework's Basic auth middleware decode the header; check the username *and* the password, constant-time where your language offers it.
-- Return `401 Unauthorized` on mismatch. Do not send a `WWW-Authenticate` challenge that redirects to a login page — Dashboardbase does not follow it.
+- Return `401 Unauthorized` on mismatch. Do not send a `WWW-Authenticate` challenge that redirects to a login page — dashboardbase does not follow it.
 
 **Configure on the datasource.** Yes — username and password, on every datasource pointing at this endpoint.
 
@@ -286,7 +286,7 @@ curl -u "user:pass" https://your-api.example.com/widgets/mrr
 
 ## Custom `Authorization` header (e.g. Bearer)
 
-**What Dashboardbase sends.** Any header you specify, including `Authorization: Bearer <token>` or a vendor-specific scheme. The value is sent verbatim on every poll — Dashboardbase never refreshes or re-issues a token.
+**What dashboardbase sends.** Any header you specify, including `Authorization: Bearer <token>` or a vendor-specific scheme. The value is sent verbatim on every poll — dashboardbase never refreshes or re-issues a token.
 
 ```bash
 curl -H "Authorization: Bearer $TOKEN" https://your-api.example.com/widgets/mrr
@@ -294,7 +294,7 @@ curl -H "Authorization: Bearer $TOKEN" https://your-api.example.com/widgets/mrr
 
 **Use when.**
 - You already issue Bearer tokens (OAuth client credentials, JWT, etc.).
-- You want short-lived tokens with refresh — though Dashboardbase does not refresh tokens; it just sends what you configured. For rotation, prefer request signing or the Endpoint Secret.
+- You want short-lived tokens with refresh — though dashboardbase does not refresh tokens; it just sends what you configured. For rotation, prefer request signing or the Endpoint Secret.
 
 **Verify it.**
 - Validate the token exactly as the rest of your API does, then return `401` on failure without redirecting.
@@ -308,20 +308,20 @@ curl -H "Authorization: Bearer $TOKEN" https://your-api.example.com/widgets/mrr
 
 > **Read this section when:** the endpoint is already being polled and the task is to add a second method, swap one method for another, drop one, or put auth in front of an endpoint that has been open.
 
-An auth change is different from every other change to a live endpoint. A mis-shaped payload breaks one widget; a `401` breaks **every** widget polling that endpoint, on every dashboard, at the next refresh. And the change is split in two: the check lives in your code, while the credential (for every method except the Endpoint Secret) lives on the datasource in Dashboardbase. The two halves land at different moments, and often through different people, so the order matters more than the code does.
+An auth change is different from every other change to a live endpoint. A mis-shaped payload breaks one widget; a `401` breaks **every** widget polling that endpoint, on every dashboard, at the next refresh. And the change is split in two: the check lives in your code, while the credential (for every method except the Endpoint Secret) lives on the datasource in dashboardbase. The two halves land at different moments, and often through different people, so the order matters more than the code does.
 
 ### Widen, switch, narrow — always in that order
 
 1. **Widen (code).** Deploy the endpoint so it accepts **both** what it accepts today and the new method. Nothing breaks: the credential currently arriving still works.
-2. **Switch (configuration).** Update every datasource that points at this endpoint — in Dashboardbase, open the dashboard editor, select the widget, and edit its datasource. **Skip this step entirely when the new method is the Endpoint Secret or request signing**: both are already being sent on every request.
+2. **Switch (configuration).** Update every datasource that points at this endpoint — in dashboardbase, open the dashboard editor, select the widget, and edit its datasource. **Skip this step entirely when the new method is the Endpoint Secret or request signing**: both are already being sent on every request.
 3. **Confirm.** Give it one refresh interval and check the widgets still render — see "Verify the change" below.
 4. **Narrow (code).** Only now, remove acceptance of the old credential and redeploy.
 
-That is two deploys, and the gap between them is the point: for as long as it lasts, either credential works, so no poll can land on a version of the endpoint that rejects what Dashboardbase is sending. Doing step 4 before step 2 is the reliable way to red every widget on the dashboard.
+That is two deploys, and the gap between them is the point: for as long as it lasts, either credential works, so no poll can land on a version of the endpoint that rejects what dashboardbase is sending. Doing step 4 before step 2 is the reliable way to red every widget on the dashboard.
 
 ### Which ask is which
 
-| The ask | In your code | In Dashboardbase | Watch out for |
+| The ask | In your code | In dashboardbase | Watch out for |
 | --- | --- | --- | --- |
 | **Add a second method** alongside the one already in use | Accept either credential | Configure the new credential on each datasource — nothing when it is the Endpoint Secret or request signing | Stop after step 2; there is nothing to narrow. Auth is now "any one of these passes" |
 | **Replace one method with another** | Widen, then narrow — two deploys | Configure the new credential, then clear the old one | The full four steps. Clearing the old credential in the app before step 4 is harmless; doing step 4 first is not |
@@ -343,7 +343,7 @@ Credentials never live in `.dashboardbase/<slug>.json` — `POST /tools/v1/setup
 1. `curl` with the new credential → `200`.
 2. `curl` with **no** credentials at all → `401`. This is the one that catches an endpoint that never checked what it was configured to expect.
 3. `curl` with the old credential → `200` while widened, `401` after narrowing. Both are correct at the right moment; know which one you expect right now.
-4. Run the datasource **Test** in the editor. Dashboardbase also probes the endpoint with every credential stripped and reports whether it answered anyway — configuring a credential says nothing about whether your code checks it.
+4. Run the datasource **Test** in the editor. dashboardbase also probes the endpoint with every credential stripped and reports whether it answered anyway — configuring a credential says nothing about whether your code checks it.
 5. Watch one full refresh interval on the dashboard before calling it done. The widget, not the `curl`, is the acceptance test.
 
 ### If the widgets go red
@@ -356,7 +356,7 @@ The Endpoint Secret rotates with a built-in grace window (above). For an API key
 
 1. Generate a new key in your secret store.
 2. Update your endpoint to accept **both** the old and the new key for a grace period.
-3. Update the Dashboardbase datasource to use the new key.
+3. Update the dashboardbase datasource to use the new key.
 4. Confirm widgets refresh successfully.
 5. Remove old-key acceptance from your endpoint.
 
@@ -364,13 +364,13 @@ That is the same widen → switch → narrow shape as changing the method itself
 
 ## Common mistakes
 
-- **Assuming a configured credential means the endpoint is protected.** Setting Basic auth on the datasource tells Dashboardbase what to send; it does not make your code check it. Dashboardbase probes your endpoint with no credentials during validation and will tell you if it answered anyway.
-- **Accepting keys via query string.** Logged in access logs and CDN caches; rejected by Dashboardbase by convention.
-- **Returning `200 OK` for an unauthorised request with an empty body.** Dashboardbase will render "no data"; return `401` instead.
-- **Redirecting on auth failure.** Dashboardbase does not follow redirects on the poll path.
+- **Assuming a configured credential means the endpoint is protected.** Setting Basic auth on the datasource tells dashboardbase what to send; it does not make your code check it. dashboardbase probes your endpoint with no credentials during validation and will tell you if it answered anyway.
+- **Accepting keys via query string.** Logged in access logs and CDN caches; rejected by dashboardbase by convention.
+- **Returning `200 OK` for an unauthorised request with an empty body.** dashboardbase will render "no data"; return `401` instead.
+- **Redirecting on auth failure.** dashboardbase does not follow redirects on the poll path.
 - **Checking only `x-dashboardbase-secret` and not `x-dashboardbase-secret-previous`.** Your endpoint will 401 for up to 24 hours after a rotation.
 - **Storing secrets in plaintext config files committed to git.** Always use a secret manager or environment variable.
 - **Dropping the old credential in the deploy that adds the new one.** There is no moment when both are configured, so the dashboard 401s until someone updates every datasource. Widen, switch, then narrow.
 - **Changing the code and forgetting the datasource, or the reverse.** An auth change is only finished when both halves are done and one refresh interval has passed cleanly.
-- **Configuring the Endpoint Secret as a datasource header.** It is already sent on every request, and Dashboardbase overwrites any datasource header of that name with the workspace value — a hand-entered one is replaced, not merged, so your endpoint never sees it. Leave it out.
+- **Configuring the Endpoint Secret as a datasource header.** It is already sent on every request, and dashboardbase overwrites any datasource header of that name with the workspace value — a hand-entered one is replaced, not merged, so your endpoint never sees it. Leave it out.
 - **Updating one datasource and assuming the rest followed.** Credentials are per datasource — every widget pointing at the endpoint needs the edit.

@@ -2,12 +2,12 @@
 
 > **Load this file when:** a developer is starting from zero and wants a worked example beyond the inline KPI quickstart in `SKILL.md`. Walks through wiring two widgets (KPI + Table) end-to-end.
 
-This guide builds a small Node.js service that exposes two widget endpoints — a KPI and a Table — wires them to Dashboardbase, and ends with a setup file you can share.
+This guide builds a small Node.js service that exposes two widget endpoints — a KPI and a Table — wires them to dashboardbase, and ends with a setup file you can share.
 
 ## Prerequisites
 
 - Node 20+ (or any HTTPS-capable runtime; the principles are language-agnostic)
-- A Dashboardbase organisation with permission to create dashboards
+- A dashboardbase organisation with permission to create dashboards
 - A public HTTPS URL for your local service (e.g. via [ngrok](https://ngrok.com) for development)
 
 ## Step 1 — Skeleton
@@ -17,7 +17,7 @@ import express from "express";
 import { createPublicKey, verify } from "node:crypto";
 
 const app = express();
-// Dashboardbase signs every request with your workspace's Ed25519 key. Paste your public key below —
+// dashboardbase signs every request with your workspace's Ed25519 key. Paste your public key below —
 // copy it from Workspace → Secrets → Signing Key at app.dashboardbase.com/workspace (a generated plan
 // already contains it), or print it with
 //   curl https://api.dashboardbase.com/keys/<workspace-id>.pem
@@ -93,7 +93,7 @@ app.get("/widgets/top-customers", auth, (_req, res) => {
 app.listen(3000);
 ```
 
-> **Prefer one environment variable to a committed key file?** Dashboardbase also sends your workspace's
+> **Prefer one environment variable to a committed key file?** dashboardbase also sends your workspace's
 > Endpoint Secret as `x-dashboardbase-secret` on every request. Read `DASHBOARDBASE_ENDPOINT_SECRET`
 > from the environment and compare it instead — a few lines shorter, and equally supported. Implement
 > one or the other, never both. See `references/authentication.md`.
@@ -108,7 +108,7 @@ ngrok http 3000
 
 Copy the `https://` URL ngrok prints (e.g. `https://abc123.ngrok.app`).
 
-## Step 3 — Wire in Dashboardbase
+## Step 3 — Wire in dashboardbase
 
 1. Create a new dashboard.
 2. Add a KPI widget. Set the URL to `https://abc123.ngrok.app/widgets/mrr` and save — no headers to configure, the signature is sent automatically.

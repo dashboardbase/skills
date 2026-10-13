@@ -1,21 +1,21 @@
 ---
 name: dashboardbase
-description: Use when creating a Dashboardbase dashboard end-to-end, or when building, wiring, or debugging an HTTP endpoint that Dashboardbase will poll to render a widget (BarChart, Clock, ContributionsGrid, Countdown, DonutChart, GaugeChart, Image, KPI, LineChart, PieChart, ProgressList, Status, Table, Text), writing a Dashboardbase setup file, configuring, changing or adding authentication, or sending events/notifications. Use it too when changing an endpoint that is already live: adding alerting, action links, a header or badge, another chart series, or wiring an event webhook. Covers the full create-a-dashboard workflow (choose widgets, pick a layout, build endpoints, write the setup file, validate, import), the response envelope, JSON schemas per widget, widget styling (header title/subtitle and colored badges), the recommended authentication method (verifying the Ed25519 signature Dashboardbase already sends, against a public key you commit), refresh intervals, hosting requirements, and a go-live checklist.
-license: MIT
+description: Use when creating a dashboardbase dashboard end-to-end, or when building, wiring, or debugging an HTTP endpoint that dashboardbase will poll to render a widget (BarChart, Clock, ContributionsGrid, Countdown, DonutChart, GaugeChart, Image, KPI, LineChart, PieChart, ProgressList, Status, Table, Text), writing a dashboardbase setup file, configuring, changing or adding authentication, or sending events/notifications. Use it too when changing an endpoint that is already live: adding alerting, action links, a header or badge, another chart series, or wiring an event webhook. Covers the full create-a-dashboard workflow (choose widgets, pick a layout, build endpoints, write the setup file, validate, import), the response envelope, JSON schemas per widget, widget styling (header title/subtitle and colored badges), the recommended authentication method (verifying the Ed25519 signature dashboardbase already sends, against a public key you commit), refresh intervals, hosting requirements, and a go-live checklist.
+license: Proprietary. Free to use; not open source. LICENSE has complete terms.
 metadata:
   source-repo: dashboardbase-api
-  generated-at: "2026-10-12T16:21:56Z"
+  generated-at: "2026-10-13T17:45:44Z"
   api-version: "1.0.0"
   spec-version: "1.0"
 ---
 
-# Dashboardbase Developer Skill
+# dashboardbase Developer Skill
 
-This skill teaches you to build HTTP endpoints whose JSON responses Dashboardbase can render as widgets, plus the setup-file format used to wire those endpoints into a dashboard.
+This skill teaches you to build HTTP endpoints whose JSON responses dashboardbase can render as widgets, plus the setup-file format used to wire those endpoints into a dashboard.
 
 ## Mental model
 
-Dashboardbase periodically polls each widget's configured HTTPS endpoint at the dashboard's `refreshInterval` (one of `1m`, `5m`, `10m`, `30m`). Your endpoint returns JSON in a fixed envelope; Dashboardbase parses it and renders the widget. There is no streaming and no callback — your endpoint is just a regular `GET` that returns the current snapshot of data.
+dashboardbase periodically polls each widget's configured HTTPS endpoint at the dashboard's `refreshInterval` (one of `1m`, `5m`, `10m`, `30m`). Your endpoint returns JSON in a fixed envelope; dashboardbase parses it and renders the widget. There is no streaming and no callback — your endpoint is just a regular `GET` that returns the current snapshot of data.
 
 ## Creating a dashboard end-to-end
 
@@ -72,21 +72,21 @@ One endpoint, one widget, one slot on the grid — instead of four endpoints and
    - Endpoints can't be built yet → describe each widget with a State C `plan` mapping; the setup file still imports as a sketch to implement later.
 4. **Write the setup file** per `references/setup-files.md` and save it as `.dashboardbase/<dashboard-slug>.json` in the repo — named after the dashboard, never a generic `dashboard.json`. Write it as part of the build, as soon as the endpoint paths are settled; only the handover in step 6 waits for live endpoints. If that path already exists and describes a different dashboard, pick a distinct slug rather than overwriting it — two near-identical file names in one directory is the failure mode to avoid. That directory is also the first thing to read when you join an existing project: an existing setup file gives you the `baseUrl` and the path convention outright.
 5. **Validate before handing over.**
-   - **If the `validate_widget_response` and `validate_setup_file` tools are available** (the Dashboardbase MCP server is installed), use them — they check against the live contract, so they cannot drift from what the platform accepts. Pass `validate_widget_response` the **full response envelope** (`title` / `actions` / `data` / `alert`), not just `data`. No account or API key is needed.
+   - **If the `validate_widget_response` and `validate_setup_file` tools are available** (the dashboardbase MCP server is installed), use them — they check against the live contract, so they cannot drift from what the platform accepts. Pass `validate_widget_response` the **full response envelope** (`title` / `actions` / `data` / `alert`), not just `data`. No account or API key is needed.
    - **Otherwise**, validate each endpoint response's `data` against `assets/schemas/<widget>.json`, and the setup file against `assets/setup-file.schema.json` (or `POST /bff/v1/organizations/{orgId}/setup-files/validate`).
 
    Then run the validation loop below.
 6. **Ask how they want it handed over, then do that.** There are two routes and the choice is the user's — **never upload their config without being asked to**:
 
-   > The dashboard config is ready. I can upload it and give you a link that opens straight into the import preview, or you can drag `.dashboardbase/<slug>.json` into Dashboardbase yourself. Shall I create the link?
+   > The dashboard config is ready. I can upload it and give you a link that opens straight into the import preview, or you can drag `.dashboardbase/<slug>.json` into dashboardbase yourself. Shall I create the link?
 
-   **If they take the link:** if the `create_setup_link` tool is available (the Dashboardbase MCP server), call it with the file — it posts it and hands back the link with what to tell the user. Otherwise `POST` the file as the raw body to `https://api.dashboardbase.com/tools/v1/setup-links` — no account, no API key, no org ID, and no `{"content": …}` wrapper. You get back `id`, `url` (e.g. `https://app.dashboardbase.com/i/V1v3rZ8Qk2mN4pR6tY8uWx`) and `expiresAt`. Full request/response and failure cases are in `references/setup-files.md` → "How to load your setup file into Dashboardbase".
+   **If they take the link:** if the `create_setup_link` tool is available (the dashboardbase MCP server), call it with the file — it posts it and hands back the link with what to tell the user. Otherwise `POST` the file as the raw body to `https://api.dashboardbase.com/tools/v1/setup-links` — no account, no API key, no org ID, and no `{"content": …}` wrapper. You get back `id`, `url` (e.g. `https://app.dashboardbase.com/i/V1v3rZ8Qk2mN4pR6tY8uWx`) and `expiresAt`. Full request/response and failure cases are in `references/setup-files.md` → "How to load your setup file into dashboardbase".
 
    **If they'd rather do it themselves:** nothing to upload — point them at the saved file and let them drag it onto the import area or paste its contents. Same result; credentials are entered in the import flow either way.
 
    **When you do create a link, give the user the `url` and tell them what it does** — a bare link with no explanation is not a handover. Say, in your own words:
 
-   - **What happens when they click it:** they'll see a preview of the dashboard — its widgets and which hosts they pull from — *before* anything is created. Nothing touches their Dashboardbase org until they confirm.
+   - **What happens when they click it:** they'll see a preview of the dashboard — its widgets and which hosts they pull from — *before* anything is created. Nothing touches their dashboardbase org until they confirm.
    - **That they'll enter credentials there, not in the file:** if the widgets point at a real API, the import flow asks for the API key or basic-auth details. That is the right place for them — never put them in the setup file.
    - **That it expires in 48 hours:** it's a handover, not storage. The setup file lives in their repo at `.dashboardbase/<slug>.json`; if the link goes stale, you can mint a fresh one from the same file in one call.
    - **That it works more than once:** they can forward it to teammates and each person can import the dashboard.
@@ -123,7 +123,7 @@ Every widget endpoint returns this shape:
 }
 ```
 
-- `title` (optional string) overrides the widget title configured in Dashboardbase.
+- `title` (optional string) overrides the widget title configured in dashboardbase.
 - `actions` (optional array) renders link actions in the widget header. `type` is currently always `"link"`. `url` must be an absolute `https://` URL.
 - `data` (required) is the widget-type-specific payload — see `references/<widget>.md` for each widget's exact shape.
 - `alert` (optional object) renders an alert banner on the widget and feeds alert notifications. Shape: `active` (boolean — `true` shows the banner, `false` clears it), `level` (one of `info`, `success`, `warning`, or `critical` — note these are lowercase, unlike the styling enums), and `message` (string; truncated beyond 200 characters). Works the same on every widget type.
@@ -132,7 +132,7 @@ These four keys are the only ones allowed at the envelope level; `additionalProp
 
 ## Request: the `dateRange` query parameter
 
-Dashboardbase appends a `?dateRange=<value>` query parameter to your endpoint URL whenever the dashboard has a date range selector active. If you ignore it, your endpoint returns the same data regardless of what the user picks — silent footgun.
+dashboardbase appends a `?dateRange=<value>` query parameter to your endpoint URL whenever the dashboard has a date range selector active. If you ignore it, your endpoint returns the same data regardless of what the user picks — silent footgun.
 
 Supported values:
 
@@ -159,7 +159,7 @@ import express from "express";
 const app = express();
 
 app.get("/widgets/mrr", (req, res) => {
-  // Dashboardbase signs every request; verify it. See references/quickstart.md for verifyDashboardbase.
+  // dashboardbase signs every request; verify it. See references/quickstart.md for verifyDashboardbase.
   if (!verifyDashboardbase(req)) return res.sendStatus(401);
   res.json({
     title: "MRR",
@@ -183,7 +183,7 @@ Verify it:
 curl https://your-api.example.com/widgets/mrr
 ```
 
-Connect it in Dashboardbase: create a KPI widget, point it at this URL and save — no headers to configure, the signature is sent automatically. The `KEY` constant needs your workspace's public key: ask the user to paste it from **Workspace → Secrets → Signing Key** (app.dashboardbase.com/workspace) before you write the verifier, and check what they paste per `references/authentication.md` → "Accepting a pasted key". See `references/quickstart.md` for the full walkthrough including a Table widget.
+Connect it in dashboardbase: create a KPI widget, point it at this URL and save — no headers to configure, the signature is sent automatically. The `KEY` constant needs your workspace's public key: ask the user to paste it from **Workspace → Secrets → Signing Key** (app.dashboardbase.com/workspace) before you write the verifier, and check what they paste per `references/authentication.md` → "Accepting a pasted key". See `references/quickstart.md` for the full walkthrough including a Table widget.
 
 ## Make it look good
 
@@ -211,7 +211,7 @@ Load only what the current task needs — these files are progressive disclosure
 | Creating a **complete dashboard** from scratch | Follow "Creating a dashboard end-to-end" above, with `references/setup-files.md` for layouts and the setup file |
 | Building a **BarChart / Clock / ContributionsGrid / Countdown / DonutChart / GaugeChart / Image / KPI / LineChart / PieChart / ProgressList / Status / Table / Text** endpoint | `references/<widget>.md` (e.g. `references/kpi.md`, `references/bar-chart.md`) |
 | Writing a **setup file** (declarative dashboard config) | `references/setup-files.md` (and `assets/setup-file.schema.json` for full schema) |
-| **Handing a finished dashboard to the user** — sharing it as a link, or the drag-drop / paste alternatives | `references/setup-files.md` → "How to load your setup file into Dashboardbase" |
+| **Handing a finished dashboard to the user** — sharing it as a link, or the drag-drop / paste alternatives | `references/setup-files.md` → "How to load your setup file into dashboardbase" |
 | Deciding between **one endpoint per widget** and **one shared endpoint** (`?widget=`) | `references/endpoint-layout.md` |
 | Choosing, changing or adding **authentication** — a new method, a second method alongside it, or a rotation | `references/authentication.md` |
 | **Changing an endpoint that is already live** — adding a header or a header strip, badge, action link, colour, another series or column | `references/modifying-endpoints.md` |
@@ -237,13 +237,13 @@ The widget reference filenames are: `bar-chart.md`, `clock.md`, `contributions-g
 - **Know what the widget exposes.** Before settling on an auth method, state in one line what the endpoint actually returns. A widget serving personal data — names, email addresses, customer records — or anything else the project would not publish deserves a deliberate decision rather than the default, so call it out to the user; the project's own `SECURITY.md` may describe the feed as aggregate-only.
 - **An existing convention beats the recommended default.** Where the project already checks a particular auth header on its other widget endpoints, or already uses a route prefix or folder layout, reuse it and ask "reuse X?" rather than offering the menu below.
 - **Alerting needs a toggle you cannot set from code.** An `alert` in the envelope renders and feeds notifications only once the user enables alerts on that widget in the dashboard editor, on a published dashboard. Returning `alert` is never enough on its own — tell the user to switch it on.
-- **Recommended auth:** verify the Ed25519 signature. Dashboardbase signs every request with your workspace's key and sends `x-dashboardbase-timestamp` and `x-dashboardbase-signature` — you verify against a public key committed to the repo, so there is no secret to hold and nothing to configure on the datasource. **Get the key before writing the verifier:** a generated plan or issue already carries it; otherwise ask the user to paste it from **Workspace → Secrets → Signing Key** (app.dashboardbase.com/workspace), and normalise what arrives per `references/authentication.md` → "Accepting a pasted key" — never scaffold around a placeholder. Prefer the Endpoint Secret instead if one environment variable suits you better; implement exactly one. API key and basic auth still work and are sent in addition. See `references/authentication.md`.
+- **Recommended auth:** verify the Ed25519 signature. dashboardbase signs every request with your workspace's key and sends `x-dashboardbase-timestamp` and `x-dashboardbase-signature` — you verify against a public key committed to the repo, so there is no secret to hold and nothing to configure on the datasource. **Get the key before writing the verifier:** a generated plan or issue already carries it; otherwise ask the user to paste it from **Workspace → Secrets → Signing Key** (app.dashboardbase.com/workspace), and normalise what arrives per `references/authentication.md` → "Accepting a pasted key" — never scaffold around a placeholder. Prefer the Endpoint Secret instead if one environment variable suits you better; implement exactly one. API key and basic auth still work and are sent in addition. See `references/authentication.md`.
 
 ## Validation loop — before declaring done
 
 1. `curl` the endpoint and confirm it returns `200` with a JSON body, in under 10 seconds.
 2. Validate the response. If `validate_widget_response` is available, call it with the **full response body** — it checks the envelope and the `data` payload against the live contract. Otherwise JSON-validate the response's `data` field against the bundled schema at `assets/schemas/<widget>.json` (the same schema is shown in `references/<widget>.md`).
-3. Open the widget in Dashboardbase and confirm it renders. If it doesn't, load `references/gotchas.md`.
+3. Open the widget in dashboardbase and confirm it renders. If it doesn't, load `references/gotchas.md`.
 4. Confirm the configured `refreshInterval` is realistic given upstream rate limits.
 
 ## Top 5 gotchas (full list: `references/gotchas.md`)
@@ -343,4 +343,4 @@ Each has its own reference file under `references/` — see the filename list ab
 
 ---
 
-*Skill generated at `2026-10-12T16:21:56Z` from the Dashboardbase API contract.*
+*Skill generated at `2026-10-13T17:45:44Z` from the dashboardbase API contract.*

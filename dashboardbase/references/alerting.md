@@ -53,7 +53,7 @@ res.json({
 });
 ```
 
-Do not keep alert state in your own database. Dashboardbase stores whether the alert is currently active and only notifies on the transition — your endpoint just reports the current truth on every poll.
+Do not keep alert state in your own database. dashboardbase stores whether the alert is currently active and only notifies on the transition — your endpoint just reports the current truth on every poll.
 
 ## Side 2 — enabling alerts on the widget
 
