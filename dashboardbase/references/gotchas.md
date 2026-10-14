@@ -10,7 +10,7 @@ These are the environment-specific facts that defy reasonable assumptions — th
 
 ## 2. `additionalProperties: false` — extra fields cause silent render failures
 
-Each widget schema has `additionalProperties: false` — it applies to the `data` payload. If `data` contains a key not in the schema (a typo, an extra debug field, a wrapper from your serialiser), Dashboardbase rejects the response. Strip unknown fields before responding. At the envelope level the allowed fields are exactly `title`, `actions`, `data`, and `alert` (see the response-envelope section in `SKILL.md`).
+Each widget schema has `additionalProperties: false` — it applies to the `data` payload. If `data` contains a key not in the schema (a typo, an extra debug field, a wrapper from your serialiser), dashboardbase rejects the response. Strip unknown fields before responding. At the envelope level the allowed fields are exactly `title`, `actions`, `data`, and `alert` (see the response-envelope section in `SKILL.md`).
 
 Common offenders:
 - `_id`, `__v` from MongoDB
@@ -25,7 +25,7 @@ The exception is fields that the schema explicitly marks as `nullable: true` —
 
 ## 4. ISO-8601 datetimes only
 
-If you put dates in `labels` for a LineChart, use ISO-8601 strings (`"2026-05-19T12:00:00Z"`) or pre-formatted strings (`"Mon"`, `"2026-05-19"`). Avoid JavaScript `Date.toString()` output (`"Mon May 19 2026 12:00:00 GMT+0000"`) — Dashboardbase treats labels as opaque strings.
+If you put dates in `labels` for a LineChart, use ISO-8601 strings (`"2026-05-19T12:00:00Z"`) or pre-formatted strings (`"Mon"`, `"2026-05-19"`). Avoid JavaScript `Date.toString()` output (`"Mon May 19 2026 12:00:00 GMT+0000"`) — dashboardbase treats labels as opaque strings.
 
 ## 5. Action URLs must be absolute HTTPS
 
@@ -48,7 +48,7 @@ For PieChart and DonutChart datasets, `color` is `List<WidgetDataColor>` (one pe
 For `Table`, `"rows": []` is a validation error (must contain at least one row, and every row must contain at least one cell). For charts, an empty `"datasets": []` is likewise rejected. A dataset whose `data` is `[]` passes validation but draws an empty series.
 
 **`204 No Content` is not an escape hatch.** It is tempting to answer "nothing to show" with an empty
-response, but Dashboardbase parses the body of every 2xx, and a 204 has no body to parse — the widget
+response, but dashboardbase parses the body of every 2xx, and a 204 has no body to parse — the widget
 lands in an error state, not an empty one. There is no "empty" outcome in the contract. Always answer
 with `200` and a valid payload that *says* there is nothing:
 
@@ -71,15 +71,15 @@ the top N.
 
 ## 11. Auth middleware that redirects (`302`)
 
-If your auth layer redirects unauthenticated requests to a login page, Dashboardbase does not follow the redirect — the widget shows an opaque error. Return `401` directly with a JSON body. This applies to every redirect, not just auth: a `301` from a trailing-slash normaliser or an HTTP→HTTPS hop errors the widget just the same. Configure the widget with the URL that actually serves the data.
+If your auth layer redirects unauthenticated requests to a login page, dashboardbase does not follow the redirect — the widget shows an opaque error. Return `401` directly with a JSON body. This applies to every redirect, not just auth: a `301` from a trailing-slash normaliser or an HTTP→HTTPS hop errors the widget just the same. Configure the widget with the URL that actually serves the data.
 
 ## 12. Non-deterministic sort order causes flicker
 
-If `rows` in a Table change order between polls (because your query sorts by `created_at` and two rows share a timestamp), the table flickers as Dashboardbase re-renders. Sort by a stable, unique field.
+If `rows` in a Table change order between polls (because your query sorts by `created_at` and two rows share a timestamp), the table flickers as dashboardbase re-renders. Sort by a stable, unique field.
 
 ## 13. Ignoring the `dateRange` query parameter
 
-When a dashboard has a date selector, Dashboardbase appends `?dateRange=<value>` to every poll, where `<value>` is one of `Today`, `SevenDays`, `ThirtyDays`, `SixtyDays`, or `NinetyDays`. If your endpoint ignores it, the widget never responds to the user's date selection — the data looks frozen. Read the parameter and map it to a time window (see `references/hosting-and-http.md`). Also make sure your **cache key includes `dateRange`** — otherwise `Today` and `NinetyDays` collide and you serve the wrong data.
+When a dashboard has a date selector, dashboardbase appends `?dateRange=<value>` to every poll, where `<value>` is one of `Today`, `SevenDays`, `ThirtyDays`, `SixtyDays`, or `NinetyDays`. If your endpoint ignores it, the widget never responds to the user's date selection — the data looks frozen. Read the parameter and map it to a time window (see `references/hosting-and-http.md`). Also make sure your **cache key includes `dateRange`** — otherwise `Today` and `NinetyDays` collide and you serve the wrong data.
 
 ## 14. Handling `dateRange` correctly, but not showing it
 

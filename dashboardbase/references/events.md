@@ -1,8 +1,8 @@
 # Events
 
-> **Load this file when:** you need to push a real-time event, notification, sound, or alert to a Dashboardbase dashboard from your own backend.
+> **Load this file when:** you need to push a real-time event, notification, sound, or alert to a dashboardbase dashboard from your own backend.
 
-Events are real-time signals your backend pushes **to** Dashboardbase (the inverse of widget polling). An event can play a sound, show a notification, and render an emoji on dashboards subscribed to the webhook.
+Events are real-time signals your backend pushes **to** dashboardbase (the inverse of widget polling). An event can play a sound, show a notification, and render an emoji on dashboards subscribed to the webhook.
 
 ## Endpoint
 
@@ -11,7 +11,7 @@ POST /webhook/events/{webhookId}
 Content-Type: application/json
 
 {
-  "secret": "<shared secret configured in Dashboardbase>",
+  "secret": "<shared secret configured in dashboardbase>",
   "message": "Deploy succeeded for api-prod",
   "emoji": "🎉",
   "sound": true,
@@ -162,7 +162,7 @@ export async function sendDashboardbaseEvent({ message, emoji, sound, notificati
       signal: AbortSignal.timeout(3000)
     });
   } catch (err) {
-    logger.warn({ err }, "Dashboardbase event not sent");
+    logger.warn({ err }, "dashboardbase event not sent");
   }
 }
 ```

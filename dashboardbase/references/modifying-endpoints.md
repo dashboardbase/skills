@@ -43,7 +43,7 @@ The widget is being polled right now, so a bad deploy shows up as a broken tile 
 - **Adding is safer than renaming.** A new optional field inside `data` renders on the next poll. Renaming or removing a key the widget already renders blanks that part of the tile.
 - **Adding `headers` is purely additive.** The strip appears above the widget on the next poll and nothing else moves — no setup-file change, no re-import. It is the cheapest answer to "can we also show X"; check the 6-block total first.
 - **Keep parallel arrays in step.** On a chart, `labels` and every dataset's `data` array must stay the same length. Adding a series means adding a whole `datasets` entry — not lengthening one array and leaving the others behind.
-- **Changing the widget *type* is not an edit.** A KPI that should become a LineChart is a different `data` contract, a different setup-file `type`, and a different widget in Dashboardbase. Treat it as a new widget and retire the old one.
+- **Changing the widget *type* is not an edit.** A KPI that should become a LineChart is a different `data` contract, a different setup-file `type`, and a different widget in dashboardbase. Treat it as a new widget and retire the old one.
 - **Ship the change and the styling together.** A new series with no `color` picks a default that may collide with an existing one; give every series its own `color` when you add the second.
 - **An auth change breaks every widget at once, or none.** Like alerting it is half code and half configuration — the check is in your handler, the credential is on each datasource — but here a wrong order is not an inert feature, it is a `401` on every poll. Widen first (accept both the old and the new), switch the datasources, then narrow (drop the old). Removing the old credential in the deploy that adds the new one 401s every dashboard polling the endpoint. See `references/authentication.md`.
 - **Do not change what the endpoint *means* without saying so.** Switching a KPI from all-time to last-30-days is invisible in the JSON and silently changes what the number on the wall means. Tell the user.
@@ -59,13 +59,13 @@ The widget is being polled right now, so a bad deploy shows up as a broken tile 
 | Turning on alerting | No | **Enable alerts on that widget in the editor** — see `references/alerting.md` |
 | How the endpoint authenticates | No — credentials never live in the setup file | Update the credential on **every** datasource pointing at the endpoint, unless the method is request signing or the Endpoint Secret (nothing to configure) |
 
-When the setup file does change, update `.dashboardbase/<slug>.json` in the repo in the same commit as the endpoint change, then hand it over the same way as a new dashboard (`references/setup-files.md` → "How to load your setup file into Dashboardbase"). Keeping the file in sync is what makes the dashboard reproducible; a repo whose setup file no longer matches the live dashboard is worse than no setup file.
+When the setup file does change, update `.dashboardbase/<slug>.json` in the repo in the same commit as the endpoint change, then hand it over the same way as a new dashboard (`references/setup-files.md` → "How to load your setup file into dashboardbase"). Keeping the file in sync is what makes the dashboard reproducible; a repo whose setup file no longer matches the live dashboard is worse than no setup file.
 
 ## 5. Verify the change
 
 1. `curl` the live endpoint and look at the **whole** response, not just the part you changed — it is easy to add a `header` and drop a key from `data` in the same edit.
 2. Validate it. If `validate_widget_response` is available, pass it the full envelope; otherwise validate `data` against `assets/schemas/<widget>.json`.
-3. Reload the widget in Dashboardbase and confirm the new element renders. If the tile went blank, the change added a key the schema does not allow — `references/gotchas.md` § 2.
+3. Reload the widget in dashboardbase and confirm the new element renders. If the tile went blank, the change added a key the schema does not allow — `references/gotchas.md` § 2.
 4. If you touched `dateRange` handling, check the endpoint under two different ranges, not one.
 
 ## Common mistakes

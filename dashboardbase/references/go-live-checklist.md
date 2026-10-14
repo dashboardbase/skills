@@ -1,6 +1,6 @@
 # Go-live checklist
 
-> **Load this file when:** preparing a Dashboardbase widget endpoint for production, before pointing real users at it.
+> **Load this file when:** preparing a dashboardbase widget endpoint for production, before pointing real users at it.
 
 Walk through this list before declaring the integration ready.
 
@@ -46,7 +46,7 @@ Walk through this list before declaring the integration ready.
 
 - [ ] Endpoint has monitoring: latency, error rate, request volume.
 - [ ] Alerting is wired for sustained `5xx` or response time over 2 seconds.
-- [ ] Endpoint behaves predictably under load: rate limiting allows Dashboardbase's poll rate.
+- [ ] Endpoint behaves predictably under load: rate limiting allows dashboardbase's poll rate.
 - [ ] Database queries supporting this endpoint use indexed columns and are not expected to slow down with scale.
 
 ## Setup file

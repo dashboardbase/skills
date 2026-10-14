@@ -2,7 +2,7 @@
 
 > **Load this file when:** deciding how many endpoints to build for a dashboard, implementing a single endpoint that serves several widgets, or wiring `?widget=` query strings into a setup file.
 
-Dashboardbase polls one URL per widget. Nothing requires those URLs to be distinct *paths* — only distinct *URLs*. That gives you two layouts.
+dashboardbase polls one URL per widget. Nothing requires those URLs to be distinct *paths* — only distinct *URLs*. That gives you two layouts.
 
 | | One endpoint per widget (default) | One shared endpoint |
 |---|---|---|
@@ -11,7 +11,7 @@ Dashboardbase polls one URL per widget. Nothing requires those URLs to be distin
 | Handler | one per widget, each returning one shape | one, dispatching on `widget` |
 | Adding a widget | add a route | add a case |
 
-Both are fully supported. Nothing else in Dashboardbase changes: the response envelope, the widget schemas, authentication, refresh intervals, and the setup file are identical either way.
+Both are fully supported. Nothing else in dashboardbase changes: the response envelope, the widget schemas, authentication, refresh intervals, and the setup file are identical either way.
 
 ## Which to choose
 
@@ -101,7 +101,7 @@ Rules that hold regardless of language:
 }
 ```
 
-A `path` containing a query string is valid, validates, and round-trips through export unchanged. When the dashboard has a date range selector active, Dashboardbase appends `dateRange` to whatever URL you configured — with `&`, because a query string is already there:
+A `path` containing a query string is valid, validates, and round-trips through export unchanged. When the dashboard has a date range selector active, dashboardbase appends `dateRange` to whatever URL you configured — with `&`, because a query string is already there:
 
 ```
 GET https://api.example.com/api/v1/dashboard/widget?widget=mrr&dateRange=SevenDays
@@ -122,7 +122,7 @@ Widgets keep their ids, their positions, and their history — no widget is recr
 ## Common mistakes
 
 - **Putting the discriminator in `baseUrl`.** `baseUrl` is shared by every mapping, so `https://api.example.com?widget=mrr` sends every widget the same value. It belongs in `path`.
-- **Reusing `dateRange` as the discriminator.** Dashboardbase controls that parameter; it will be overwritten.
-- **Naming the parameter something Dashboardbase sends.** Avoid `dateRange`. `widget` is the conventional name; anything else you pick works as long as the setup file and the handler agree.
+- **Reusing `dateRange` as the discriminator.** dashboardbase controls that parameter; it will be overwritten.
+- **Naming the parameter something dashboardbase sends.** Avoid `dateRange`. `widget` is the conventional name; anything else you pick works as long as the setup file and the handler agree.
 - **Returning `200` for an unknown widget.** The widget renders empty and the misconfiguration is invisible. Return `400`.
 - **Forgetting one branch's `header`.** With N shapes behind one route it's easy to ship one without the styling the rest have. Check every branch against "Make it look good" in `SKILL.md`.

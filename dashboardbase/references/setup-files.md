@@ -2,7 +2,7 @@
 
 > **Load this file when:** writing, importing, or exporting a declarative dashboard configuration, or when a user mentions "setup file", "dashboard JSON", or "wire widgets from a file".
 
-A setup file is a single JSON document that describes a Dashboardbase dashboard — its widgets, where each widget's data comes from, and how often to refresh. Setup files are how you ship a dashboard configuration alongside your application code, so a user can "bring up the same dashboard" in their Dashboardbase organisation in one step.
+A setup file is a single JSON document that describes a dashboardbase dashboard — its widgets, where each widget's data comes from, and how often to refresh. Setup files are how you ship a dashboard configuration alongside your application code, so a user can "bring up the same dashboard" in their dashboardbase organisation in one step.
 
 ## Schema reference
 
@@ -27,11 +27,11 @@ The full JSON Schema is bundled at `assets/setup-file.schema.json`. Load it when
 - `id` is the target dashboard UUID. If absent, a new dashboard is created on import. The value above is a placeholder — replace with a real UUID or omit the field.
 - `name` (optional) is the human-readable dashboard name, so the file on disk carries which dashboard it configures.
 - `baseUrl` is the default base URL for mappings without an explicit `datasourceId` or absolute `path`.
-- `datasources[]` declares named datasources. Each `mapping` may reference one by `datasourceId`. Credentials live in Dashboardbase, never in the setup file.
+- `datasources[]` declares named datasources. Each `mapping` may reference one by `datasourceId`. Credentials live in dashboardbase, never in the setup file.
 - `refreshInterval` is one of `1m`, `5m`, `10m`, `30m`.
 - `mappings[]` is the array of widget-to-endpoint wires — each entry is in one of four states described below.
 
-A mapping's `path` may carry a query string: `"/api/v1/dashboard/widget?widget=revenue-mrr"` is valid, and it is how a dashboard served by **one shared endpoint** is wired (see `references/endpoint-layout.md`). Dashboardbase appends `dateRange` to whatever URL you configure, using `&` when a query string is already present.
+A mapping's `path` may carry a query string: `"/api/v1/dashboard/widget?widget=revenue-mrr"` is valid, and it is how a dashboard served by **one shared endpoint** is wired (see `references/endpoint-layout.md`). dashboardbase appends `dateRange` to whatever URL you configure, using `&` when a query string is already present.
 
 ## Widget `type` values
 
@@ -400,7 +400,7 @@ Before extending the grid, check that the extra widgets really are extra *widget
 - **More than one Primary-role widget** → give each extra one its own full-width row (`w:12 h:5`), or pair two side by side as `w:6 h:5`.
 - **More Secondary-role widgets than slots** → tile the extras in rows of three `w:4 h:5` or two `w:6 h:5` below the layout.
 
-Rules that keep an extended layout valid: each added row starts at `y` = the previous row's `y` + its `h` (so nothing overlaps), each row's widths sum to 12 columns, and every slot stays inside the size constraints listed above. Tell the user which layout you extended and how, so they can rearrange in Dashboardbase if they prefer.
+Rules that keep an extended layout valid: each added row starts at `y` = the previous row's `y` + its `h` (so nothing overlaps), each row's widths sum to 12 columns, and every slot stays inside the size constraints listed above. Tell the user which layout you extended and how, so they can rearrange in dashboardbase if they prefer.
 
 ## Example with multiple datasources
 
@@ -538,13 +538,13 @@ Before writing a **new** setup file, check whether the user already has one — 
 
 This keeps every dashboard in the repo pointed at the same API and saves the user from re-entering a URL they have already set up.
 
-## How to load your setup file into Dashboardbase
+## How to load your setup file into dashboardbase
 
 After generating the JSON, there are four ways to get it in.
 
 **If you are an agent handing work back to a person, ask them which they want before doing anything** — Option 1 uploads their config to get a link, and that is their call to make, not yours:
 
-> The dashboard config is ready. I can upload it and give you a link that opens straight into the import preview, or you can drag the file into Dashboardbase yourself. Shall I create the link?
+> The dashboard config is ready. I can upload it and give you a link that opens straight into the import preview, or you can drag the file into dashboardbase yourself. Shall I create the link?
 
 Suggest Option 1, since it saves them handling the file at all, but take Option 2 or 3 without argument if that is what they prefer. Never upload a config you were not asked to upload.
 
@@ -572,7 +572,7 @@ The request body is the setup file itself — no `{ "content": … }` wrapper. R
 
 Give the user the `url` **and** tell them how to use it. A bare URL with no explanation is not a handover — they don't know whether clicking it will change something in their account. Cover these, in your own words:
 
-- **What clicking it does.** They land on a preview showing the dashboard's widgets and which hosts the data comes from. Nothing is created in their Dashboardbase organisation until they confirm — the link is safe to open and look at.
+- **What clicking it does.** They land on a preview showing the dashboard's widgets and which hosts the data comes from. Nothing is created in their dashboardbase organisation until they confirm — the link is safe to open and look at.
 - **Where credentials go.** If the widgets point at a real API, the import flow prompts for the API key or basic-auth details. That is the only place they belong — never in the setup file, and never in the link.
 - **How long it lasts.** 48 hours. The setup file itself stays in the repo at `.dashboardbase/<slug>.json`, so if the link goes stale you can generate a new one from the same file in one call. Say this rather than implying the dashboard is stored at the URL.
 - **That it's reusable.** They can forward it to teammates; each person can import the dashboard from the same link.
@@ -583,22 +583,22 @@ If they declined the link in the first place, none of this applies — just poin
 
 #### Limits and failure cases
 
-- **Credentials are rejected, not stripped.** If the file carries anything credential-shaped — a `headers` object, `apiKey`, `authorization`, `basicAuth`, a `user:password@host` base URL, a `?api_key=…` query parameter, or a pasted provider key — the POST fails with `400` and `reason: "credentials_detected"`, listing the offending fields. Remove them and configure the credentials in Dashboardbase per-datasource. Do not try to work around the check.
+- **Credentials are rejected, not stripped.** If the file carries anything credential-shaped — a `headers` object, `apiKey`, `authorization`, `basicAuth`, a `user:password@host` base URL, a `?api_key=…` query parameter, or a pasted provider key — the POST fails with `400` and `reason: "credentials_detected"`, listing the offending fields. Remove them and configure the credentials in dashboardbase per-datasource. Do not try to work around the check.
 - **`400` with `reason: "invalid_setup_file"`** means the file didn't validate; `errors[]` carries field- and line-precise detail. Fix and re-post.
 - The file must be **256 KB or smaller** (`413` past that), and the endpoint is rate limited to a handful of calls per minute. It is for handing over a dashboard, not for bulk uploads.
 - You cannot choose the expiry or make a link permanent — every link is temporary with the same 48-hour lifetime.
 
 ### Option 2 — Drag-and-drop the file
 
-In the Dashboardbase web app, open the dashboard import area and drop the `.json` file onto the drop zone. Dashboardbase validates it server-side and creates / updates the dashboard.
+In the dashboardbase web app, open the dashboard import area and drop the `.json` file onto the drop zone. dashboardbase validates it server-side and creates / updates the dashboard.
 
 ### Option 3 — Paste the raw JSON
 
-Some import dialogs accept pasted text. Copy the file contents and paste them into the import input field; Dashboardbase parses and validates server-side.
+Some import dialogs accept pasted text. Copy the file contents and paste them into the import input field; dashboardbase parses and validates server-side.
 
 ### Option 4 — validate the file before importing (for tools)
 
-**If the `validate_setup_file` tool is available** (the Dashboardbase MCP server is installed), call it — it validates against the live contract, needs no org ID and no credentials, and cannot drift from what the platform accepts. It is backed by the public endpoint below, which you can also call directly:
+**If the `validate_setup_file` tool is available** (the dashboardbase MCP server is installed), call it — it validates against the live contract, needs no org ID and no credentials, and cannot drift from what the platform accepts. It is backed by the public endpoint below, which you can also call directly:
 
 ```http
 POST /tools/v1/validate/setup-file
@@ -660,7 +660,7 @@ The response's `data` field contains the setup-file JSON with every widget's ful
 ## Common mistakes
 
 - **Mixing State A and State B in the same mapping.** A mapping with both `widgetId` and `type` but **without** the full State D export shape (`size`, `position`, and one of `path` / `plan`) is invalid — either wire an existing widget (State A: `widgetId` + `path`, no `type`) or create a new one (State B: `type` + `path`). Only exported State D mappings legitimately carry both.
-- **Including credentials in the file.** Setup files are designed to be shareable; credentials are configured in Dashboardbase per-datasource. This is now enforced: `POST /tools/v1/setup-links` rejects a file carrying credential-shaped fields rather than quietly removing them.
+- **Including credentials in the file.** Setup files are designed to be shareable; credentials are configured in dashboardbase per-datasource. This is now enforced: `POST /tools/v1/setup-links` rejects a file carrying credential-shaped fields rather than quietly removing them.
 - **Using a `refreshInterval` outside the allowed set.** Only `1m`, `5m`, `10m`, `30m`.
 - **Forgetting `$schema`.** Optional but recommended — editors with JSON Schema support will offer completion when it's present.
 - **Relative `path` without `baseUrl` or `datasourceId`.** Either set a top-level `baseUrl`, declare a `datasourceId`, or use an absolute URL in `path`.
