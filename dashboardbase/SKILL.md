@@ -4,7 +4,7 @@ description: Use when creating a dashboardbase dashboard end-to-end, or when bui
 license: Proprietary. Free to use; not open source. LICENSE has complete terms.
 metadata:
   source-repo: dashboardbase-api
-  generated-at: "2026-10-13T17:45:44Z"
+  generated-at: "2026-10-20T18:24:21Z"
   api-version: "1.0.0"
   spec-version: "1.0"
 ---
@@ -23,7 +23,7 @@ When the task is a whole dashboard (not a single widget), follow this workflow:
 
 1. **Choose widgets.** Pick one widget type per *thing being shown* — not one per number. Several numbers describing the same data belong in one widget's `headers` strip above it (up to 6 blocks including `header`), so "pageviews per day, plus totals for pages, users and organizations" is **one** LineChart, not a LineChart and three KPI tiles. Reach for a second widget when the second thing has its own shape — a list, a breakdown, a status — not when it is another number about the first. Then pick the type per widget:
 
-- **BarChart** (setup-file type `bar`) — building a bar chart / grouped bars / comparison by category.
+- **BarChart** (setup-file type `bar`) — building a bar chart / grouped or stacked bars / comparison by category / bars with a rate line (combo chart).
 - **Clock** (setup-file type `clock`) — building a clock / current-time / timezone tile.
 - **ContributionsGrid** (setup-file type `contributions`) — building a GitHub-style contributions / activity heatmap grid.
 - **Countdown** (setup-file type `countdown`) — building a countdown / days-until / time-remaining tile.
@@ -197,6 +197,7 @@ Dashboards read dramatically better when every widget uses the styling surface t
 - **Leave the chart's look to the defaults.** A LineChart is filled, drawn with straight segments, shows dots only on a short series and carries faint value gridlines without being asked; a BarChart carries the same gridlines. `fill`, `smooth`, `points` and `grid` exist to opt out (or into curves) — omit them unless the developer asks for a different look.
 - **Give a KPI its recent shape with `trend`** when the endpoint has the readings anyway: a plain array of numbers, oldest first, ending with the headline value. It draws a sparkline beside the number where the tile has room and is left out where it doesn't — never move a number into a chart to get one.
 - **Show a goal or a baseline as data, not decoration.** A goal, quota, budget or SLA goes in `target: { "value": 50000, "label": "Q3 goal" }` on a LineChart or BarChart — one labelled line the axis always stretches to include. A previous period on a LineChart is an extra dataset with `"style": "Comparison"` (a dashed grey line behind the current one, compared in the tooltip). Send either only when the goal asks for it; never fake one with a flat or duplicate series.
+- **Stack parts of a total; put a rate on its own axis.** When BarChart series are parts of one whole in the same unit (MRR by plan, visitors by channel), send `"stacked": true` and the total in `header.title`. When the goal pairs a volume with a rate (signups and conversion, orders and AOV), keep the volume as bars and send the rate as a dataset with `"type": "Line"` and `"axis": "Right"`, its unit in each value's `postfix`. Never stack rates or mixed units, and never plot a percentage on the same axis as counts.
 - **Add link `actions`** so a widget clicks through to the underlying tool (Stripe, your admin, a runbook).
 - **Design for the big screen too.** A dashboard can be shown on a wall-mounted TV (paired as a display device) and viewed from across a room. Nothing extra to build — a TV renders the same widget endpoints — but the styling above is exactly what makes it read at a distance: large headline numbers, high-contrast badges, and an echoed date range beat dense tables and tiny labels on a 55" screen.
 
@@ -343,4 +344,4 @@ Each has its own reference file under `references/` — see the filename list ab
 
 ---
 
-*Skill generated at `2026-10-13T17:45:44Z` from the dashboardbase API contract.*
+*Skill generated at `2026-10-20T18:24:21Z` from the dashboardbase API contract.*
