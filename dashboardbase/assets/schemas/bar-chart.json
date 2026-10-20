@@ -181,6 +181,22 @@
             ],
             "type": "string",
             "nullable": true
+          },
+          "type": {
+            "enum": [
+              "Bar",
+              "Line"
+            ],
+            "type": "string",
+            "nullable": true
+          },
+          "axis": {
+            "enum": [
+              "Left",
+              "Right"
+            ],
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -324,6 +340,10 @@
         }
       },
       "additionalProperties": false,
+      "nullable": true
+    },
+    "stacked": {
+      "type": "boolean",
       "nullable": true
     }
   },

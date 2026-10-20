@@ -1,10 +1,10 @@
 # BarChart widget
 
-> **Load this file when:** building a bar chart / grouped bars / comparison by category.
+> **Load this file when:** building a bar chart / grouped or stacked bars / comparison by category / bars with a rate line (combo chart).
 
 ## Purpose
 
-Render one or more series of vertical bars across a shared label axis — ideal for 'X by Y' comparisons (monthly sales, items per category, multi-region comparison).
+Render one or more series of vertical bars across a shared label axis — ideal for 'X by Y' comparisons (monthly sales, items per category, multi-region comparison). Bars can be stacked to show a total and what it is made of, and a series can be drawn as a line over the bars (on its own right-hand axis) to read a rate against the volume beneath it.
 
 In a setup file, this widget's `type` is `bar` (see `references/setup-files.md`).
 
@@ -196,6 +196,22 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             ],
             "type": "string",
             "nullable": true
+          },
+          "type": {
+            "enum": [
+              "Bar",
+              "Line"
+            ],
+            "type": "string",
+            "nullable": true
+          },
+          "axis": {
+            "enum": [
+              "Left",
+              "Right"
+            ],
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -339,6 +355,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
         }
       },
       "additionalProperties": false,
+      "nullable": true
+    },
+    "stacked": {
+      "type": "boolean",
       "nullable": true
     }
   },
@@ -499,6 +519,32 @@ The canonical example shows two datasets ("Series A" and "Series B") with no exp
   "labels": ["Alice", "Bob", "Chen"],
   "datasets": [{ "label": "Deals closed", "data": [{"value": 14}, {"value": 9}, {"value": 12}] }],
   "target": { "value": 12, "label": "Quota" }
+}
+```
+
+**Stack the series** with `stacked: true` when they are parts of one whole in the same unit — MRR by plan, visitors by channel, tickets by priority. The top of each column is the total, so put that total in `header.title`. Do not stack series that do not add up (rates, mixed units, negative values).
+
+```json
+{
+  "stacked": true,
+  "labels": ["Jul", "Aug", "Sep"],
+  "datasets": [
+    { "label": "Starter", "data": [{"value": 8000}, {"value": 8400}, {"value": 9200}] },
+    { "label": "Team", "data": [{"value": 16000}, {"value": 18000}, {"value": 19000}] },
+    { "label": "Business", "data": [{"value": 15000}, {"value": 17000}, {"value": 20000}] }
+  ]
+}
+```
+
+**Draw a rate over the bars** (a combo chart) by giving one dataset `type: "Line"`. When its values are on a different scale from the bars — a percentage over counts — also set `axis: "Right"`, so it gets its own scale on the right edge. A unit such as `%` goes in each value's `postfix` and is used for that axis and the tooltip. Line series are never stacked, and `target` always measures against the left axis.
+
+```json
+{
+  "labels": ["W39", "W40", "W41"],
+  "datasets": [
+    { "label": "Signups", "data": [{"value": 250}, {"value": 290}, {"value": 320}] },
+    { "label": "Conversion", "type": "Line", "axis": "Right", "data": [{"value": 3.9, "postfix": "%"}, {"value": 4.4, "postfix": "%"}, {"value": 4.7, "postfix": "%"}] }
+  ]
 }
 ```
 
@@ -902,6 +948,246 @@ Categories measured against one shared goal — deals per rep against quota, tic
 }
 ```
 
+### Stacked total and its make-up
+
+Series that are parts of one total in the same unit — MRR by plan, visitors by channel, tickets by priority. Set `stacked: true`.
+
+```json
+{
+  "title": "MRR by plan",
+  "actions": [
+    {
+      "title": "Open billing",
+      "type": "link",
+      "url": "https://example.com/billing"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "$48.2k",
+      "subtitle": "MRR, Sep",
+      "badge": {
+        "text": "+12%",
+        "icon": "ArrowUp",
+        "color": "Success"
+      }
+    },
+    "labels": [
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 6000,
+            "prefix": "$"
+          },
+          {
+            "value": 7000,
+            "prefix": "$"
+          },
+          {
+            "value": 7000,
+            "prefix": "$"
+          },
+          {
+            "value": 8000,
+            "prefix": "$"
+          },
+          {
+            "value": 8000,
+            "prefix": "$"
+          },
+          {
+            "value": 9200,
+            "prefix": "$"
+          }
+        ],
+        "label": "Starter"
+      },
+      {
+        "data": [
+          {
+            "value": 12000,
+            "prefix": "$"
+          },
+          {
+            "value": 13000,
+            "prefix": "$"
+          },
+          {
+            "value": 15000,
+            "prefix": "$"
+          },
+          {
+            "value": 16000,
+            "prefix": "$"
+          },
+          {
+            "value": 18000,
+            "prefix": "$"
+          },
+          {
+            "value": 19000,
+            "prefix": "$"
+          }
+        ],
+        "label": "Team"
+      },
+      {
+        "data": [
+          {
+            "value": 10000,
+            "prefix": "$"
+          },
+          {
+            "value": 11000,
+            "prefix": "$"
+          },
+          {
+            "value": 13000,
+            "prefix": "$"
+          },
+          {
+            "value": 15000,
+            "prefix": "$"
+          },
+          {
+            "value": 17000,
+            "prefix": "$"
+          },
+          {
+            "value": 20000,
+            "prefix": "$"
+          }
+        ],
+        "label": "Business"
+      }
+    ],
+    "stacked": true
+  }
+}
+```
+
+### Volume with a rate line (combo)
+
+A count and a rate that explain each other — signups and conversion, orders and average order value, requests and error rate. Give the rate `type: "Line"` and `axis: "Right"`.
+
+```json
+{
+  "title": "Signups and conversion",
+  "actions": [
+    {
+      "title": "Open funnel",
+      "type": "link",
+      "url": "https://example.com/funnel"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "320",
+      "subtitle": "Signups this week",
+      "badge": {
+        "text": "+10%",
+        "icon": "ArrowUp",
+        "color": "Success"
+      }
+    },
+    "labels": [
+      "W34",
+      "W35",
+      "W36",
+      "W37",
+      "W38",
+      "W39",
+      "W40",
+      "W41"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 180
+          },
+          {
+            "value": 210
+          },
+          {
+            "value": 195
+          },
+          {
+            "value": 240
+          },
+          {
+            "value": 260
+          },
+          {
+            "value": 250
+          },
+          {
+            "value": 290
+          },
+          {
+            "value": 320
+          }
+        ],
+        "label": "Signups"
+      },
+      {
+        "data": [
+          {
+            "value": 3.1,
+            "postfix": "%"
+          },
+          {
+            "value": 3.4,
+            "postfix": "%"
+          },
+          {
+            "value": 3.2,
+            "postfix": "%"
+          },
+          {
+            "value": 3.8,
+            "postfix": "%"
+          },
+          {
+            "value": 4,
+            "postfix": "%"
+          },
+          {
+            "value": 3.9,
+            "postfix": "%"
+          },
+          {
+            "value": 4.4,
+            "postfix": "%"
+          },
+          {
+            "value": 4.7,
+            "postfix": "%"
+          }
+        ],
+        "label": "Conversion",
+        "type": "Line",
+        "axis": "Right"
+      }
+    ],
+    "headers": [
+      {
+        "title": "4.7%",
+        "subtitle": "Trial to paid"
+      }
+    ]
+  }
+}
+```
+
 ## Validation
 
 The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, dashboardbase renders the widget in an error state. Before declaring done, validate the response. If the `validate_widget_response` tool is available, call it with the full response body — that checks against the live contract. Otherwise validate the response's `data` field against `assets/schemas/bar-chart.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
@@ -928,4 +1214,8 @@ All values are case-sensitive (`"Success"`, not `"success"`).
 - Turning `ticksX` off for a long daily series — the labels stay level and thin themselves to fit, so thirty or ninety dates read fine. Leave them on and keep each label short (`"Sep 9"`, not `"2026-09-09T00:00:00Z"`); the dates are what make the trend readable.
 - Setting `grid` just to make the chart look finished — omit it. Faint value gridlines are the default; `grid: false` only exists to switch them off.
 - Drawing a goal as an extra dataset of identical bars — send `target: { "value": 12, "label": "Quota" }` instead. It draws one labelled line across every bar and keeps it in view even when no bar reaches it.
+- Stacking series that do not add up — `stacked: true` says the columns are a total. A rate, an average or a series in another unit belongs on a line (`type: "Line"`, `axis: "Right"`) instead.
+- Putting a percentage on the same axis as counts in the hundreds — it flattens into a line along the bottom. Give the rate series `axis: "Right"` so it gets its own scale.
+- Making every dataset a line — a BarChart needs at least one bar series. For lines only, use a LineChart.
+- Combining `type: "Line"` or `axis: "Right"` with horizontal bars (`indexAxis: y`) — a combo chart is vertical only, and the response fails validation.
 - Sending more than 6 header blocks — `header` and `headers` together may hold at most 6, one per pair of grid columns. Everything past the sixth is a validation error, not a silent truncation.
