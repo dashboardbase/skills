@@ -1049,6 +1049,102 @@ A metric tracked against a goal, quota or budget — MRR toward this quarter's t
 }
 ```
 
+### Smooth curve, no gridlines
+
+A longer trend read for its shape rather than its exact values — daily active users over two weeks on a wallboard.
+
+```json
+{
+  "title": "Daily active users",
+  "actions": [
+    {
+      "title": "Open analytics",
+      "type": "link",
+      "url": "https://example.com/analytics"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "2,543",
+      "subtitle": "Last 14 days",
+      "badge": {
+        "text": "+12%",
+        "icon": "ArrowUp",
+        "color": "Success"
+      }
+    },
+    "labels": [
+      "Sep 23",
+      "Sep 24",
+      "Sep 25",
+      "Sep 26",
+      "Sep 27",
+      "Sep 28",
+      "Sep 29",
+      "Sep 30",
+      "Oct 1",
+      "Oct 2",
+      "Oct 3",
+      "Oct 4",
+      "Oct 5",
+      "Oct 6"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 2120
+          },
+          {
+            "value": 2260
+          },
+          {
+            "value": 2190
+          },
+          {
+            "value": 2310
+          },
+          {
+            "value": 2180
+          },
+          {
+            "value": 1960
+          },
+          {
+            "value": 2020
+          },
+          {
+            "value": 2280
+          },
+          {
+            "value": 2410
+          },
+          {
+            "value": 2350
+          },
+          {
+            "value": 2470
+          },
+          {
+            "value": 2390
+          },
+          {
+            "value": 2210
+          },
+          {
+            "value": 2543
+          }
+        ],
+        "label": "Active users"
+      }
+    ],
+    "smooth": true,
+    "points": false,
+    "grid": false
+  }
+}
+```
+
 ## Validation
 
 The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, dashboardbase renders the widget in an error state. Before declaring done, validate the response. If the `validate_widget_response` tool is available, call it with the full response body — that checks against the live contract. Otherwise validate the response's `data` field against `assets/schemas/line-chart.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
