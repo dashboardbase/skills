@@ -400,6 +400,39 @@ Progress toward a goal where the value can sit anywhere from 0 to the target.
 }
 ```
 
+### Capacity with a trend badge
+
+A capacity or quota dial where the recent change matters as much as the level — storage, seats, API quota used.
+
+```json
+{
+  "title": "Storage used",
+  "actions": [
+    {
+      "title": "Manage storage",
+      "type": "link",
+      "url": "https://example.com/storage"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "412 GB",
+      "subtitle": "of 500 GB",
+      "badge": {
+        "text": "+18 GB",
+        "icon": "ArrowUp",
+        "color": "Warning"
+      }
+    },
+    "value": {
+      "value": 82.4,
+      "postfix": "%"
+    },
+    "maxValue": 100
+  }
+}
+```
+
 ### Utilisation with a warning alert
 
 A utilisation dial nearing its ceiling — raise a warning alert before it maxes out.
