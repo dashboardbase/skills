@@ -4,7 +4,7 @@
 
 ## Purpose
 
-Show a binary health indicator (Ok / Error) with optional header context — ideal for service status, deploy state, alert summaries. Set the optional `mode` to `Heartbeat` to have the client render the indicator as an ECG-style pulse that beats (a healthy service visibly 'lives' on a TV wall); omit it or send `Default` for the plain Ok/Error pill.
+Show a binary health indicator (Ok / Error) with optional header context — ideal for service status, deploy state, alert summaries. Set the optional `mode` to `Heartbeat` to have the client render the indicator as an ECG-style pulse that beats (a healthy service visibly 'lives' on a TV wall); omit it or send `Default` for the plain Ok/Error pill. Add an optional `legend` to list the items behind the overall status under the indicator — one entry per service or check, each with its own `color` (`Success`, `Warning`, `Danger`, …) and an optional `value` — styled like a chart legend.
 
 In a setup file, this widget's `type` is `status` (see `references/setup-files.md`).
 
@@ -231,6 +231,46 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
         "additionalProperties": false
       },
       "nullable": true
+    },
+    "legend": {
+      "maxItems": 24,
+      "type": "array",
+      "items": {
+        "required": [
+          "label"
+        ],
+        "type": "object",
+        "properties": {
+          "label": {
+            "maxLength": 60,
+            "minLength": 1,
+            "type": "string"
+          },
+          "color": {
+            "enum": [
+              "Success",
+              "Warning",
+              "Danger",
+              "Blue",
+              "Green",
+              "Red",
+              "Yellow",
+              "Orange",
+              "Light",
+              "Dark"
+            ],
+            "type": "string",
+            "nullable": true
+          },
+          "value": {
+            "maxLength": 24,
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "nullable": true
     }
   },
   "additionalProperties": false
@@ -304,7 +344,24 @@ readable there too.
 Every block in `headers` needs a `title` — an entry without one renders as an empty column, so it is
 rejected.
 
+## Legend
 
+**A health board with a legend.** The indicator is the overall verdict; `legend` names what it is made of. Give each entry a `label`, a `color` for its own state and, optionally, a short `value` (a latency, an uptime). Omit `color` for a neutral entry.
+
+```json
+{
+  "status": "Error",
+  "header": { "title": "Degraded", "subtitle": "1 of 4 services failing" },
+  "legend": [
+    { "label": "API", "color": "Success", "value": "112 ms" },
+    { "label": "Database", "color": "Success", "value": "8 ms" },
+    { "label": "Queue", "color": "Warning", "value": "1.2k jobs" },
+    { "label": "Payments", "color": "Danger", "value": "Down" }
+  ]
+}
+```
+
+Give the widget the whole board (12 columns, full height) to use it as a full-screen health dashboard on a TV.
 
 ## Variations
 
@@ -447,6 +504,57 @@ A health tile that should also carry uptime and time-since-last-incident, instea
 }
 ```
 
+### Overall health with a legend per service
+
+A health board where one indicator gives the overall verdict and a `legend` lists each service or check with its own colour — give it the whole board to use it as a full-screen health dashboard.
+
+```json
+{
+  "title": "Platform health",
+  "actions": [
+    {
+      "title": "Open Status Page",
+      "type": "link",
+      "url": "https://example.com/status-page"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "Degraded",
+      "subtitle": "1 of 5 services failing"
+    },
+    "status": "Error",
+    "legend": [
+      {
+        "label": "API",
+        "color": "Success",
+        "value": "112 ms"
+      },
+      {
+        "label": "Database",
+        "color": "Success",
+        "value": "8 ms"
+      },
+      {
+        "label": "Queue",
+        "color": "Warning",
+        "value": "1.2k jobs"
+      },
+      {
+        "label": "Payments",
+        "color": "Danger",
+        "value": "Down"
+      },
+      {
+        "label": "CDN",
+        "color": "Success",
+        "value": "99.99%"
+      }
+    ]
+  }
+}
+```
+
 ## Validation
 
 The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, dashboardbase renders the widget in an error state. Before declaring done, validate the response. If the `validate_widget_response` tool is available, call it with the full response body — that checks against the live contract. Otherwise validate the response's `data` field against `assets/schemas/status.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
@@ -468,4 +576,6 @@ All values are case-sensitive (`"Success"`, not `"success"`).
 - Sending a string for `status` outside `Ok` / `Error` — values are case-sensitive and limited to the `WidgetStatusIndicator` enum.
 - Using KPI shape for a binary indicator — Status renders an explicit Ok/Error pill, KPI does not.
 - Sending a `mode` outside `Default` / `Heartbeat` — it is nullable, so omit it for the default rendering.
+- Encoding each item's health in its `label` (`'API ✅'`) — send `legend` entries with a `color` instead, so the state reads as a swatch and the overall `status` stays the verdict.
+- Sending more than 24 `legend` entries, or one without a `label` — the legend is a summary under the indicator, not a full check list.
 - Sending more than 6 header blocks — `header` and `headers` together may hold at most 6, one per pair of grid columns. Everything past the sixth is a validation error, not a silent truncation.
