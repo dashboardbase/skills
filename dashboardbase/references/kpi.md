@@ -256,33 +256,59 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
       "nullable": true
     },
     "trend": {
-      "maxItems": 120,
-      "minItems": 2,
-      "type": "array",
-      "items": {
-        "type": "number",
-        "format": "double"
-      },
-      "nullable": true
-    },
-    "trendColor": {
-      "enum": [
-        "Success",
-        "Warning",
-        "Danger",
-        "Blue",
-        "Green",
-        "Red",
-        "Yellow",
-        "Orange",
-        "Light",
-        "Dark"
+      "oneOf": [
+        {
+          "maxItems": 120,
+          "minItems": 2,
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        {
+          "required": [
+            "values"
+          ],
+          "type": "object",
+          "properties": {
+            "values": {
+              "maxItems": 120,
+              "minItems": 2,
+              "type": "array",
+              "items": {
+                "type": "number",
+                "format": "double"
+              }
+            },
+            "color": {
+              "enum": [
+                "Success",
+                "Warning",
+                "Danger",
+                "Blue",
+                "Green",
+                "Red",
+                "Yellow",
+                "Orange",
+                "Light",
+                "Dark"
+              ],
+              "type": "string",
+              "nullable": true
+            },
+            "smooth": {
+              "type": "boolean",
+              "nullable": true
+            },
+            "fill": {
+              "type": "boolean",
+              "nullable": true
+            }
+          },
+          "additionalProperties": false
+        }
       ],
-      "type": "string",
-      "nullable": true
-    },
-    "trendSmooth": {
-      "type": "boolean",
       "nullable": true
     }
   },
@@ -368,12 +394,20 @@ rejected.
 
 ## Sparkline
 
-`trend` is a plain array of numbers, oldest first, ending with the reading the headline shows — the last 7 days, the last 12 weeks. It is drawn as a small line beside the headline (or under it on a taller card), coloured like the badge, with the latest point marked. Like a LineChart it is drawn with straight segments; set `trendSmooth: true` for a curve. Set `trendColor` to draw the line in another colour than the badge (e.g. `Light` for a white line under a green badge). It is decoration on top of the number: it is left out where the tile has no room for it (a narrow 2-column tile, a phone showing two KPIs side by side), and it is not drawn next to `progress` or a `headers` strip.
+`trend` is the recent readings, oldest first, ending with the reading the headline shows — the last 7 days, the last 12 weeks. Send them as a plain array of numbers, or as an object when the line needs styling: `values` holds the same array, and `color`, `smooth` and `fill` sit beside it. It is drawn as a small line beside the headline (or under it on a taller card), coloured like the badge unless `color` says otherwise (e.g. `Light` for a white line under a green badge), with a soft fill under it (`fill: false` for a bare line) and no marker on the latest point — the headline beside it already says "now". Like a LineChart it is drawn with straight segments; set `smooth: true` for a curve. It is decoration on top of the number: it is left out where the tile has no room for it (a narrow 2-column tile, a phone showing two KPIs side by side), and it is not drawn next to `progress` or a `headers` strip. A Table cell takes the same `trend`.
 
 ```json
 {
   "header": { "title": "$12,345", "subtitle": "vs last month", "badge": { "text": "+8%", "icon": "ArrowUp", "color": "Success" } },
   "trend": [9800, 10150, 10400, 10900, 11300, 11800, 12345]
+}
+```
+
+Styled — a white curve with no fill:
+
+```json
+{
+  "trend": { "values": [9800, 10150, 10400, 10900, 11300, 11800, 12345], "color": "Light", "smooth": true, "fill": false }
 }
 ```
 
@@ -636,6 +670,7 @@ All values are case-sensitive (`"Success"`, not `"success"`).
 - Forgetting `badge.text` when including a badge — `text` is required; icon and color are decoration.
 - Putting the trend percentage in `header.subtitle` instead of `header.badge.text` — only badges render with color and icon.
 - Setting `progress.max` to `0` or a `value` above `max` — when `progress` is present `max` must be `> 0` and `value` non-negative.
-- Sending `trend` as objects (`[{ "value": 9800 }]`) or as formatted strings — it is a plain array of numbers, oldest first. Send 2 to 120 points; 7–30 reads best.
-- Ending `trend` on a different period than the headline — its last point is marked as "now", so it should be the reading `header.title` shows.
+- Sending `trendColor` / `trendSmooth` beside `trend` — styling lives on the trend itself: switch to the object form, `"trend": { "values": [9800, 10150], "color": "Light", "smooth": true }`.
+- Sending the readings as objects (`[{ "value": 9800 }]`) or as formatted strings — `trend` (or `trend.values`) is a plain array of numbers, oldest first. Send 2 to 120 points; 7–30 reads best.
+- Ending `trend` on a different period than the headline — its last point is read as "now" beside the number, so it should be the reading `header.title` shows.
 - Sending more than 6 header blocks — `header` and `headers` together may hold at most 6, one per pair of grid columns. Everything past the sixth is a validation error, not a silent truncation.

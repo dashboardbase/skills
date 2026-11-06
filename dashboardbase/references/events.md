@@ -26,6 +26,7 @@ Content-Type: application/json
 - `secret` (required) — the shared secret from the workspace page. A mismatch is rejected with `401`; no event is recorded.
 - `message` (required) — short human-readable text.
 - `emoji` (optional) — either a literal emoji character (e.g. `"🎉"`) **or** a short name from the table below (e.g. `"tada"`). Names are case-insensitive. Anything unrecognised is passed through as-is, so plain Unicode always works.
+  Common emojis also play a short animation across the dashboard with the notification — rockets for `rocket`, a ship sailing past for `ship` (a release that shipped), a crashing rocket for `crash`, money rain for `money`, a delivery truck for `package`/`shipment`, a rising or falling line for `chart`/`chartdown`, confetti for `tada`, balloons for `balloon`, a unicorn on a rainbow for `unicorn`, a cowboy galloping into the sunset for `cowboy`, and so on. Pick the emoji that matches the mood: never a celebratory one for a failure. Other emojis show the notification only.
 - `sound` (optional, default `false`) — play a sound for connected dashboard viewers.
 - `notification` (optional, default `false`) — display a notification card.
 
@@ -42,12 +43,16 @@ You can pass the literal Unicode character, or use one of these short names. The
 | `rocket` | 🚀 |
 | `fire` | 🔥 |
 | `happy` | 😊 |
+| `balloon` | 🎈 |
+| `unicorn` | 🦄 |
+| `cowboy` | 🤠 |
 
 ### Business
 
 | Name | Renders as |
 | --- | --- |
 | `chart` | 📈 |
+| `chartdown` | 📉 |
 | `trophy` | 🏆 |
 | `handshake` | 🤝 |
 | `clap` | 👏 |
@@ -62,6 +67,7 @@ You can pass the literal Unicode character, or use one of these short names. The
 | `cart` | 🛒 |
 | `gift` | 🎁 |
 | `package` | 📦 |
+| `shipment` | 🚚 |
 | `diamond` | 💎 |
 | `sale` | 🏷️ |
 
@@ -78,6 +84,8 @@ You can pass the literal Unicode character, or use one of these short names. The
 | `gear` | ⚙️ |
 | `robot` | 🤖 |
 | `tada` | 🎉 |
+| `crash` | 💥 |
+| `ship` | 🚢 |
 
 ### Colors
 
@@ -112,7 +120,7 @@ These are good triggers for an event:
 | Deploy succeeded | `{ "message": "Deploy v1.42 succeeded", "emoji": "🚀", "sound": true }` |
 | Deploy failed | `{ "message": "Deploy v1.42 failed", "emoji": "💥", "sound": true, "notification": true }` |
 | New paying customer | `{ "message": "New $99/mo signup: Acme Corp", "emoji": "💰" }` |
-| Pager alert opened | `{ "message": "ERR_RATE > 5%", "emoji": "🔥", "notification": true, "sound": true }` |
+| Pager alert opened | `{ "message": "ERR_RATE > 5%", "emoji": "⚠️", "notification": true, "sound": true }` |
 | Pager alert resolved | `{ "message": "ERR_RATE back to normal", "emoji": "✅" }` |
 
 ## Implementation pattern (Node.js)

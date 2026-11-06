@@ -216,6 +216,46 @@
         "additionalProperties": false
       },
       "nullable": true
+    },
+    "legend": {
+      "maxItems": 24,
+      "type": "array",
+      "items": {
+        "required": [
+          "label"
+        ],
+        "type": "object",
+        "properties": {
+          "label": {
+            "maxLength": 60,
+            "minLength": 1,
+            "type": "string"
+          },
+          "color": {
+            "enum": [
+              "Success",
+              "Warning",
+              "Danger",
+              "Blue",
+              "Green",
+              "Red",
+              "Yellow",
+              "Orange",
+              "Light",
+              "Dark"
+            ],
+            "type": "string",
+            "nullable": true
+          },
+          "value": {
+            "maxLength": 24,
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "nullable": true
     }
   },
   "additionalProperties": false
