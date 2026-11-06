@@ -4,7 +4,7 @@
 
 ## Purpose
 
-Render rows of structured data with optional column labels — ideal for top-N lists, ranked items, status grids, recent activity. A ranked list can carry a quiet bar behind each row (`bar` on one cell, 0–100) so every row reads against the top one.
+Render rows of structured data with optional column labels — ideal for top-N lists, ranked items, status grids, recent activity. A ranked list can carry a quiet bar behind each row (`bar` on one cell, 0–100) so every row reads against the top one, and any cell can draw a sparkline of its recent readings (`trend`).
 
 In a setup file, this widget's `type` is `table` (see `references/setup-files.md`).
 
@@ -208,6 +208,36 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "minimum": 0,
               "type": "number",
               "format": "double",
+              "nullable": true
+            },
+            "trend": {
+              "maxItems": 120,
+              "minItems": 2,
+              "type": "array",
+              "items": {
+                "type": "number",
+                "format": "double"
+              },
+              "nullable": true
+            },
+            "trendColor": {
+              "enum": [
+                "Success",
+                "Warning",
+                "Danger",
+                "Blue",
+                "Green",
+                "Red",
+                "Yellow",
+                "Orange",
+                "Light",
+                "Dark"
+              ],
+              "type": "string",
+              "nullable": true
+            },
+            "trendSmooth": {
+              "type": "boolean",
               "nullable": true
             }
           },
@@ -474,7 +504,18 @@ readable there too.
 Every block in `headers` needs a `title` — an entry without one renders as an empty column, so it is
 rejected.
 
+## Sparkline cells
 
+Any cell can carry `trend` — a plain array of numbers, oldest first, ending with the reading the row shows — and it is drawn as a small sparkline in that cell, the same line a KPI draws beside its number, coloured like the cell's badge. Give the trend its own column (a cell with only `trend`) or put it beside a value (a cell with `text` and `trend`; the line sits before the text so numbers stay right-aligned). On a phone a line that shares its cell with a value is left out so the columns still fit; one in its own column always shows. Like a KPI it is drawn with straight segments; set `trendSmooth: true` for a curve, and `trendColor` to pick the line's colour (a cell without a badge or `trendColor` draws it in the card's own text colour). Each row's line is scaled to its own readings, so it shows the row's shape, not its size against the other rows — use `bar` for that.
+
+```json
+{
+  "columns": [{ "text": "Product", "width": 45 }, { "text": "Last 14 days", "width": 30 }, { "text": "Revenue", "width": 25 }],
+  "rows": [
+    [{ "text": "Pro plan" }, { "trend": [320, 340, 335, 360, 390, 410, 440], "trendColor": "Success" }, { "text": "$4,400" }]
+  ]
+}
+```
 
 ## Variations
 
@@ -651,6 +692,165 @@ A ranked breakdown (top pages, referrers, countries, customers) where the reader
         },
         {
           "text": "455"
+        }
+      ]
+    ]
+  }
+}
+```
+
+### Rows with sparklines
+
+A breakdown (plans, products, regions, endpoints) where each row has a recent history worth seeing next to its current value — set `trend` on a cell, oldest reading first, ending with the value the row shows.
+
+```json
+{
+  "title": "MRR by plan",
+  "actions": [
+    {
+      "title": "View revenue",
+      "type": "link",
+      "url": "https://example.com/revenue"
+    }
+  ],
+  "data": {
+    "columns": [
+      {
+        "text": "Plan",
+        "width": 35
+      },
+      {
+        "text": "Last 10 weeks",
+        "width": 30
+      },
+      {
+        "text": "MRR",
+        "width": 20
+      },
+      {
+        "text": "Change",
+        "width": 15
+      }
+    ],
+    "rows": [
+      [
+        {
+          "text": "Enterprise"
+        },
+        {
+          "trend": [
+            18200,
+            18900,
+            19400,
+            19100,
+            20300,
+            21000,
+            21800,
+            22600,
+            23100,
+            24400
+          ],
+          "trendColor": "Success"
+        },
+        {
+          "text": "$24,400"
+        },
+        {
+          "badge": {
+            "text": "+34%",
+            "icon": "ArrowUp",
+            "color": "Success"
+          }
+        }
+      ],
+      [
+        {
+          "text": "Pro"
+        },
+        {
+          "trend": [
+            12100,
+            12500,
+            12300,
+            12900,
+            13400,
+            13200,
+            13900,
+            14500,
+            14800,
+            15200
+          ],
+          "trendColor": "Success"
+        },
+        {
+          "text": "$15,200"
+        },
+        {
+          "badge": {
+            "text": "+26%",
+            "icon": "ArrowUp",
+            "color": "Success"
+          }
+        }
+      ],
+      [
+        {
+          "text": "Team"
+        },
+        {
+          "trend": [
+            8400,
+            8300,
+            8600,
+            8200,
+            8100,
+            7900,
+            8000,
+            7700,
+            7600,
+            7450
+          ],
+          "trendColor": "Danger"
+        },
+        {
+          "text": "$7,450"
+        },
+        {
+          "badge": {
+            "text": "-11%",
+            "icon": "ArrowDown",
+            "color": "Danger"
+          }
+        }
+      ],
+      [
+        {
+          "text": "Starter"
+        },
+        {
+          "trend": [
+            2900,
+            3050,
+            3000,
+            3200,
+            3350,
+            3300,
+            3500,
+            3650,
+            3700,
+            3820
+          ],
+          "trendColor": "Success"
+        },
+        {
+          "text": "$3,820"
+        },
+        {
+          "badge": {
+            "text": "+32%",
+            "icon": "ArrowUp",
+            "color": "Success"
+          }
         }
       ]
     ]
@@ -918,3 +1118,4 @@ All values are case-sensitive (`"Success"`, not `"success"`).
 - Sending more than 6 header blocks — `header` and `headers` together may hold at most 6, one per pair of grid columns. Everything past the sixth is a validation error, not a silent truncation.
 - Sending a raw count in `bar` — it is a percentage of the row's width (0–100), not the value itself. Scale each row against your largest one (`value / max * 100`) so the top row fills the row and the rest read relative to it.
 - Setting `bar` on more than one cell in a row — the bar fills the whole row, so a row carries at most one. Put it on the cell holding the number it measures.
+- Sending a cell's `trend` as objects (`[{ "value": 320 }]`) or formatted strings — like a KPI's it is a plain array of numbers, oldest first. Send 2 to 120 points; 7–30 reads best in a row.

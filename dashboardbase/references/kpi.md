@@ -368,7 +368,7 @@ rejected.
 
 ## Sparkline
 
-`trend` is a plain array of numbers, oldest first, ending with the reading the headline shows — the last 7 days, the last 12 weeks. It is drawn as a small line beside the headline (or under it on a taller card), coloured like the badge, with the latest point marked. Like a LineChart it is drawn with straight segments; set `trendSmooth: true` for a curve. Set `trendColor` to draw the line in another colour than the badge (e.g. `Light` for a white line under a green badge). It is decoration on top of the number: it is left out where the tile has no room for it (a narrow 2-column tile, a phone showing two KPIs side by side), and it is not drawn next to `progress` or a `headers` strip.
+`trend` is a plain array of numbers, oldest first, ending with the reading the headline shows — the last 7 days, the last 12 weeks. It is drawn as a small line beside the headline (or under it on a taller card), coloured like the badge, with no marker on the latest point — the headline beside it already says "now". Like a LineChart it is drawn with straight segments; set `trendSmooth: true` for a curve. Set `trendColor` to draw the line in another colour than the badge (e.g. `Light` for a white line under a green badge). It is decoration on top of the number: it is left out where the tile has no room for it (a narrow 2-column tile, a phone showing two KPIs side by side), and it is not drawn next to `progress` or a `headers` strip.
 
 ```json
 {
@@ -637,5 +637,5 @@ All values are case-sensitive (`"Success"`, not `"success"`).
 - Putting the trend percentage in `header.subtitle` instead of `header.badge.text` — only badges render with color and icon.
 - Setting `progress.max` to `0` or a `value` above `max` — when `progress` is present `max` must be `> 0` and `value` non-negative.
 - Sending `trend` as objects (`[{ "value": 9800 }]`) or as formatted strings — it is a plain array of numbers, oldest first. Send 2 to 120 points; 7–30 reads best.
-- Ending `trend` on a different period than the headline — its last point is marked as "now", so it should be the reading `header.title` shows.
+- Ending `trend` on a different period than the headline — its last point is read as "now" beside the number, so it should be the reading `header.title` shows.
 - Sending more than 6 header blocks — `header` and `headers` together may hold at most 6, one per pair of grid columns. Everything past the sixth is a validation error, not a silent truncation.

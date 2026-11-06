@@ -194,6 +194,36 @@
               "type": "number",
               "format": "double",
               "nullable": true
+            },
+            "trend": {
+              "maxItems": 120,
+              "minItems": 2,
+              "type": "array",
+              "items": {
+                "type": "number",
+                "format": "double"
+              },
+              "nullable": true
+            },
+            "trendColor": {
+              "enum": [
+                "Success",
+                "Warning",
+                "Danger",
+                "Blue",
+                "Green",
+                "Red",
+                "Yellow",
+                "Orange",
+                "Light",
+                "Dark"
+              ],
+              "type": "string",
+              "nullable": true
+            },
+            "trendSmooth": {
+              "type": "boolean",
+              "nullable": true
             }
           },
           "additionalProperties": false
