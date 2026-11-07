@@ -4,7 +4,7 @@ description: Use when creating a dashboardbase dashboard end-to-end, or when bui
 license: Proprietary. Free to use; not open source. LICENSE has complete terms.
 metadata:
   source-repo: dashboardbase-api
-  generated-at: "2026-10-20T19:19:38Z"
+  generated-at: "2026-11-06T06:54:00Z"
   api-version: "1.0.0"
   spec-version: "1.0"
 ---
@@ -195,7 +195,7 @@ Dashboards read dramatically better when every widget uses the styling surface t
 - **Echo the active date range in `header.subtitle`** when handling `?dateRange=` — it shows users their filter is applied.
 - **Keep axis labels on, and short.** LineChart and BarChart show the category labels by default; they stay level and thin themselves to fit, so a 30- or 90-day daily series reads fine. Send short labels (`"Sep 9"`, `"Mon"`, `"Jan"`), not timestamps. `ticksX: false` is for a sparkline-style tile with no room for an axis; `ticksY: true` adds value labels to the left.
 - **Leave the chart's look to the defaults.** A LineChart is filled, drawn with straight segments, shows dots only on a short series and carries faint value gridlines without being asked; a BarChart carries the same gridlines. `fill`, `smooth`, `points` and `grid` exist to opt out (or into curves) — omit them unless the developer asks for a different look.
-- **Give a KPI its recent shape with `trend`** when the endpoint has the readings anyway: a plain array of numbers, oldest first, ending with the headline value. It draws a sparkline beside the number where the tile has room and is left out where it doesn't — never move a number into a chart to get one.
+- **Give a KPI its recent shape with `trend`** when the endpoint has the readings anyway: `"trend": [...]`, a plain array of numbers oldest first, ending with the headline value — or `{ "values": [...], "color", "smooth", "fill" }` when the line needs styling. A Table cell takes the same `trend`. It draws a sparkline beside the number where the tile has room and is left out where it doesn't — never move a number into a chart to get one.
 - **Show a goal or a baseline as data, not decoration.** A goal, quota, budget or SLA goes in `target: { "value": 50000, "label": "Q3 goal" }` on a LineChart or BarChart — one labelled line the axis always stretches to include. A previous period on a LineChart is an extra dataset with `"style": "Comparison"` (a dashed grey line behind the current one, compared in the tooltip). Send either only when the goal asks for it; never fake one with a flat or duplicate series.
 - **Stack parts of a total; put a rate on its own axis.** When BarChart series are parts of one whole in the same unit (MRR by plan, visitors by channel), send `"stacked": true` and the total in `header.title`. When the goal pairs a volume with a rate (signups and conversion, orders and AOV), keep the volume as bars and send the rate as a dataset with `"type": "Line"` and `"axis": "Right"`, its unit in each value's `postfix`. Never stack rates or mixed units, and never plot a percentage on the same axis as counts.
 - **Add link `actions`** so a widget clicks through to the underlying tool (Stripe, your admin, a runbook).
@@ -344,4 +344,4 @@ Each has its own reference file under `references/` — see the filename list ab
 
 ---
 
-*Skill generated at `2026-10-20T19:19:38Z` from the dashboardbase API contract.*
+*Skill generated at `2026-11-06T06:54:00Z` from the dashboardbase API contract.*
