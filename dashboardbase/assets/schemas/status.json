@@ -104,14 +104,23 @@
     "status": {
       "enum": [
         "Ok",
-        "Error"
+        "Error",
+        "Warning"
       ],
       "type": "string"
     },
     "mode": {
       "enum": [
         "Default",
-        "Heartbeat"
+        "Heartbeat",
+        "Flower",
+        "Coffee",
+        "Weather",
+        "RubberDuck",
+        "Rocket",
+        "OpenSign",
+        "DeliveryVan",
+        "ShoppingBag"
       ],
       "type": "string",
       "nullable": true
@@ -255,6 +264,11 @@
         },
         "additionalProperties": false
       },
+      "nullable": true
+    },
+    "caption": {
+      "maxLength": 80,
+      "type": "string",
       "nullable": true
     }
   },

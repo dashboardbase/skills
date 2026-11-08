@@ -4,7 +4,7 @@
 
 ## Purpose
 
-Show a binary health indicator (Ok / Error) with optional header context — ideal for service status, deploy state, alert summaries. Set the optional `mode` to `Heartbeat` to have the client render the indicator as an ECG-style pulse that beats (a healthy service visibly 'lives' on a TV wall); omit it or send `Default` for the plain Ok/Error pill. Add an optional `legend` to list the items behind the overall status under the indicator — one entry per service or check, each with its own `color` (`Success`, `Warning`, `Danger`, …) and an optional `value` — styled like a chart legend.
+Show a health indicator (Ok / Warning / Error) with optional header context — ideal for service status, deploy state, alert summaries. `Warning` is the degraded state between the two: something is slow or partly failing but the service is up. Set the optional `mode` to choose how the indicator is drawn: omit it or send `Default` for the plain status dot, `Heartbeat` for an ECG-style pulse that beats, or one of the illustrated modes — `Flower`, `Coffee`, `Weather`, `RubberDuck`, `Rocket`, `OpenSign`, `DeliveryVan`, `ShoppingBag` — an outlined, animated object that reacts to the status (a flower that droops when degraded and wilts when down, a van that slows and then parks with its hazard lights on), made for a one-widget board on a TV. Illustrated modes show a short sentence under the object: omit `caption` for the built-in sentence for that mode and status, send your own text to replace it, or send an empty string to show no sentence. Add an optional `legend` to list the items behind the overall status under the indicator — one entry per service or check, each with its own `color` (`Success`, `Warning`, `Danger`, …) and an optional `value` — styled like a chart legend.
 
 In a setup file, this widget's `type` is `status` (see `references/setup-files.md`).
 
@@ -119,14 +119,23 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
     "status": {
       "enum": [
         "Ok",
-        "Error"
+        "Error",
+        "Warning"
       ],
       "type": "string"
     },
     "mode": {
       "enum": [
         "Default",
-        "Heartbeat"
+        "Heartbeat",
+        "Flower",
+        "Coffee",
+        "Weather",
+        "RubberDuck",
+        "Rocket",
+        "OpenSign",
+        "DeliveryVan",
+        "ShoppingBag"
       ],
       "type": "string",
       "nullable": true
@@ -270,6 +279,11 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
         },
         "additionalProperties": false
       },
+      "nullable": true
+    },
+    "caption": {
+      "maxLength": 80,
+      "type": "string",
       "nullable": true
     }
   },
@@ -555,6 +569,239 @@ A health board where one indicator gives the overall verdict and a `legend` list
 }
 ```
 
+### Degraded (slow but up)
+
+A service is up but slow or partly failing — send `Warning` instead of `Error` so the board shows the degraded state, not an outage.
+
+```json
+{
+  "title": "Search API",
+  "actions": [
+    {
+      "title": "Check Logs",
+      "type": "link",
+      "url": "https://example.com/status-logs"
+    }
+  ],
+  "data": {
+    "status": "Warning"
+  }
+}
+```
+
+### Flower (illustrated)
+
+A friendly one-widget board for a TV — a flower that blooms while everything is healthy, droops when degraded and wilts when down. Omit `caption` for the built-in sentence.
+
+```json
+{
+  "title": "Shop",
+  "actions": [
+    {
+      "title": "Check Logs",
+      "type": "link",
+      "url": "https://example.com/status-logs"
+    }
+  ],
+  "data": {
+    "status": "Ok",
+    "mode": "Flower"
+  }
+}
+```
+
+### Coffee (illustrated)
+
+A light-hearted office board — steam rises while all is well and stops when something is down.
+
+```json
+{
+  "title": "Is it fine?",
+  "actions": [
+    {
+      "title": "Check Logs",
+      "type": "link",
+      "url": "https://example.com/status-logs"
+    }
+  ],
+  "data": {
+    "status": "Ok",
+    "mode": "Coffee"
+  }
+}
+```
+
+### Weather, degraded (illustrated)
+
+A forecast-style board — clear skies when healthy, a cloud over the sun when degraded, a storm when down. Here a custom `caption` names the slow service.
+
+```json
+{
+  "title": "Forecast",
+  "actions": [
+    {
+      "title": "Check Logs",
+      "type": "link",
+      "url": "https://example.com/status-logs"
+    }
+  ],
+  "data": {
+    "status": "Warning",
+    "mode": "Weather",
+    "caption": "A cloud over Search."
+  }
+}
+```
+
+### Rubber duck, down (illustrated)
+
+An engineering-team board — the duck bobs calmly when there is nothing to debug and starts talking when something breaks. Pairs well with a `legend` of the services behind it.
+
+```json
+{
+  "title": "Production",
+  "actions": [
+    {
+      "title": "Check Logs",
+      "type": "link",
+      "url": "https://example.com/status-logs"
+    }
+  ],
+  "data": {
+    "status": "Error",
+    "mode": "RubberDuck",
+    "legend": [
+      {
+        "label": "API",
+        "color": "Success",
+        "value": "112 ms"
+      },
+      {
+        "label": "Payments",
+        "color": "Danger",
+        "value": "Down"
+      },
+      {
+        "label": "Search",
+        "color": "Success",
+        "value": "84 ms"
+      }
+    ]
+  }
+}
+```
+
+### Rocket (illustrated)
+
+A launch or deploy board — the rocket hovers on its flame while healthy, sputters when degraded and lands when down.
+
+```json
+{
+  "title": "Launch",
+  "actions": [
+    {
+      "title": "Check Logs",
+      "type": "link",
+      "url": "https://example.com/status-logs"
+    }
+  ],
+  "data": {
+    "status": "Ok",
+    "mode": "Rocket"
+  }
+}
+```
+
+### Open sign, down (illustrated)
+
+A shop board — the sign reads OPEN while checkout works and flips to BACK SOON when it is down.
+
+```json
+{
+  "title": "Shop",
+  "actions": [
+    {
+      "title": "Open Store Admin",
+      "type": "link",
+      "url": "https://example.com/store-admin"
+    }
+  ],
+  "data": {
+    "status": "Error",
+    "mode": "OpenSign",
+    "caption": "Checkout is down. Back soon."
+  }
+}
+```
+
+### Delivery van, degraded (illustrated)
+
+An order-fulfilment board — the van drives while orders flow, slows when degraded and parks with its hazard lights on when down.
+
+```json
+{
+  "title": "Orders",
+  "actions": [
+    {
+      "title": "Open Store Admin",
+      "type": "link",
+      "url": "https://example.com/store-admin"
+    }
+  ],
+  "data": {
+    "status": "Warning",
+    "mode": "DeliveryVan"
+  }
+}
+```
+
+### Shopping bag (illustrated)
+
+A storefront board — products drop into the bag as orders come in, slow to a trickle when degraded and stop when checkout is down.
+
+```json
+{
+  "title": "Checkout",
+  "actions": [
+    {
+      "title": "Open Store Admin",
+      "type": "link",
+      "url": "https://example.com/store-admin"
+    }
+  ],
+  "data": {
+    "status": "Ok",
+    "mode": "ShoppingBag"
+  }
+}
+```
+
+### Flower with a header and no caption
+
+An illustrated mode under a header, with the sentence turned off — send `caption` as an empty string to show the illustration alone.
+
+```json
+{
+  "title": "Shop",
+  "actions": [
+    {
+      "title": "Check Logs",
+      "type": "link",
+      "url": "https://example.com/status-logs"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "Operational",
+      "subtitle": "All checks passing"
+    },
+    "status": "Ok",
+    "mode": "Flower",
+    "caption": ""
+  }
+}
+```
+
 ## Validation
 
 The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, dashboardbase renders the widget in an error state. Before declaring done, validate the response. If the `validate_widget_response` tool is available, call it with the full response body — that checks against the live contract. Otherwise validate the response's `data` field against `assets/schemas/status.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
@@ -573,9 +820,12 @@ All values are case-sensitive (`"Success"`, not `"success"`).
 
 ## Common mistakes
 
-- Sending a string for `status` outside `Ok` / `Error` — values are case-sensitive and limited to the `WidgetStatusIndicator` enum.
-- Using KPI shape for a binary indicator — Status renders an explicit Ok/Error pill, KPI does not.
-- Sending a `mode` outside `Default` / `Heartbeat` — it is nullable, so omit it for the default rendering.
+- Sending a string for `status` outside `Ok` / `Warning` / `Error` — values are case-sensitive and limited to the `WidgetStatusIndicator` enum.
+- Sending `Error` for a service that is only slow — use `Warning`, so the illustrated modes show the degraded state (a drooping flower, a slower van) instead of the outage.
+- Using KPI shape for a health indicator — Status renders an explicit status indicator, KPI does not.
+- Sending a `mode` outside the `WidgetStatusMode` enum — it is nullable, so omit it for the default rendering.
+- Sending `caption: null` to hide the sentence under an illustrated mode — null means "use the built-in sentence". Send an empty string `""` to show none.
+- Writing a long paragraph in `caption` — it is one short sentence under the illustration, at most 80 characters.
 - Encoding each item's health in its `label` (`'API ✅'`) — send `legend` entries with a `color` instead, so the state reads as a swatch and the overall `status` stays the verdict.
 - Sending more than 24 `legend` entries, or one without a `label` — the legend is a summary under the indicator, not a full check list.
 - Sending more than 6 header blocks — `header` and `headers` together may hold at most 6, one per pair of grid columns. Everything past the sixth is a validation error, not a silent truncation.
