@@ -87,7 +87,7 @@ Connect a widget that already exists in the dashboard to an endpoint. Requires `
 
 ### State B — Create new wired widget
 
-Create a new widget and point it at an endpoint. Requires `type` and `path`. Typically also includes `size` and `position` — copy those from a layout slot (see "Recommended layouts" below). This example uses the *Starter Kit* layout: two `Kpi` slots, the `Primary` slot for the line chart, and the `Secondary` slot for the table.
+Create a new widget and point it at an endpoint. Requires `type` and `path`. Typically also includes `size` and `position` — copy those from a layout slot (see "Recommended layouts" below). This example uses the *Starter Kit* layout: two `Kpi` slots, the `Primary` slot for the line chart, and the `Secondary` slot for the table. It wires only two of the four `Kpi` slots to stay short; a real dashboard fills the row — see "Composition rules".
 
 ```json
 {
@@ -126,7 +126,7 @@ Create a new widget and point it at an endpoint. Requires `type` and `path`. Typ
 
 ### State C — Create plan-only widget
 
-Describe a widget you intend to build but for which no endpoint exists yet. Requires `type` and `plan` (free-text description of the data the widget should display). Useful for sketching dashboards before implementation. This example uses the *Starter Kit* layout: two `Kpi` slots, `Primary` for the line chart, `Secondary` for the pie chart.
+Describe a widget you intend to build but for which no endpoint exists yet. Requires `type` and `plan` (free-text description of the data the widget should display). Useful for sketching dashboards before implementation, and for handing a dashboard to someone who has no endpoints — or no account — yet: the file imports as the finished layout with each widget described. Write `goal` as the widget's title-plus-intent ("Monthly recurring revenue, with the change vs last month"); it is what the user sees on the widget until it is wired. This example uses the *Starter Kit* layout: two `Kpi` slots, `Primary` for the line chart, `Secondary` for the pie chart.
 
 ```json
 {
@@ -231,15 +231,43 @@ Grid constraints (every layout slot below satisfies them):
 
 How to use them:
 
-1. List the widgets you're adding and note each one's slot role from the affinity table below (a single-number widget like KPI / Status / Gauge is a `Kpi` slot; a hero chart like Line / Bar is `Primary`; supporting charts and tables like Table / Pie / Donut are `Secondary`).
-2. Pick the smallest layout whose slots cover that mix — leftover slots are fine to leave unused.
-3. Assign each widget to a slot whose role it fits, and copy that slot's `position` and `size` straight into the mapping. The user can drag things around afterward.
+1. List the widgets you're adding and note each one's slot role from the affinity table below (a single-number widget like KPI / Status is a `Kpi` slot; a hero chart like Line / Bar is `Primary`; supporting charts and tables like Table / Pie / Donut are `Secondary`).
+2. Pick a layout from "Choosing a layout" below. Designing a whole dashboard for a known domain? `references/dashboard-recipes.md` has the widgets *and* the layout already worked out.
+3. Assign each widget to a slot whose **fits** column names it, and copy that slot's `position` and `size` straight into the mapping. A role alone is not enough — a GaugeChart is a `Kpi`-role widget but needs two rows, so it does not go in a one-row tile.
+4. Apply the "Composition rules" below so no slot is left empty. The user can drag things around afterward, but the dashboard should look finished before they touch it.
 
 Worked examples:
 
 - **LineChart + Table** → *Two Columns*: the line chart takes the `Primary` slot (`position {x:0,y:0}`, `size {w:8,h:6}`), the table the `Secondary` slot (`position {x:8,y:0}`, `size {w:4,h:6}`).
 - **LineChart + Table + KPI** → *Spotlight*: the KPI drops into the small `Kpi` slot, the line chart into `Primary`, the table into `Secondary`.
+- **3 KPIs + LineChart + DonutChart** → *Starter Kit* with the KPI row widened: three `w:4 h:1` tiles at `x:0 / 4 / 8` instead of four `w:3` slots with a hole at the end.
 - **One widget on its own** → *Single Panel*: whatever its role, give it the whole board (`position {x:0,y:0}`, `size {w:12,h:6}`) rather than a default-sized tile — a lone `w:6 h:4` chart leaves three quarters of the screen empty.
+
+### Choosing a layout
+
+| The widgets you have | Layout |
+| --- | --- |
+| One widget | *Single Panel* |
+| A main chart or table + one supporting widget | *Two Columns* |
+| A main chart + one headline number + one supporting widget | *Spotlight* (*Reversed Spotlight* puts the chart on the right) |
+| 2–4 headline numbers + a main chart + one supporting widget | *Starter Kit* — the default for a general dashboard (*Reversed Starter Kit* puts the chart on the right) |
+| 2–4 headline numbers + a main chart, nothing else | *Starter Kit Single Column* |
+| 2–4 headline numbers + three widgets of equal weight (a bar chart, a donut, a table) | *Starter Kit - Three Columns* |
+| 5–6 compact tiles + a main chart — a wallboard | *Six Across* |
+| 2–4 headline numbers + a short full-width strip above a wide panel | *Starter Kit - Two Rows* — its `Primary` slot is only 2 rows high, so it takes a ProgressList, Text or Image, never a chart |
+
+### Composition rules
+
+A layout is a starting point; these rules are what make the result look finished. Check every one before writing the file.
+
+1. **Every row spans all 12 columns.** Never leave a slot empty — an unused slot is a hole in the dashboard. With fewer headline tiles than the layout has, widen the ones you have: three are `w:4` at `x:0 / 4 / 8`, two are `w:6` at `x:0 / 6`. A single headline number goes in *Spotlight* when there is also a supporting widget; otherwise fold it into the main chart's `header`, or give it a full-width `w:12 h:1` tile above the main panel.
+2. **The board is 6 rows tall.** Six rows are exactly one screen on a desktop and on a TV, so a dashboard whose rows add up to 6 shows everything without scrolling. Every layout below adds up to 6; when you extend one, add whole rows rather than stretching one widget.
+3. **Widgets side by side share a `y` and an `h`.** A row whose tiles end at different heights leaves a ragged edge.
+4. **Rows stack with no gaps and no overlaps.** Each row's `y` is the previous row's `y` + `h`.
+5. **Respect each widget's minimum.** "Recommended widget sizes" below lists them; a slot's **fits** column already applies them. A chart needs at least 3 rows, a LineChart at least 6 columns, a GaugeChart 2 rows.
+6. **Most important first.** The number the user cares about most goes top-left; the main chart sits left of its supporting widget. Phones stack the widgets in a single column, so this is also the order they are read in there.
+7. **Headline numbers go in one strip, not scattered.** Up to four at `w:3`, five or six at `w:2` (KPI, Status, Clock and Countdown only). More than six is a second row — or numbers that belong in a chart's `headers`.
+
 
 ### Which widget fits which slot
 
@@ -277,117 +305,117 @@ tile has no room for its axis. Prefer the default when nothing else dictates the
 
 One widget filling the entire board — nothing else on screen.
 
-| Slot | position | size | role |
-| --- | --- | --- | --- |
-| 1 | `x:0 y:0` | `w:12 h:6` | `Primary` |
+| Slot | position | size | role | fits |
+| --- | --- | --- | --- | --- |
+| 1 | `x:0 y:0` | `w:12 h:6` | `Primary` | any `Primary` widget |
 
 #### Starter Kit
 
 A balanced dashboard with KPIs and charts to get you started.
 
-| Slot | position | size | role |
-| --- | --- | --- | --- |
-| 1 | `x:0 y:0` | `w:3 h:1` | `Kpi` |
-| 2 | `x:3 y:0` | `w:3 h:1` | `Kpi` |
-| 3 | `x:6 y:0` | `w:3 h:1` | `Kpi` |
-| 4 | `x:9 y:0` | `w:3 h:1` | `Kpi` |
-| 5 | `x:0 y:1` | `w:8 h:5` | `Primary` |
-| 6 | `x:8 y:1` | `w:4 h:5` | `Secondary` |
+| Slot | position | size | role | fits |
+| --- | --- | --- | --- | --- |
+| 1 | `x:0 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 2 | `x:3 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 3 | `x:6 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 4 | `x:9 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 5 | `x:0 y:1` | `w:8 h:5` | `Primary` | any `Primary` widget |
+| 6 | `x:8 y:1` | `w:4 h:5` | `Secondary` | BarChart, Clock, DonutChart, GaugeChart, Image, PieChart, ProgressList, Table, Text |
 
 #### Reversed Starter Kit
 
 A starter kit with the second row's column order reversed.
 
-| Slot | position | size | role |
-| --- | --- | --- | --- |
-| 1 | `x:0 y:0` | `w:3 h:1` | `Kpi` |
-| 2 | `x:3 y:0` | `w:3 h:1` | `Kpi` |
-| 3 | `x:6 y:0` | `w:3 h:1` | `Kpi` |
-| 4 | `x:9 y:0` | `w:3 h:1` | `Kpi` |
-| 5 | `x:0 y:1` | `w:4 h:5` | `Secondary` |
-| 6 | `x:4 y:1` | `w:8 h:5` | `Primary` |
+| Slot | position | size | role | fits |
+| --- | --- | --- | --- | --- |
+| 1 | `x:0 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 2 | `x:3 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 3 | `x:6 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 4 | `x:9 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 5 | `x:0 y:1` | `w:4 h:5` | `Secondary` | BarChart, Clock, DonutChart, GaugeChart, Image, PieChart, ProgressList, Table, Text |
+| 6 | `x:4 y:1` | `w:8 h:5` | `Primary` | any `Primary` widget |
 
 #### Starter Kit Single Column
 
 A starter kit with a single large column in the second row.
 
-| Slot | position | size | role |
-| --- | --- | --- | --- |
-| 1 | `x:0 y:0` | `w:3 h:1` | `Kpi` |
-| 2 | `x:3 y:0` | `w:3 h:1` | `Kpi` |
-| 3 | `x:6 y:0` | `w:3 h:1` | `Kpi` |
-| 4 | `x:9 y:0` | `w:3 h:1` | `Kpi` |
-| 5 | `x:0 y:1` | `w:12 h:5` | `Primary` |
+| Slot | position | size | role | fits |
+| --- | --- | --- | --- | --- |
+| 1 | `x:0 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 2 | `x:3 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 3 | `x:6 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 4 | `x:9 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 5 | `x:0 y:1` | `w:12 h:5` | `Primary` | any `Primary` widget |
 
 #### Six Across
 
 Six compact tiles across the top with a single large panel below.
 
-| Slot | position | size | role |
-| --- | --- | --- | --- |
-| 1 | `x:0 y:0` | `w:2 h:1` | `Kpi` |
-| 2 | `x:2 y:0` | `w:2 h:1` | `Kpi` |
-| 3 | `x:4 y:0` | `w:2 h:1` | `Kpi` |
-| 4 | `x:6 y:0` | `w:2 h:1` | `Kpi` |
-| 5 | `x:8 y:0` | `w:2 h:1` | `Kpi` |
-| 6 | `x:10 y:0` | `w:2 h:1` | `Kpi` |
-| 7 | `x:0 y:1` | `w:12 h:5` | `Primary` |
+| Slot | position | size | role | fits |
+| --- | --- | --- | --- | --- |
+| 1 | `x:0 y:0` | `w:2 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 2 | `x:2 y:0` | `w:2 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 3 | `x:4 y:0` | `w:2 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 4 | `x:6 y:0` | `w:2 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 5 | `x:8 y:0` | `w:2 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 6 | `x:10 y:0` | `w:2 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 7 | `x:0 y:1` | `w:12 h:5` | `Primary` | any `Primary` widget |
 
 #### Starter Kit - Two Rows
 
 A starter kit with the second row split into two.
 
-| Slot | position | size | role |
-| --- | --- | --- | --- |
-| 1 | `x:0 y:0` | `w:3 h:1` | `Kpi` |
-| 2 | `x:3 y:0` | `w:3 h:1` | `Kpi` |
-| 3 | `x:6 y:0` | `w:3 h:1` | `Kpi` |
-| 4 | `x:9 y:0` | `w:3 h:1` | `Kpi` |
-| 5 | `x:0 y:1` | `w:12 h:2` | `Primary` |
-| 6 | `x:0 y:3` | `w:12 h:3` | `Secondary` |
+| Slot | position | size | role | fits |
+| --- | --- | --- | --- | --- |
+| 1 | `x:0 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 2 | `x:3 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 3 | `x:6 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 4 | `x:9 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 5 | `x:0 y:1` | `w:12 h:2` | `Primary` | Image, ProgressList, Text |
+| 6 | `x:0 y:3` | `w:12 h:3` | `Secondary` | any `Secondary` widget |
 
 #### Starter Kit - Three Columns
 
 A starter kit with three columns in the second row.
 
-| Slot | position | size | role |
-| --- | --- | --- | --- |
-| 1 | `x:0 y:0` | `w:3 h:1` | `Kpi` |
-| 2 | `x:3 y:0` | `w:3 h:1` | `Kpi` |
-| 3 | `x:6 y:0` | `w:3 h:1` | `Kpi` |
-| 4 | `x:9 y:0` | `w:3 h:1` | `Kpi` |
-| 5 | `x:0 y:1` | `w:4 h:5` | `Primary` |
-| 6 | `x:4 y:1` | `w:4 h:5` | `Secondary` |
-| 7 | `x:8 y:1` | `w:4 h:5` | `Secondary` |
+| Slot | position | size | role | fits |
+| --- | --- | --- | --- | --- |
+| 1 | `x:0 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 2 | `x:3 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 3 | `x:6 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 4 | `x:9 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 5 | `x:0 y:1` | `w:4 h:5` | `Primary` | BarChart, Image, ProgressList, Table, Text |
+| 6 | `x:4 y:1` | `w:4 h:5` | `Secondary` | BarChart, Clock, DonutChart, GaugeChart, Image, PieChart, ProgressList, Table, Text |
+| 7 | `x:8 y:1` | `w:4 h:5` | `Secondary` | BarChart, Clock, DonutChart, GaugeChart, Image, PieChart, ProgressList, Table, Text |
 
 #### Two Columns
 
 Two full-height columns side by side, one wide and one narrow.
 
-| Slot | position | size | role |
-| --- | --- | --- | --- |
-| 1 | `x:0 y:0` | `w:8 h:6` | `Primary` |
-| 2 | `x:8 y:0` | `w:4 h:6` | `Secondary` |
+| Slot | position | size | role | fits |
+| --- | --- | --- | --- | --- |
+| 1 | `x:0 y:0` | `w:8 h:6` | `Primary` | any `Primary` widget |
+| 2 | `x:8 y:0` | `w:4 h:6` | `Secondary` | BarChart, Clock, DonutChart, GaugeChart, Image, PieChart, ProgressList, Table, Text |
 
 #### Spotlight
 
 A wide full-height panel beside a stacked pair in a narrow column.
 
-| Slot | position | size | role |
-| --- | --- | --- | --- |
-| 1 | `x:0 y:0` | `w:8 h:6` | `Primary` |
-| 2 | `x:8 y:0` | `w:4 h:1` | `Kpi` |
-| 3 | `x:8 y:1` | `w:4 h:5` | `Secondary` |
+| Slot | position | size | role | fits |
+| --- | --- | --- | --- | --- |
+| 1 | `x:0 y:0` | `w:8 h:6` | `Primary` | any `Primary` widget |
+| 2 | `x:8 y:0` | `w:4 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 3 | `x:8 y:1` | `w:4 h:5` | `Secondary` | BarChart, Clock, DonutChart, GaugeChart, Image, PieChart, ProgressList, Table, Text |
 
 #### Reversed Spotlight
 
 A stacked pair in a narrow column beside a wide full-height panel.
 
-| Slot | position | size | role |
-| --- | --- | --- | --- |
-| 1 | `x:0 y:0` | `w:4 h:1` | `Kpi` |
-| 2 | `x:0 y:1` | `w:4 h:5` | `Secondary` |
-| 3 | `x:4 y:0` | `w:8 h:6` | `Primary` |
+| Slot | position | size | role | fits |
+| --- | --- | --- | --- | --- |
+| 1 | `x:0 y:0` | `w:4 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 2 | `x:0 y:1` | `w:4 h:5` | `Secondary` | BarChart, Clock, DonutChart, GaugeChart, Image, PieChart, ProgressList, Table, Text |
+| 3 | `x:4 y:0` | `w:8 h:6` | `Primary` | any `Primary` widget |
 
 ### When no layout fits
 
@@ -397,6 +425,7 @@ Before extending the grid, check that the extra widgets really are extra *widget
 
 - **More than four KPI-role widgets that each have their own endpoint** → repeat the KPI row: four more `w:3 h:1` slots at `x:0 / 3 / 6 / 9` on the next row, shifting every later row's `y` down by 1.
 - **Five or six such KPI-role widgets that belong on one row** → use six `w:2 h:1` slots at `x:0 / 2 / 4 / 6 / 8 / 10` (the *Six Across* layout). Compact types only — a Gauge or Table at `w:2` is below its minimum.
+- **A GaugeChart among the headline numbers** → it needs 2 rows, so it cannot sit in a one-row strip. Give it a `Secondary` slot, or make the whole top row `h:2` or `h:3` and fill it with gauges (`w:3` or `w:4` each).
 - **More than one Primary-role widget** → give each extra one its own full-width row (`w:12 h:5`), or pair two side by side as `w:6 h:5`.
 - **More Secondary-role widgets than slots** → tile the extras in rows of three `w:4 h:5` or two `w:6 h:5` below the layout.
 
@@ -540,11 +569,11 @@ This keeps every dashboard in the repo pointed at the same API and saves the use
 
 ## How to load your setup file into dashboardbase
 
-After generating the JSON, there are four ways to get it in.
+After generating the JSON, there are four ways to get it in. None of them needs the user to have a dashboardbase account *before* you start: a setup link is created anonymously, and whoever opens it signs in — or signs up — at the moment they import.
 
 **If you are an agent handing work back to a person, ask them which they want before doing anything** — Option 1 uploads their config to get a link, and that is their call to make, not yours:
 
-> The dashboard config is ready. I can upload it and give you a link that opens straight into the import preview, or you can drag the file into dashboardbase yourself. Shall I create the link?
+> The dashboard config is saved at `.dashboardbase/<slug>.json`. I can upload it and give you a link — you click it, see a preview and import it — or you can upload the file in dashboardbase yourself. Shall I create the link?
 
 Suggest Option 1, since it saves them handling the file at all, but take Option 2 or 3 without argument if that is what they prefer. Never upload a config you were not asked to upload.
 
@@ -568,18 +597,33 @@ The request body is the setup file itself — no `{ "content": … }` wrapper. R
 }
 ```
 
+#### What the user sees when they open the link
+
+Know this flow, so you can describe it and answer "what do I do now?":
+
+1. **A preview.** The link opens a page showing the dashboard's name, how many widgets it creates, their types and the host they connect to. Nothing has been created yet, and no account is needed to look.
+2. **Import to a workspace.** Pressing it asks them to sign in. Someone with no account signs up there, creates their first workspace, and is brought straight back — the import carries on, they are not sent to an empty home page.
+3. **The import.** The file is already loaded. They enter credentials if the endpoints need any (optional — request signing and the Endpoint Secret need none), dashboardbase test-calls each endpoint and shows which respond, and they press **Import**. An endpoint that is not answering yet does not block the import.
+4. **The editor.** The dashboard opens with every widget placed and showing its data. **Publish** makes it live; from there it can be shared, shown on a TV or opened in the phone app.
+
+A plan-only file (State C) follows the same steps, except there is nothing to connect yet: it opens as the finished layout with each widget described, and dashboardbase generates the prompt for building the endpoints.
+
+On a phone with the dashboardbase app installed, the link opens in the app.
+
 #### Explain the link when you hand it over
 
 Give the user the `url` **and** tell them how to use it. A bare URL with no explanation is not a handover — they don't know whether clicking it will change something in their account. Cover these, in your own words:
 
-- **What clicking it does.** They land on a preview showing the dashboard's widgets and which hosts the data comes from. Nothing is created in their dashboardbase organisation until they confirm — the link is safe to open and look at.
+- **What clicking it does.** They land on a preview showing the dashboard's widgets and which hosts the data comes from. Nothing is created in their dashboardbase organisation until they press **Import to a workspace** — the link is safe to open and look at.
+- **That they don't need an account first.** Importing asks them to sign in or sign up, then carries straight on. Say this whenever you don't know that they already have one.
+- **What to do after importing.** The dashboard opens in the editor; **Publish** makes it live.
 - **Where credentials go.** If the widgets point at a real API, the import flow prompts for the API key or basic-auth details. That is the only place they belong — never in the setup file, and never in the link.
 - **How long it lasts.** 48 hours. The setup file itself stays in the repo at `.dashboardbase/<slug>.json`, so if the link goes stale you can generate a new one from the same file in one call. Say this rather than implying the dashboard is stored at the URL.
 - **That it's reusable.** They can forward it to teammates; each person can import the dashboard from the same link.
 - **That the URL is the only protection.** Anyone holding it can read the setup file. Send it to them directly — don't paste it into a public issue, PR comment, or open channel.
 - **Which dashboard it is,** if you generated more than one. Name it and say what's on it, so a list of links isn't a guessing game.
 
-If they declined the link in the first place, none of this applies — just point them at the saved file and let them drag-drop or paste it (Options 2 and 3).
+If they declined the link in the first place, none of this applies — give them the saved file's path and the steps in Option 2.
 
 #### Limits and failure cases
 
@@ -588,13 +632,21 @@ If they declined the link in the first place, none of this applies — just poin
 - The file must be **256 KB or smaller** (`413` past that), and the endpoint is rate limited to a handful of calls per minute. It is for handing over a dashboard, not for bulk uploads.
 - You cannot choose the expiry or make a link permanent — every link is temporary with the same 48-hour lifetime.
 
-### Option 2 — Drag-and-drop the file
+### Option 2 — Upload the file
 
-In the dashboardbase web app, open the dashboard import area and drop the `.json` file onto the drop zone. dashboardbase validates it server-side and creates / updates the dashboard.
+For a user who would rather not have their config uploaded by you. Tell them the exact steps:
 
-### Option 3 — Paste the raw JSON
+1. Sign in at app.dashboardbase.com (or sign up — the home page of a new workspace has the same button).
+2. Press **Import config** on the home page. To add to a dashboard that already exists, open it in the editor and drop the file anywhere on it instead.
+3. Drop `.dashboardbase/<slug>.json` onto the box, or press **Upload file** and pick it.
+4. Enter credentials if the endpoints need any, wait for the endpoint check, press **Import**, then **Publish**.
 
-Some import dialogs accept pasted text. Copy the file contents and paste them into the import input field; dashboardbase parses and validates server-side.
+dashboardbase validates the file and creates the dashboard — or updates it, when the file carries the `id` of an existing one.
+
+### Option 3 — Paste the JSON, or a setup link
+
+The same box takes pasted text: the contents of the setup file, or a setup link (`https://app.dashboardbase.com/i/…`) created earlier. Useful when the file is on another machine, or when the user is already in the editor and has the link in a chat window.
+
 
 ### Option 4 — validate the file before importing (for tools)
 

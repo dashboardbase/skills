@@ -118,7 +118,7 @@ Both widgets should render within a few seconds.
 
 ## Step 4 — Ship as a setup file
 
-To let users reproduce the same dashboard with one click, export a setup file. The `position` / `size` values are copied from the *Spotlight* layout in `references/setup-files.md` → "Recommended layouts" (the table takes the `Primary` slot, the KPI the `Kpi` slot) — don't invent grid values:
+To let users reproduce the same dashboard with one click, export a setup file. The `position` / `size` values come from the *Starter Kit Single Column* layout in `references/setup-files.md` → "Recommended layouts" — the table takes the `Primary` slot, and the one KPI is widened to the full row so the board has no hole (see "Composition rules" there). Don't invent grid values:
 
 ```json
 {
@@ -130,14 +130,14 @@ To let users reproduce the same dashboard with one click, export a setup file. T
     {
       "type": "kpi",
       "path": "/widgets/mrr",
-      "size": { "w": 4, "h": 1 },
-      "position": { "x": 8, "y": 0 }
+      "size": { "w": 12, "h": 1 },
+      "position": { "x": 0, "y": 0 }
     },
     {
       "type": "table",
       "path": "/widgets/top-customers",
-      "size": { "w": 8, "h": 6 },
-      "position": { "x": 0, "y": 0 }
+      "size": { "w": 12, "h": 5 },
+      "position": { "x": 0, "y": 1 }
     }
   ]
 }
@@ -145,7 +145,7 @@ To let users reproduce the same dashboard with one click, export a setup file. T
 
 Save this file in your repo as `.dashboardbase/<slug>.json`, where `<slug>` is your dashboard name in lowercase with hyphens (e.g. `.dashboardbase/mrr-overview.json`). Keeping it in `.dashboardbase/` lets you version-control all your dashboard configs alongside your code.
 
-Share this file. Ask the user how they want it: you can POST it to `/tools/v1/setup-links` and send them the short URL that comes back — they open it, preview what will be created, and import from there — or they can drag-drop or paste the file themselves. Uploading their config is their call, so ask before you do it. See `references/setup-files.md` for all four options. They provide credentials in the import flow; the file itself stays credential-free.
+Share this file. Ask the user how they want it: you can POST it to `/tools/v1/setup-links` and send them the short URL that comes back — they click it, preview what will be created, and import from there, signing up at that point if they have no account yet — or they can upload the file themselves with **Import config** on the dashboardbase home page. Uploading their config is their call, so ask before you do it. See `references/setup-files.md` for all four options. They provide credentials in the import flow; the file itself stays credential-free.
 
 ## Step 5 — Before going live
 

@@ -1,6 +1,6 @@
 ---
 name: dashboardbase
-description: Use when creating a dashboardbase dashboard end-to-end, or when building, wiring, or debugging an HTTP endpoint that dashboardbase will poll to render a widget (BarChart, Clock, ContributionsGrid, Countdown, DonutChart, GaugeChart, Image, KPI, LineChart, PieChart, ProgressList, Status, Table, Text), writing a dashboardbase setup file, configuring, changing or adding authentication, or sending events/notifications. Use it too when changing an endpoint that is already live: adding alerting, action links, a header or badge, another chart series, or wiring an event webhook. Covers the full create-a-dashboard workflow (choose widgets, pick a layout, build endpoints, write the setup file, validate, import), the response envelope, JSON schemas per widget, widget styling (header title/subtitle and colored badges), the recommended authentication method (verifying the Ed25519 signature dashboardbase already sends, against a public key you commit), refresh intervals, hosting requirements, and a go-live checklist.
+description: Use when designing or creating a dashboardbase dashboard end-to-end (which widgets, which layout — with or without an account), or when building, wiring, or debugging an HTTP endpoint that dashboardbase polls to render a widget (BarChart, Clock, ContributionsGrid, Countdown, DonutChart, GaugeChart, Image, KPI, LineChart, PieChart, ProgressList, Status, Table, Text), writing a setup file or setup link, configuring or changing authentication, or sending events/notifications. Use it too when changing a live endpoint: adding alerting, action links, a header or badge, another chart series, or an event webhook. Covers the full workflow (design from a ready-made recipe or the project's data, choose widgets, pick a layout, build endpoints, write the setup file, validate, hand over as a link or a file), the response envelope, JSON schemas per widget, the recommended authentication (verifying the Ed25519 signature dashboardbase already sends), refresh intervals, hosting requirements, and a go-live checklist.
 license: Proprietary. Free to use; not open source. LICENSE has complete terms.
 metadata:
   source-repo: dashboardbase-api
@@ -11,7 +11,7 @@ metadata:
 
 # dashboardbase Developer Skill
 
-This skill teaches you to build HTTP endpoints whose JSON responses dashboardbase can render as widgets, plus the setup-file format used to wire those endpoints into a dashboard.
+This skill teaches you to design a dashboardbase dashboard — which widgets, in which layout — to build the HTTP endpoints whose JSON responses dashboardbase renders as those widgets, and to hand the result over as a setup file the user uploads or a setup link they click.
 
 ## Mental model
 
@@ -21,7 +21,30 @@ dashboardbase periodically polls each widget's configured HTTPS endpoint at the 
 
 When the task is a whole dashboard (not a single widget), follow this workflow:
 
-1. **Choose widgets.** Pick one widget type per *thing being shown* — not one per number. Several numbers describing the same data belong in one widget's `headers` strip above it (up to 6 blocks including `header`), so "pageviews per day, plus totals for pages, users and organizations" is **one** LineChart, not a LineChart and three KPI tiles. Reach for a second widget when the second thing has its own shape — a list, a breakdown, a status — not when it is another number about the first. Then pick the type per widget:
+1. **Design the dashboard first — propose, don't interview.** A request like "make me a dashboard" gets a concrete proposal, not a list of questions. Work out what the product is and who will read the board, then:
+   - **A domain is recognisable** (SaaS, a store, an API or backend, an app, a client report, an office TV) → load `references/dashboard-recipes.md` and start from the matching recipe: a finished widget list with a layout that already fills the board.
+   - **No recipe fits** → design from the project itself. Read the models, the billing or analytics integration, the admin pages and existing reports, list what can actually be counted, and pick a widget for each (step 2).
+   - **Aim for one screen:** a row of 3–6 headline numbers, one main chart, one or two supporting widgets — 5 to 8 widgets in total. A board that needs scrolling, or a ninth widget, is usually two dashboards.
+   - **Only show what the project can feed.** A widget whose number you would have to invent is left out or swapped, never faked.
+
+   Show the user the proposal as a short list — title · widget type · what it shows — name the recipe or layout, and build on a yes.
+2. **Choose widgets.** Pick one widget type per *thing being shown* — not one per number. Several numbers describing the same data belong in one widget's `headers` strip above it (up to 6 blocks including `header`), so "pageviews per day, plus totals for pages, users and organizations" is **one** LineChart, not a LineChart and three KPI tiles. Reach for a second widget when the second thing has its own shape — a list, a breakdown, a status — not when it is another number about the first.
+
+   Match the widget to the question the data answers:
+
+   | The data answers… | Use | Rather than |
+   | --- | --- | --- |
+   | "What is the number right now?" | **KPI** — add `trend` for its recent shape, `progress` for a goal | A chart with one point |
+   | "How is it changing over time?" (7+ points) | **LineChart** | A BarChart of 30 daily bars |
+   | "How do a few categories or periods compare?" | **BarChart** — stacked for parts of a total | A pie with more than 6 slices |
+   | "How is one total split?" (2–6 parts) | **DonutChart** or **PieChart** | Either, for values that don't sum to a whole |
+   | "How close to a limit or a goal?" | **GaugeChart** for one, **ProgressList** for several | One KPI per goal |
+   | "Which ones?" — rows with a few attributes, a top 10 | **Table** | A chart with 10 unlabelled series |
+   | "Is it OK?" | **Status** — one indicator per widget | A KPI showing the word "Up" |
+   | "How active, day by day, over months?" | **ContributionsGrid** | A 365-point line |
+   | A date to count down to, the time, a notice, a picture | **Countdown**, **Clock**, **Text**, **Image** | — |
+
+   The full list, with each widget's setup-file `type`:
 
 - **BarChart** (setup-file type `bar`) — building a bar chart / grouped or stacked bars / comparison by category / bars with a rate line (combo chart).
 - **Clock** (setup-file type `clock`) — building a clock / current-time / timezone tile.
@@ -65,36 +88,47 @@ One endpoint, one widget, one slot on the grid — instead of four endpoints and
 
 </details>
 
-2. **Pick a layout.** Load `references/setup-files.md` → "Recommended layouts". Choose the smallest layout whose slots cover your widget mix and copy each slot's `position` / `size` into the setup file — don't invent grid values. If no layout covers the mix, extend the closest one per that file's "When no layout fits". Name the layout you picked when handing over (e.g. "arranged as *Spotlight*") so the user knows what to expect and can ask for a different arrangement.
-3. **Choose an endpoint layout, then build or plan each endpoint.** Default to **one endpoint per widget** — dedicated endpoints can back the same widget on several dashboards, keep each handler to one response shape, and make wiring a single obvious step. Switch to **one shared endpoint** taking `?widget=<slug>` when the project is a single serverless function or one handler file, or when the user asks for it. Ask which they want when the project doesn't make it obvious, and load `references/endpoint-layout.md` before implementing the shared layout.
+3. **Pick a layout, then make it fill the board.** A recipe already carries its layout. Otherwise load `references/setup-files.md` → "Recommended layouts", choose from "Choosing a layout" and copy each slot's `position` / `size` into the setup file — don't invent grid values, and put a widget only in a slot whose "fits" column names it. Then apply that file's "Composition rules": every row spans all 12 columns, the board is 6 rows tall, and no slot is left empty — an unused slot is a hole in the finished dashboard, so widen its neighbours instead. If no layout covers the mix, extend the closest one per "When no layout fits". Name the layout you picked when handing over (e.g. "arranged as *Spotlight*") so the user knows what to expect and can ask for a different arrangement.
+4. **Choose an endpoint layout, then build or plan each endpoint.** Default to **one endpoint per widget** — dedicated endpoints can back the same widget on several dashboards, keep each handler to one response shape, and make wiring a single obvious step. Switch to **one shared endpoint** taking `?widget=<slug>` when the project is a single serverless function or one handler file, or when the user asks for it. Ask which they want when the project doesn't make it obvious, and load `references/endpoint-layout.md` before implementing the shared layout.
    - Endpoints already exist → wire them with mapping State A (existing widgets) or State B (new widgets); see `references/setup-files.md`.
    - You're building them now → implement them in the chosen layout using each widget's `references/<widget>.md`, then map with State B.
-   - Endpoints can't be built yet → describe each widget with a State C `plan` mapping; the setup file still imports as a sketch to implement later.
-4. **Write the setup file** per `references/setup-files.md` and save it as `.dashboardbase/<dashboard-slug>.json` in the repo — named after the dashboard, never a generic `dashboard.json`. Write it as part of the build, as soon as the endpoint paths are settled; only the handover in step 6 waits for live endpoints. If that path already exists and describes a different dashboard, pick a distinct slug rather than overwriting it — two near-identical file names in one directory is the failure mode to avoid. That directory is also the first thing to read when you join an existing project: an existing setup file gives you the `baseUrl` and the path convention outright.
-5. **Validate before handing over.**
+   - Endpoints can't be built yet → describe each widget with a State C `plan` mapping; the setup file still imports as the finished layout, each widget described, to implement later.
+   - The endpoint can be built but its data source can't be reached yet → offer the user a choice: wait, or return realistic sample data in the right shape now (hardcoded, with a `TODO` naming the real source) so the dashboard is connected and looks finished today. Only on their say-so, and say at handover exactly which widgets show sample numbers — never pass them off as real.
+5. **Write the setup file** per `references/setup-files.md` and save it as `.dashboardbase/<dashboard-slug>.json` in the repo — named after the dashboard, never a generic `dashboard.json`. Write it as part of the build, as soon as the endpoint paths are settled; only the handover in step 7 waits for live endpoints. If that path already exists and describes a different dashboard, pick a distinct slug rather than overwriting it — two near-identical file names in one directory is the failure mode to avoid. That directory is also the first thing to read when you join an existing project: an existing setup file gives you the `baseUrl` and the path convention outright.
+6. **Validate before handing over.**
    - **If the `validate_widget_response` and `validate_setup_file` tools are available** (the dashboardbase MCP server is installed), use them — they check against the live contract, so they cannot drift from what the platform accepts. Pass `validate_widget_response` the **full response envelope** (`title` / `actions` / `data` / `alert`), not just `data`. No account or API key is needed.
    - **Otherwise**, validate each endpoint response's `data` against `assets/schemas/<widget>.json`, and the setup file against `assets/setup-file.schema.json` (or `POST /bff/v1/organizations/{orgId}/setup-files/validate`).
 
    Then run the validation loop below.
-6. **Ask how they want it handed over, then do that.** There are two routes and the choice is the user's — **never upload their config without being asked to**:
+7. **Hand it over — a dashboard is not delivered until the user knows how to open it.** There are two routes and the choice is the user's — **never upload their config without being asked to**:
 
-   > The dashboard config is ready. I can upload it and give you a link that opens straight into the import preview, or you can drag `.dashboardbase/<slug>.json` into dashboardbase yourself. Shall I create the link?
+   > The dashboard config is saved at `.dashboardbase/<slug>.json`. I can upload it and give you a link — you click it, see a preview and import it — or you can upload the file in dashboardbase yourself. Shall I create the link?
 
-   **If they take the link:** if the `create_setup_link` tool is available (the dashboardbase MCP server), call it with the file — it posts it and hands back the link with what to tell the user. Otherwise `POST` the file as the raw body to `https://api.dashboardbase.com/tools/v1/setup-links` — no account, no API key, no org ID, and no `{"content": …}` wrapper. You get back `id`, `url` (e.g. `https://app.dashboardbase.com/i/V1v3rZ8Qk2mN4pR6tY8uWx`) and `expiresAt`. Full request/response and failure cases are in `references/setup-files.md` → "How to load your setup file into dashboardbase".
+   **Route 1 — a setup link they click.** If the `create_setup_link` tool is available (the dashboardbase MCP server), call it with the file — it posts it and hands back the link with what to tell the user. Otherwise `POST` the file as the raw body to `https://api.dashboardbase.com/tools/v1/setup-links` — no account, no API key, no org ID, and no `{"content": …}` wrapper. You get back `id`, `url` (e.g. `https://app.dashboardbase.com/i/V1v3rZ8Qk2mN4pR6tY8uWx`) and `expiresAt`.
 
-   **If they'd rather do it themselves:** nothing to upload — point them at the saved file and let them drag it onto the import area or paste its contents. Same result; credentials are entered in the import flow either way.
+   **Route 2 — they upload the file.** Nothing to post. Tell them where the file is and what to do with it: sign in at app.dashboardbase.com, press **Import config** on the home page, then drop `.dashboardbase/<slug>.json` onto the box, press **Upload file**, or paste its contents.
 
-   **When you do create a link, give the user the `url` and tell them what it does** — a bare link with no explanation is not a handover. Say, in your own words:
+   **Either way, say what happens next** — a bare link or a bare path is not a handover. In your own words:
 
-   - **What happens when they click it:** they'll see a preview of the dashboard — its widgets and which hosts they pull from — *before* anything is created. Nothing touches their dashboardbase org until they confirm.
-   - **That they'll enter credentials there, not in the file:** if the widgets point at a real API, the import flow asks for the API key or basic-auth details. That is the right place for them — never put them in the setup file.
-   - **That it expires in 48 hours:** it's a handover, not storage. The setup file lives in their repo at `.dashboardbase/<slug>.json`; if the link goes stale, you can mint a fresh one from the same file in one call.
-   - **That it works more than once:** they can forward it to teammates and each person can import the dashboard.
-   - **That the link is the only thing protecting the file:** anyone holding the URL can read it. Tell them to send it directly rather than pasting it into a public issue or channel.
+   - **Clicking the link is safe.** It opens a preview — the dashboard's name, its widgets and the hosts they pull from. Nothing is created until they press **Import to a workspace**.
+   - **No account is needed to look, and none is needed yet.** Pressing Import asks them to sign in or sign up; a first-time user creates a workspace and is brought straight back to the import with the file already loaded.
+   - **The import takes it from there:** credentials if the endpoints need any (entered there, never in the file), a test call to every endpoint, then **Import**. The dashboard opens in the editor with every widget placed; **Publish** makes it live.
+   - **The link expires in 48 hours** and works more than once, so it can be forwarded to teammates. It is a handover, not storage — the file stays in the repo and a fresh link is one call away.
+   - **The link is the only thing protecting the file:** anyone holding the URL can read it. Send it directly rather than pasting it into a public issue or channel.
 
-   If the POST comes back `400` with `reason: "credentials_detected"`, the file carries something credential-shaped — a `headers` object, an `apiKey`, a `user:password@host` base URL, a `?api_key=…` parameter, or a pasted provider key. The response lists the offending fields. **Remove them and re-post; do not try to work around the check.** Credentials belong in the import flow.
+   If the POST comes back `400` with `reason: "credentials_detected"`, the file carries something credential-shaped — a `headers` object, an `apiKey`, a `user:password@host` base URL, a `?api_key=…` parameter, or a pasted provider key. The response lists the offending fields. **Remove them and re-post; do not try to work around the check.**
 
-   See `references/setup-files.md` for every option. Either way, credentials never go in the file.
+   Full request/response, limits and failure cases: `references/setup-files.md` → "How to load your setup file into dashboardbase".
+
+## No dashboardbase account yet
+
+Nothing in this skill needs an account until the moment of import, so never stop to ask for one. Without it you can still design the board, build and validate every endpoint, write the setup file and create the setup link; the user signs up when they press Import (a free trial, no card needed). Three things change:
+
+- **Authenticate with the Endpoint Secret, not request signing.** The signing key only exists once there is a workspace, so there is nothing to verify against yet. Write the verifier to read `DASHBOARDBASE_ENDPOINT_SECRET` from the environment and fail closed while it is unset (`references/authentication.md` → "Endpoint Secret"). An endpoint that must already be protected by something the user controls can use an API key header instead — they choose the value and enter it in the import flow.
+- **Tell the user the one step that remains after signing up:** copy the Endpoint Secret from **Workspace → Secrets** (app.dashboardbase.com/workspace) into the endpoint's environment and redeploy. Until then the import still goes through, but the widgets show an authentication error — say so, so it does not look broken.
+- **Let them see the result before signing up.** Paste any endpoint response into app.dashboardbase.com/validate — it needs no account, and its Preview tab renders the JSON as the real widget.
+
+Endpoints cannot be built yet either? Hand over a plan-only setup file (State C, see `references/dashboard-recipes.md` → "A recipe as a setup file"): it imports as the finished layout with each widget described, ready to be wired later.
 
 ## Changing an endpoint that is already live
 
@@ -209,10 +243,12 @@ Load only what the current task needs — these files are progressive disclosure
 
 | Trigger | File |
 |---|---|
-| Creating a **complete dashboard** from scratch | Follow "Creating a dashboard end-to-end" above, with `references/setup-files.md` for layouts and the setup file |
+| Creating a **complete dashboard** from scratch | Follow "Creating a dashboard end-to-end" above, with `references/dashboard-recipes.md` for what goes on it and `references/setup-files.md` for layouts and the setup file |
+| **Deciding what goes on a dashboard** — the user named a domain, or only said "a dashboard" | `references/dashboard-recipes.md` |
+| The user has **no dashboardbase account** yet | "No dashboardbase account yet" above |
 | Building a **BarChart / Clock / ContributionsGrid / Countdown / DonutChart / GaugeChart / Image / KPI / LineChart / PieChart / ProgressList / Status / Table / Text** endpoint | `references/<widget>.md` (e.g. `references/kpi.md`, `references/bar-chart.md`) |
 | Writing a **setup file** (declarative dashboard config) | `references/setup-files.md` (and `assets/setup-file.schema.json` for full schema) |
-| **Handing a finished dashboard to the user** — sharing it as a link, or the drag-drop / paste alternatives | `references/setup-files.md` → "How to load your setup file into dashboardbase" |
+| **Handing a finished dashboard to the user** — a setup link they click, or the file they upload | `references/setup-files.md` → "How to load your setup file into dashboardbase" |
 | Deciding between **one endpoint per widget** and **one shared endpoint** (`?widget=`) | `references/endpoint-layout.md` |
 | Choosing, changing or adding **authentication** — a new method, a second method alongside it, or a rotation | `references/authentication.md` |
 | **Changing an endpoint that is already live** — adding a header or a header strip, badge, action link, colour, another series or column | `references/modifying-endpoints.md` |
@@ -244,7 +280,7 @@ The widget reference filenames are: `bar-chart.md`, `clock.md`, `contributions-g
 
 1. `curl` the endpoint and confirm it returns `200` with a JSON body, in under 10 seconds.
 2. Validate the response. If `validate_widget_response` is available, call it with the **full response body** — it checks the envelope and the `data` payload against the live contract. Otherwise JSON-validate the response's `data` field against the bundled schema at `assets/schemas/<widget>.json` (the same schema is shown in `references/<widget>.md`).
-3. Open the widget in dashboardbase and confirm it renders. If it doesn't, load `references/gotchas.md`.
+3. Confirm it renders: open the widget in dashboardbase, or — before the dashboard is imported, or with no account — paste the response into app.dashboardbase.com/validate and look at its Preview tab. If it doesn't, load `references/gotchas.md`.
 4. Confirm the configured `refreshInterval` is realistic given upstream rate limits.
 
 ## Top 5 gotchas (full list: `references/gotchas.md`)
