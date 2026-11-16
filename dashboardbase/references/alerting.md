@@ -11,7 +11,7 @@ Until side 2 is done, side 1 is inert — the endpoint keeps returning `alert` a
 
 ## Side 1 — returning an alert
 
-`alert` is an envelope key, alongside `title`, `actions` and `data` — never inside `data`. It works identically on every widget type.
+`alert` is an envelope key, alongside `title`, `icon`, `hint`, `actions` and `data` — never inside `data`. It works identically on every widget type.
 
 ```json
 {

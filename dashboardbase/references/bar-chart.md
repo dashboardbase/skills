@@ -1188,6 +1188,73 @@ A count and a rate that explain each other — signups and conversion, orders an
 }
 ```
 
+### Bars with a title icon and an explanation
+
+A breakdown whose numbers need a one-line definition (which orders count, which time zone the days are in), with an icon matching the rest of the row.
+
+```json
+{
+  "title": "Orders by weekday",
+  "actions": [
+    {
+      "title": "Open orders",
+      "type": "link",
+      "url": "https://example.com/orders"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "1,284",
+      "subtitle": "Last 7 days",
+      "badge": {
+        "text": "+6%",
+        "icon": "ArrowUp",
+        "color": "Success"
+      }
+    },
+    "labels": [
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sat",
+      "Sun"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 162
+          },
+          {
+            "value": 171
+          },
+          {
+            "value": 188
+          },
+          {
+            "value": 176
+          },
+          {
+            "value": 214
+          },
+          {
+            "value": 205
+          },
+          {
+            "value": 168
+          }
+        ],
+        "label": "Orders"
+      }
+    ]
+  },
+  "icon": "Cart",
+  "hint": "Completed checkouts per day in UTC, cancelled orders excluded."
+}
+```
+
 ## Validation
 
 The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, dashboardbase renders the widget in an error state. Before declaring done, validate the response. If the `validate_widget_response` tool is available, call it with the full response body — that checks against the live contract. Otherwise validate the response's `data` field against `assets/schemas/bar-chart.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
