@@ -1145,6 +1145,100 @@ A longer trend read for its shape rather than its exact values — daily active 
 }
 ```
 
+### Chart with a title icon and an explanation
+
+A chart whose metric needs defining for the people reading it (who counts as an active user), with an icon that ties it to the KPI tiles beside it.
+
+```json
+{
+  "title": "Active users",
+  "actions": [
+    {
+      "title": "Open analytics",
+      "type": "link",
+      "url": "https://example.com/analytics"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "3,412",
+      "subtitle": "This week",
+      "badge": {
+        "text": "+14%",
+        "icon": "ArrowUp",
+        "color": "Success"
+      }
+    },
+    "labels": [
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sat",
+      "Sun"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 2980
+          },
+          {
+            "value": 3120
+          },
+          {
+            "value": 3260
+          },
+          {
+            "value": 3190
+          },
+          {
+            "value": 3340
+          },
+          {
+            "value": 3280
+          },
+          {
+            "value": 3412
+          }
+        ],
+        "label": "This week"
+      },
+      {
+        "data": [
+          {
+            "value": 2710
+          },
+          {
+            "value": 2820
+          },
+          {
+            "value": 2900
+          },
+          {
+            "value": 2860
+          },
+          {
+            "value": 2950
+          },
+          {
+            "value": 2890
+          },
+          {
+            "value": 2990
+          }
+        ],
+        "label": "Last week",
+        "style": "Comparison"
+      }
+    ]
+  },
+  "icon": "People",
+  "hint": "People who opened the app at least once that day. Last week is drawn dashed behind it."
+}
+```
+
 ## Validation
 
 The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, dashboardbase renders the widget in an error state. Before declaring done, validate the response. If the `validate_widget_response` tool is available, call it with the full response body — that checks against the live contract. Otherwise validate the response's `data` field against `assets/schemas/line-chart.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).

@@ -299,6 +299,18 @@
                       "database",
                       "posthog"
                     ]
+                  },
+                  "exampleId": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "pattern": "^[a-z0-9-]{1,100}$",
+                    "description": "Id of an example from this widget type\u0027s catalogue (GET /bff/v1/widget-types, \u0060variants[].id\u0060) that sets the widget\u0027s look. The generated plan builds that example instead of guessing one from the goal. An id the catalogue no longer has falls back to the guess.",
+                    "examples": [
+                      "kpi-sparkline",
+                      "line-target"
+                    ]
                   }
                 }
               },
@@ -435,6 +447,18 @@
                       "auth0",
                       "database",
                       "posthog"
+                    ]
+                  },
+                  "exampleId": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "pattern": "^[a-z0-9-]{1,100}$",
+                    "description": "Id of an example from this widget type\u0027s catalogue (GET /bff/v1/widget-types, \u0060variants[].id\u0060) that sets the widget\u0027s look. The generated plan builds that example instead of guessing one from the goal. An id the catalogue no longer has falls back to the guess.",
+                    "examples": [
+                      "kpi-sparkline",
+                      "line-target"
                     ]
                   }
                 }

@@ -648,6 +648,36 @@ A headline number whose recent shape matters as much as its value — MRR over t
 }
 ```
 
+### Title with an icon and an explanation
+
+A row of headline tiles where an icon helps tell them apart, or a metric whose definition viewers ask about (what counts as revenue, which orders are included).
+
+```json
+{
+  "title": "Revenue",
+  "actions": [
+    {
+      "title": "Open orders",
+      "type": "link",
+      "url": "https://example.com/orders"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "$48,120",
+      "subtitle": "vs last month",
+      "badge": {
+        "text": "+9.2%",
+        "icon": "ArrowUp",
+        "color": "Success"
+      }
+    }
+  },
+  "icon": "Cash",
+  "hint": "Paid orders in the selected period, before refunds and excluding tax and shipping."
+}
+```
+
 ## Validation
 
 The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, dashboardbase renders the widget in an error state. Before declaring done, validate the response. If the `validate_widget_response` tool is available, call it with the full response body — that checks against the live contract. Otherwise validate the response's `data` field against `assets/schemas/kpi.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).

@@ -10,7 +10,7 @@ These are the environment-specific facts that defy reasonable assumptions — th
 
 ## 2. `additionalProperties: false` — extra fields cause silent render failures
 
-Each widget schema has `additionalProperties: false` — it applies to the `data` payload. If `data` contains a key not in the schema (a typo, an extra debug field, a wrapper from your serialiser), dashboardbase rejects the response. Strip unknown fields before responding. At the envelope level the allowed fields are exactly `title`, `actions`, `data`, and `alert` (see the response-envelope section in `SKILL.md`).
+Each widget schema has `additionalProperties: false` — it applies to the `data` payload. If `data` contains a key not in the schema (a typo, an extra debug field, a wrapper from your serialiser), dashboardbase rejects the response. Strip unknown fields before responding. At the envelope level the allowed fields are exactly `title`, `icon`, `hint`, `actions`, `data`, and `alert` (see the response-envelope section in `SKILL.md`).
 
 Common offenders:
 - `_id`, `__v` from MongoDB

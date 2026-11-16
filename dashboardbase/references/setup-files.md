@@ -126,7 +126,7 @@ Create a new widget and point it at an endpoint. Requires `type` and `path`. Typ
 
 ### State C — Create plan-only widget
 
-Describe a widget you intend to build but for which no endpoint exists yet. Requires `type` and `plan` (free-text description of the data the widget should display). Useful for sketching dashboards before implementation, and for handing a dashboard to someone who has no endpoints — or no account — yet: the file imports as the finished layout with each widget described. Write `goal` as the widget's title-plus-intent ("Monthly recurring revenue, with the change vs last month"); it is what the user sees on the widget until it is wired. This example uses the *Starter Kit* layout: two `Kpi` slots, `Primary` for the line chart, `Secondary` for the pie chart.
+Describe a widget you intend to build but for which no endpoint exists yet. Requires `type` and `plan` (free-text description of the data the widget should display). Useful for sketching dashboards before implementation, and for handing a dashboard to someone who has no endpoints — or no account — yet: the file imports as the finished layout with each widget described. Write `goal` as the widget's title-plus-intent ("Monthly recurring revenue, with the change vs last month"); it is what the user sees on the widget until it is wired. Add `exampleId` to pin the widget's look to one example from that type's catalogue (`variants[].id` in `GET https://api.dashboardbase.com/bff/v1/widget-types`, e.g. `kpi-sparkline` for a headline with a sparkline); leave it out and the plan picks an example that fits the goal. This example uses the *Starter Kit* layout: two `Kpi` slots, `Primary` for the line chart, `Secondary` for the pie chart.
 
 ```json
 {
@@ -141,7 +141,8 @@ Describe a widget you intend to build but for which no endpoint exists yet. Requ
         "goal": "Monthly recurring revenue",
         "dateRange": "current month",
         "groupBy": null,
-        "dataSource": "stripe"
+        "dataSource": "stripe",
+        "exampleId": "kpi-sparkline"
       }
     },
     {
