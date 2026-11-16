@@ -4,7 +4,7 @@ description: Use when designing or creating a dashboardbase dashboard end-to-end
 license: Proprietary. Free to use; not open source. LICENSE has complete terms.
 metadata:
   source-repo: dashboardbase-api
-  generated-at: "2026-11-06T06:54:00Z"
+  generated-at: "2026-11-16T09:24:56Z"
   api-version: "1.0.0"
   spec-version: "1.0"
 ---
@@ -96,7 +96,7 @@ One endpoint, one widget, one slot on the grid — instead of four endpoints and
    - The endpoint can be built but its data source can't be reached yet → offer the user a choice: wait, or return realistic sample data in the right shape now (hardcoded, with a `TODO` naming the real source) so the dashboard is connected and looks finished today. Only on their say-so, and say at handover exactly which widgets show sample numbers — never pass them off as real.
 5. **Write the setup file** per `references/setup-files.md` and save it as `.dashboardbase/<dashboard-slug>.json` in the repo — named after the dashboard, never a generic `dashboard.json`. Write it as part of the build, as soon as the endpoint paths are settled; only the handover in step 7 waits for live endpoints. If that path already exists and describes a different dashboard, pick a distinct slug rather than overwriting it — two near-identical file names in one directory is the failure mode to avoid. That directory is also the first thing to read when you join an existing project: an existing setup file gives you the `baseUrl` and the path convention outright.
 6. **Validate before handing over.**
-   - **If the `validate_widget_response` and `validate_setup_file` tools are available** (the dashboardbase MCP server is installed), use them — they check against the live contract, so they cannot drift from what the platform accepts. Pass `validate_widget_response` the **full response envelope** (`title` / `actions` / `data` / `alert`), not just `data`. No account or API key is needed.
+   - **If the `validate_widget_response` and `validate_setup_file` tools are available** (the dashboardbase MCP server is installed), use them — they check against the live contract, so they cannot drift from what the platform accepts. Pass `validate_widget_response` the **full response envelope** (`title` / `icon` / `hint` / `actions` / `data` / `alert`), not just `data`. No account or API key is needed.
    - **Otherwise**, validate each endpoint response's `data` against `assets/schemas/<widget>.json`, and the setup file against `assets/setup-file.schema.json` (or `POST /bff/v1/organizations/{orgId}/setup-files/validate`).
 
    Then run the validation loop below.
@@ -140,7 +140,7 @@ Two things are worth knowing without loading anything:
 
 - **Adding alerting is half code, half configuration.** Returning `alert` in the envelope does nothing until the user enables alerts on that widget in the dashboard editor, and the dashboard is published. Always say so when you hand the change over. See `references/alerting.md`.
 - **Changing how an endpoint authenticates is code *and* configuration, in that order.** Deploy the endpoint accepting both the old and the new credential, update the credential on every datasource pointing at it, and only then drop the old one. Reverse that order and every widget on the endpoint 401s. Request signing and the Endpoint Secret are the exceptions with nothing to configure — both are already sent on every request. See `references/authentication.md`.
-- **A payload-only change needs no re-import.** Anything inside `title`, `actions`, `data` or `alert` is picked up on the next poll. Only a new endpoint, a changed URL, or a new or retyped widget means updating `.dashboardbase/<slug>.json` and importing it again.
+- **A payload-only change needs no re-import.** Anything inside `title`, `icon`, `hint`, `actions`, `data` or `alert` is picked up on the next poll. Only a new endpoint, a changed URL, or a new or retyped widget means updating `.dashboardbase/<slug>.json` and importing it again.
 
 ## Response envelope (always true)
 
@@ -149,6 +149,8 @@ Every widget endpoint returns this shape:
 ```json
 {
   "title": "Optional widget title",
+  "icon": "Cart",
+  "hint": "Orders paid in the selected period, refunds excluded.",
   "actions": [
     { "title": "View Details", "type": "link", "url": "https://example.com/details" }
   ],
@@ -158,11 +160,13 @@ Every widget endpoint returns this shape:
 ```
 
 - `title` (optional string) overrides the widget title configured in dashboardbase.
+- `icon` (optional) draws a small monochrome icon tile before the title, on every widget type. One of `Analytics`, `Bag`, `BarChart`, `Briefcase`, `Bug`, `Calendar`, `Card`, `Cart`, `Cash`, `Chat`, `CheckCircle`, `Cloud`, `Code`, `Cube`, `Desktop`, `Download`, `Eye`, `Flash`, `Gift`, `Globe`, `Heart`, `Home`, `Location`, `Mail`, `Megaphone`, `Notifications`, `People`, `Person`, `PersonAdd`, `Phone`, `PieChart`, `Pulse`, `Receipt`, `Rocket`, `Server`, `Shield`, `Speedometer`, `Star`, `Ticket`, `Time`, `TrendingDown`, `TrendingUp`, `Trophy`, `Wallet`, or `Warning`. An unknown name is ignored rather than failing the widget. Use it only where it adds meaning, and give a whole row of tiles icons or none.
+- `hint` (optional string) puts an (i) after the title; tapping it shows the text. Say what the number means and how it is calculated ("Paid orders in the period, refunds excluded"), in one or two sentences. Truncated beyond 280 characters.
 - `actions` (optional array) renders link actions in the widget header. `type` is currently always `"link"`. `url` must be an absolute `https://` URL.
 - `data` (required) is the widget-type-specific payload — see `references/<widget>.md` for each widget's exact shape.
 - `alert` (optional object) renders an alert banner on the widget and feeds alert notifications. Shape: `active` (boolean — `true` shows the banner, `false` clears it), `level` (one of `info`, `success`, `warning`, or `critical` — note these are lowercase, unlike the styling enums), and `message` (string; truncated beyond 200 characters). Works the same on every widget type.
 
-These four keys are the only ones allowed at the envelope level; `additionalProperties: false` applies to the `data` payload (see gotcha 2 below).
+These six keys are the only ones allowed at the envelope level; `additionalProperties: false` applies to the `data` payload (see gotcha 2 below).
 
 ## Request: the `dateRange` query parameter
 
@@ -286,7 +290,7 @@ The widget reference filenames are: `bar-chart.md`, `clock.md`, `contributions-g
 ## Top 5 gotchas (full list: `references/gotchas.md`)
 
 1. **Enum casing.** `"color": "success"` is invalid — use `"Success"`.
-2. **Extra fields fail silently.** `additionalProperties: false` applies to the `data` payload — an unrecognised key inside `data` turns the render off. Strip them. The envelope level allows exactly `title`, `actions`, `data`, and `alert`.
+2. **Extra fields fail silently.** `additionalProperties: false` applies to the `data` payload — an unrecognised key inside `data` turns the render off. Strip them. The envelope level allows exactly `title`, `icon`, `hint`, `actions`, `data`, and `alert`.
 3. **Action URLs must be absolute HTTPS.** Relative URLs and `http://` are rejected.
 4. **`datasets` is always an array.** Even single-series charts use `"datasets": [{ ... }]`. Multi-series is just multiple entries — see each chart widget's "Multiple series" section.
 5. **`null` ≠ missing.** Most optional fields should be omitted rather than set to `null`. Returning `"color": null` may render differently from omitting `color`.
@@ -380,4 +384,4 @@ Each has its own reference file under `references/` — see the filename list ab
 
 ---
 
-*Skill generated at `2026-11-06T06:54:00Z` from the dashboardbase API contract.*
+*Skill generated at `2026-11-16T09:24:56Z` from the dashboardbase API contract.*
