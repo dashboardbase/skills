@@ -68,7 +68,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "Yellow",
                 "Orange",
                 "Light",
-                "Dark"
+                "Dark",
+                "Gray"
               ],
               "type": "string",
               "nullable": true
@@ -97,7 +98,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "Yellow",
             "Orange",
             "Light",
-            "Dark"
+            "Dark",
+            "Gray"
           ],
           "type": "string",
           "nullable": true
@@ -164,7 +166,17 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                     "Yellow",
                     "Orange",
                     "Light",
-                    "Dark"
+                    "Dark",
+                    "Gray"
+                  ],
+                  "type": "string",
+                  "nullable": true
+                },
+                "style": {
+                  "enum": [
+                    "Solid",
+                    "Striped",
+                    "Outline"
                   ],
                   "type": "string",
                   "nullable": true
@@ -189,7 +201,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "Yellow",
               "Orange",
               "Light",
-              "Dark"
+              "Dark",
+              "Gray"
             ],
             "type": "string",
             "nullable": true
@@ -270,7 +283,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                   "Yellow",
                   "Orange",
                   "Light",
-                  "Dark"
+                  "Dark",
+                  "Gray"
                 ],
                 "type": "string",
                 "nullable": true
@@ -299,7 +313,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "Yellow",
               "Orange",
               "Light",
-              "Dark"
+              "Dark",
+              "Gray"
             ],
             "type": "string",
             "nullable": true
@@ -1236,6 +1251,93 @@ A chart whose metric needs defining for the people reading it (who counts as an 
   },
   "icon": "People",
   "hint": "People who opened the app at least once that day. Last week is drawn dashed behind it."
+}
+```
+
+### Chart on a coloured card
+
+The trend a board is built around, given the brand colour so it reads as the headline chart rather than one card among many.
+
+```json
+{
+  "title": "Revenue",
+  "actions": [
+    {
+      "title": "Open report",
+      "type": "link",
+      "url": "https://example.com/revenue"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "$190k",
+      "subtitle": "August",
+      "badge": {
+        "text": "+8.1%",
+        "icon": "ArrowUp",
+        "color": "Success"
+      }
+    },
+    "labels": [
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 142000
+          },
+          {
+            "value": 161000
+          },
+          {
+            "value": 178000
+          },
+          {
+            "value": 196000
+          },
+          {
+            "value": 184000
+          },
+          {
+            "value": 190000
+          }
+        ],
+        "label": "This year"
+      },
+      {
+        "data": [
+          {
+            "value": 128000
+          },
+          {
+            "value": 139000
+          },
+          {
+            "value": 151000
+          },
+          {
+            "value": 166000
+          },
+          {
+            "value": 171000
+          },
+          {
+            "value": 176000
+          }
+        ],
+        "label": "Last year",
+        "style": "Comparison"
+      }
+    ],
+    "smooth": true
+  },
+  "color": "Blue"
 }
 ```
 

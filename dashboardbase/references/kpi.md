@@ -68,7 +68,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "Yellow",
                 "Orange",
                 "Light",
-                "Dark"
+                "Dark",
+                "Gray"
               ],
               "type": "string",
               "nullable": true
@@ -97,7 +98,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "Yellow",
             "Orange",
             "Light",
-            "Dark"
+            "Dark",
+            "Gray"
           ],
           "type": "string",
           "nullable": true
@@ -145,7 +147,16 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "Yellow",
             "Orange",
             "Light",
-            "Dark"
+            "Dark",
+            "Gray"
+          ],
+          "type": "string",
+          "nullable": true
+        },
+        "shape": {
+          "enum": [
+            "Bar",
+            "Ring"
           ],
           "type": "string",
           "nullable": true
@@ -206,7 +217,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                   "Yellow",
                   "Orange",
                   "Light",
-                  "Dark"
+                  "Dark",
+                  "Gray"
                 ],
                 "type": "string",
                 "nullable": true
@@ -235,7 +247,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "Yellow",
               "Orange",
               "Light",
-              "Dark"
+              "Dark",
+              "Gray"
             ],
             "type": "string",
             "nullable": true
@@ -292,7 +305,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "Yellow",
                 "Orange",
                 "Light",
-                "Dark"
+                "Dark",
+                "Gray"
               ],
               "type": "string",
               "nullable": true
@@ -303,6 +317,14 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             },
             "fill": {
               "type": "boolean",
+              "nullable": true
+            },
+            "type": {
+              "enum": [
+                "Line",
+                "Bars"
+              ],
+              "type": "string",
               "nullable": true
             }
           },
@@ -678,6 +700,204 @@ A row of headline tiles where an icon helps tell them apart, or a metric whose d
 }
 ```
 
+### A white card that leads the board
+
+The one headline number the room should read first — revenue year to date, MRR — lifted off a dark board in a white card.
+
+```json
+{
+  "title": "Revenue, year to date",
+  "actions": [
+    {
+      "title": "View report",
+      "type": "link",
+      "url": "https://example.com/revenue"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "$1,721,974",
+      "subtitle": "Best month: June, $220k",
+      "badge": {
+        "text": "+12%",
+        "icon": "ArrowUp",
+        "color": "Success"
+      }
+    },
+    "trend": [
+      98000,
+      112000,
+      131000,
+      126000,
+      158000,
+      220000,
+      174000,
+      181000,
+      169000,
+      188000
+    ]
+  },
+  "icon": "TrendingUp",
+  "color": "Light"
+}
+```
+
+### A card that stays in focus on any Scene
+
+The headline number on a dashboard that may be shown on more than one Scene — white on the dark board, near-black on a light one, glass on Glass — so it always stands out from the cards around it.
+
+```json
+{
+  "title": "MRR",
+  "actions": [
+    {
+      "title": "View details",
+      "type": "link",
+      "url": "https://example.com/mrr"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "$84,210",
+      "subtitle": "vs last month",
+      "badge": {
+        "text": "+9.4%",
+        "icon": "ArrowUp",
+        "color": "Success"
+      }
+    },
+    "trend": [
+      71200,
+      73400,
+      74100,
+      76800,
+      78300,
+      80900,
+      82100,
+      84210
+    ]
+  },
+  "icon": "TrendingUp",
+  "color": "Contrast"
+}
+```
+
+### A dark card that leads the board
+
+The headline number on a light board, or a second lead number beside a white card — set in a near-black card that stands out on any Scene.
+
+```json
+{
+  "title": "Active sales",
+  "actions": [
+    {
+      "title": "See orders",
+      "type": "link",
+      "url": "https://example.com/orders"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "$48,320",
+      "subtitle": "vs last month",
+      "badge": {
+        "text": "+14.2%",
+        "icon": "ArrowUp",
+        "color": "Success"
+      }
+    },
+    "trend": [
+      36100,
+      38900,
+      37400,
+      40200,
+      42800,
+      41500,
+      44900,
+      46300,
+      45100,
+      48320
+    ]
+  },
+  "icon": "Cart",
+  "color": "Dark"
+}
+```
+
+### Headline with small bars
+
+A headline number whose last few periods read better as separate bars than as a line — this month against the two before, or a run of days where each day stands on its own.
+
+```json
+{
+  "title": "Active sales",
+  "actions": [
+    {
+      "title": "See orders",
+      "type": "link",
+      "url": "https://example.com/orders"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "$48,320",
+      "subtitle": "this month",
+      "badge": {
+        "text": "14.2%",
+        "icon": "ArrowUp",
+        "color": "Success",
+        "fill": "Solid"
+      }
+    },
+    "trend": {
+      "values": [
+        36900,
+        42300,
+        48320
+      ],
+      "type": "Bars"
+    }
+  },
+  "color": "Dark"
+}
+```
+
+### Headline with a progress ring
+
+A headline number that is also a share of something — units sold against stock, seats filled, a quota reached — shown as a small ring with its percentage beside the number.
+
+```json
+{
+  "title": "Units sold",
+  "actions": [
+    {
+      "title": "See products",
+      "type": "link",
+      "url": "https://example.com/products"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "3,842",
+      "subtitle": "vs last month",
+      "badge": {
+        "text": "6.4%",
+        "icon": "ArrowUp",
+        "color": "Success",
+        "fill": "Solid"
+      }
+    },
+    "progress": {
+      "value": 3842,
+      "max": 5000,
+      "label": "Of stock",
+      "shape": "Ring"
+    }
+  },
+  "color": "Gray"
+}
+```
+
 ## Validation
 
 The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, dashboardbase renders the widget in an error state. Before declaring done, validate the response. If the `validate_widget_response` tool is available, call it with the full response body — that checks against the live contract. Otherwise validate the response's `data` field against `assets/schemas/kpi.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
@@ -703,4 +923,6 @@ All values are case-sensitive (`"Success"`, not `"success"`).
 - Sending `trendColor` / `trendSmooth` beside `trend` — styling lives on the trend itself: switch to the object form, `"trend": { "values": [9800, 10150], "color": "Light", "smooth": true }`.
 - Sending the readings as objects (`[{ "value": 9800 }]`) or as formatted strings — `trend` (or `trend.values`) is a plain array of numbers, oldest first. Send 2 to 120 points; 7–30 reads best.
 - Ending `trend` on a different period than the headline — its last point is read as "now" beside the number, so it should be the reading `header.title` shows.
+- Drawing bars with a second widget — a KPI's `trend` takes `"type": "Bars"` (`"trend": { "values": [31, 38, 44], "type": "Bars" }`) for a row of small bars beside the number instead of a line: three for this month against the last two, a dozen or more for a run of days.
+- Putting a ring progress next to a sparkline — `progress.shape: "Ring"` draws the goal as a small ring beside the number, in the same place a trend goes, so send one or the other. Without `shape` (or with `Bar`) it stays the thin bar under the number.
 - Sending more than 6 header blocks — `header` and `headers` together may hold at most 6, one per pair of grid columns. Everything past the sixth is a validation error, not a silent truncation.

@@ -4,7 +4,7 @@
 
 ## Purpose
 
-Render rows of structured data with optional column labels — ideal for top-N lists, ranked items, status grids, recent activity. A ranked list can carry a quiet bar behind each row (`bar` on one cell, 0–100) so every row reads against the top one, and any cell can draw a sparkline of its recent readings (`trend`).
+Render rows of structured data with optional column labels — ideal for top-N lists, ranked items, status grids, recent activity. A ranked list can carry a quiet bar behind each row (`bar` on one cell, 0–100) so every row reads against the top one, any cell can draw a sparkline of its recent readings (`trend`), and any cell can draw an inline progress bar with its percentage (`progress`, as many per row as there are columns for it).
 
 In a setup file, this widget's `type` is `table` (see `references/setup-files.md`).
 
@@ -68,7 +68,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "Yellow",
                 "Orange",
                 "Light",
-                "Dark"
+                "Dark",
+                "Gray"
               ],
               "type": "string",
               "nullable": true
@@ -97,7 +98,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "Yellow",
             "Orange",
             "Light",
-            "Dark"
+            "Dark",
+            "Gray"
           ],
           "type": "string",
           "nullable": true
@@ -181,7 +183,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                     "Yellow",
                     "Orange",
                     "Light",
-                    "Dark"
+                    "Dark",
+                    "Gray"
                   ],
                   "type": "string",
                   "nullable": true
@@ -247,7 +250,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                         "Yellow",
                         "Orange",
                         "Light",
-                        "Dark"
+                        "Dark",
+                        "Gray"
                       ],
                       "type": "string",
                       "nullable": true
@@ -259,11 +263,67 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                     "fill": {
                       "type": "boolean",
                       "nullable": true
+                    },
+                    "type": {
+                      "enum": [
+                        "Line",
+                        "Bars"
+                      ],
+                      "type": "string",
+                      "nullable": true
                     }
                   },
                   "additionalProperties": false
                 }
               ],
+              "nullable": true
+            },
+            "progress": {
+              "required": [
+                "value"
+              ],
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "max": {
+                  "type": "number",
+                  "format": "double",
+                  "nullable": true
+                },
+                "label": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "color": {
+                  "enum": [
+                    "Success",
+                    "Warning",
+                    "Danger",
+                    "Blue",
+                    "Green",
+                    "Red",
+                    "Yellow",
+                    "Orange",
+                    "Light",
+                    "Dark",
+                    "Gray"
+                  ],
+                  "type": "string",
+                  "nullable": true
+                },
+                "shape": {
+                  "enum": [
+                    "Bar",
+                    "Ring"
+                  ],
+                  "type": "string",
+                  "nullable": true
+                }
+              },
+              "additionalProperties": false,
               "nullable": true
             }
           },
@@ -323,7 +383,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                   "Yellow",
                   "Orange",
                   "Light",
-                  "Dark"
+                  "Dark",
+                  "Gray"
                 ],
                 "type": "string",
                 "nullable": true
@@ -352,7 +413,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "Yellow",
               "Orange",
               "Light",
-              "Dark"
+              "Dark",
+              "Gray"
             ],
             "type": "string",
             "nullable": true
@@ -1126,6 +1188,177 @@ A list that should be read against its totals — put the summary numbers in the
 }
 ```
 
+### Progress bars in cells
+
+Rows that each track progress toward something — projects against their fee, tasks against their estimate, goals per team — with one or more bars per row and a colour for the rows that need attention.
+
+```json
+{
+  "title": "Fee burn by project",
+  "actions": [
+    {
+      "title": "Open projects",
+      "type": "link",
+      "url": "https://example.com/projects"
+    }
+  ],
+  "data": {
+    "header": {
+      "subtitle": "Fee used against work done: a project spending faster than it progresses shows red"
+    },
+    "columns": [
+      {
+        "text": "Project",
+        "width": 22
+      },
+      {
+        "text": "Stage",
+        "width": 12
+      },
+      {
+        "text": "Progress",
+        "width": 20
+      },
+      {
+        "text": "Fee used",
+        "width": 20
+      },
+      {
+        "text": "Fee",
+        "width": 13
+      },
+      {
+        "text": "Left",
+        "width": 13
+      }
+    ],
+    "rows": [
+      [
+        {
+          "text": "Wren Street café"
+        },
+        {
+          "text": "On site"
+        },
+        {
+          "progress": {
+            "value": 86
+          }
+        },
+        {
+          "progress": {
+            "value": 89
+          }
+        },
+        {
+          "text": "£42,800"
+        },
+        {
+          "text": "£4,880"
+        }
+      ],
+      [
+        {
+          "text": "Mill Lane extension"
+        },
+        {
+          "text": "Handover"
+        },
+        {
+          "progress": {
+            "value": 95
+          }
+        },
+        {
+          "progress": {
+            "value": 97
+          }
+        },
+        {
+          "text": "£31,200"
+        },
+        {
+          "text": "£1,060"
+        }
+      ],
+      [
+        {
+          "text": "Saltmarsh visitor hut"
+        },
+        {
+          "text": "Concept"
+        },
+        {
+          "progress": {
+            "value": 31
+          }
+        },
+        {
+          "progress": {
+            "value": 27
+          }
+        },
+        {
+          "text": "£36,500"
+        },
+        {
+          "text": "£26,630"
+        }
+      ],
+      [
+        {
+          "text": "Cobbler's Yard housing"
+        },
+        {
+          "text": "Technical"
+        },
+        {
+          "progress": {
+            "value": 52
+          }
+        },
+        {
+          "progress": {
+            "value": 71,
+            "color": "Danger"
+          }
+        },
+        {
+          "text": "£186,400"
+        },
+        {
+          "text": "£54,060"
+        }
+      ],
+      [
+        {
+          "text": "Larkhill school library"
+        },
+        {
+          "text": "Developed"
+        },
+        {
+          "progress": {
+            "value": 48
+          }
+        },
+        {
+          "progress": {
+            "value": 41
+          }
+        },
+        {
+          "text": "£128,000"
+        },
+        {
+          "text": "£75,390"
+        }
+      ]
+    ]
+  }
+}
+```
+
 ## Validation
 
 The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, dashboardbase renders the widget in an error state. Before declaring done, validate the response. If the `validate_widget_response` tool is available, call it with the full response body — that checks against the live contract. Otherwise validate the response's `data` field against `assets/schemas/table.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
@@ -1153,4 +1386,5 @@ All values are case-sensitive (`"Success"`, not `"success"`).
 - Sending more than 6 header blocks — `header` and `headers` together may hold at most 6, one per pair of grid columns. Everything past the sixth is a validation error, not a silent truncation.
 - Sending a raw count in `bar` — it is a percentage of the row's width (0–100), not the value itself. Scale each row against your largest one (`value / max * 100`) so the top row fills the row and the rest read relative to it.
 - Setting `bar` on more than one cell in a row — the bar fills the whole row, so a row carries at most one. Put it on the cell holding the number it measures.
+- Confusing `bar` with `progress` — `bar` is one quiet bar behind the whole row for ranking; `progress` is a visible bar inside its own cell (`{ "value": 86 }`, or `value` with `max`), drawn with its percentage, and a row may carry several. Colour it with `progress.color` (e.g. `Danger` for a project over budget); without one it takes the card's text colour.
 - Sending a cell's readings as objects (`[{ "value": 320 }]`) or formatted strings — like a KPI's, `trend` (or `trend.values`) is a plain array of numbers, oldest first. Send 2 to 120 points; 7–30 reads best in a row.

@@ -68,7 +68,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "Yellow",
                 "Orange",
                 "Light",
-                "Dark"
+                "Dark",
+                "Gray"
               ],
               "type": "string",
               "nullable": true
@@ -97,7 +98,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "Yellow",
             "Orange",
             "Light",
-            "Dark"
+            "Dark",
+            "Gray"
           ],
           "type": "string",
           "nullable": true
@@ -167,7 +169,17 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                     "Yellow",
                     "Orange",
                     "Light",
-                    "Dark"
+                    "Dark",
+                    "Gray"
+                  ],
+                  "type": "string",
+                  "nullable": true
+                },
+                "style": {
+                  "enum": [
+                    "Solid",
+                    "Striped",
+                    "Outline"
                   ],
                   "type": "string",
                   "nullable": true
@@ -192,7 +204,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "Yellow",
               "Orange",
               "Light",
-              "Dark"
+              "Dark",
+              "Gray"
             ],
             "type": "string",
             "nullable": true
@@ -209,6 +222,15 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "enum": [
               "Left",
               "Right"
+            ],
+            "type": "string",
+            "nullable": true
+          },
+          "style": {
+            "enum": [
+              "Solid",
+              "Striped",
+              "Outline"
             ],
             "type": "string",
             "nullable": true
@@ -285,7 +307,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                   "Yellow",
                   "Orange",
                   "Light",
-                  "Dark"
+                  "Dark",
+                  "Gray"
                 ],
                 "type": "string",
                 "nullable": true
@@ -314,7 +337,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "Yellow",
               "Orange",
               "Light",
-              "Dark"
+              "Dark",
+              "Gray"
             ],
             "type": "string",
             "nullable": true
@@ -1255,6 +1279,270 @@ A breakdown whose numbers need a one-line definition (which orders count, which 
 }
 ```
 
+### Bars on a coloured card
+
+A breakdown that should anchor the board — a weekly total in a dark card on a light board, or a brand-coloured card on a dark one.
+
+```json
+{
+  "title": "Orders by weekday",
+  "actions": [
+    {
+      "title": "Open orders",
+      "type": "link",
+      "url": "https://example.com/orders"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "1,284",
+      "subtitle": "Last 7 days",
+      "badge": {
+        "text": "+6%",
+        "icon": "ArrowUp",
+        "color": "Success"
+      }
+    },
+    "labels": [
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sat",
+      "Sun"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 162
+          },
+          {
+            "value": 171
+          },
+          {
+            "value": 188
+          },
+          {
+            "value": 176
+          },
+          {
+            "value": 214
+          },
+          {
+            "value": 205
+          },
+          {
+            "value": 168
+          }
+        ],
+        "label": "Orders"
+      }
+    ]
+  },
+  "color": "Dark"
+}
+```
+
+### Bars with the latest one highlighted
+
+A run of periods where the current one is what the reader came for — this week against the last twelve — drawn in grey with the latest bar in the card's ink.
+
+```json
+{
+  "title": "By week",
+  "actions": [
+    {
+      "title": "Open invoices",
+      "type": "link",
+      "url": "https://example.com/invoices"
+    }
+  ],
+  "data": {
+    "header": {
+      "subtitle": "Hover a bar to read it"
+    },
+    "labels": [
+      "31",
+      "7",
+      "14",
+      "21",
+      "28",
+      "5",
+      "12",
+      "19",
+      "26",
+      "2",
+      "9",
+      "16"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 15200,
+            "prefix": "£"
+          },
+          {
+            "value": 16100,
+            "prefix": "£"
+          },
+          {
+            "value": 18300,
+            "prefix": "£"
+          },
+          {
+            "value": 18200,
+            "prefix": "£"
+          },
+          {
+            "value": 17600,
+            "prefix": "£"
+          },
+          {
+            "value": 17900,
+            "prefix": "£"
+          },
+          {
+            "value": 17700,
+            "prefix": "£"
+          },
+          {
+            "value": 18200,
+            "prefix": "£"
+          },
+          {
+            "value": 18000,
+            "prefix": "£"
+          },
+          {
+            "value": 19499,
+            "prefix": "£"
+          },
+          {
+            "value": 19300,
+            "prefix": "£"
+          },
+          {
+            "value": 17724,
+            "prefix": "£",
+            "color": "Light"
+          }
+        ],
+        "label": "Fees",
+        "color": "Gray"
+      }
+    ],
+    "ticksY": true
+  }
+}
+```
+
+### Striped bars with this month solid
+
+A year by month where the current month is the point: the past months quiet and hatched, this month solid, and the forecast months still to come as dashed outlines, with the average as a line.
+
+```json
+{
+  "title": "Revenue",
+  "actions": [
+    {
+      "title": "Full analytics",
+      "type": "link",
+      "url": "https://example.com/analytics"
+    }
+  ],
+  "data": {
+    "header": {
+      "subtitle": "$300,000 so far this year"
+    },
+    "labels": [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 18200,
+            "prefix": "$"
+          },
+          {
+            "value": 20100,
+            "prefix": "$"
+          },
+          {
+            "value": 25400,
+            "prefix": "$"
+          },
+          {
+            "value": 23800,
+            "prefix": "$"
+          },
+          {
+            "value": 28900,
+            "prefix": "$"
+          },
+          {
+            "value": 34600,
+            "prefix": "$"
+          },
+          {
+            "value": 31800,
+            "prefix": "$"
+          },
+          {
+            "value": 29700,
+            "prefix": "$"
+          },
+          {
+            "value": 32100,
+            "prefix": "$"
+          },
+          {
+            "value": 36400,
+            "prefix": "$",
+            "color": "Light",
+            "style": "Solid"
+          },
+          {
+            "value": 37800,
+            "prefix": "$",
+            "note": "Forecast",
+            "style": "Outline"
+          },
+          {
+            "value": 38900,
+            "prefix": "$",
+            "note": "Forecast",
+            "style": "Outline"
+          }
+        ],
+        "label": "Revenue",
+        "color": "Gray",
+        "style": "Striped"
+      }
+    ],
+    "ticksY": true,
+    "target": {
+      "value": 30000,
+      "label": "avg $30k"
+    }
+  }
+}
+```
+
 ## Validation
 
 The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, dashboardbase renders the widget in an error state. Before declaring done, validate the response. If the `validate_widget_response` tool is available, call it with the full response body — that checks against the live contract. Otherwise validate the response's `data` field against `assets/schemas/bar-chart.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
@@ -1273,6 +1561,7 @@ All values are case-sensitive (`"Success"`, not `"success"`).
 
 ## Common mistakes
 
+- Faking a forecast or a quiet series with a lighter colour — a dataset's `style` hatches its bars (`Striped`) or draws only a dashed outline (`Outline`), and a single value's `style` overrides it: a run of striped months with the current one `Solid` and the months still to come `Outline` is one dataset.
 - Mismatched lengths: if `labels` has 6 entries, every dataset's `data` should have 6 entries.
 - Sending `value` as a string (`"65"`) — values must be numbers.
 - Setting `color` inside `data` items when you meant the whole series — series color goes on the dataset.

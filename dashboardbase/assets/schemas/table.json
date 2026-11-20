@@ -53,7 +53,8 @@
                 "Yellow",
                 "Orange",
                 "Light",
-                "Dark"
+                "Dark",
+                "Gray"
               ],
               "type": "string",
               "nullable": true
@@ -82,7 +83,8 @@
             "Yellow",
             "Orange",
             "Light",
-            "Dark"
+            "Dark",
+            "Gray"
           ],
           "type": "string",
           "nullable": true
@@ -166,7 +168,8 @@
                     "Yellow",
                     "Orange",
                     "Light",
-                    "Dark"
+                    "Dark",
+                    "Gray"
                   ],
                   "type": "string",
                   "nullable": true
@@ -232,7 +235,8 @@
                         "Yellow",
                         "Orange",
                         "Light",
-                        "Dark"
+                        "Dark",
+                        "Gray"
                       ],
                       "type": "string",
                       "nullable": true
@@ -244,11 +248,67 @@
                     "fill": {
                       "type": "boolean",
                       "nullable": true
+                    },
+                    "type": {
+                      "enum": [
+                        "Line",
+                        "Bars"
+                      ],
+                      "type": "string",
+                      "nullable": true
                     }
                   },
                   "additionalProperties": false
                 }
               ],
+              "nullable": true
+            },
+            "progress": {
+              "required": [
+                "value"
+              ],
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "max": {
+                  "type": "number",
+                  "format": "double",
+                  "nullable": true
+                },
+                "label": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "color": {
+                  "enum": [
+                    "Success",
+                    "Warning",
+                    "Danger",
+                    "Blue",
+                    "Green",
+                    "Red",
+                    "Yellow",
+                    "Orange",
+                    "Light",
+                    "Dark",
+                    "Gray"
+                  ],
+                  "type": "string",
+                  "nullable": true
+                },
+                "shape": {
+                  "enum": [
+                    "Bar",
+                    "Ring"
+                  ],
+                  "type": "string",
+                  "nullable": true
+                }
+              },
+              "additionalProperties": false,
               "nullable": true
             }
           },
@@ -308,7 +368,8 @@
                   "Yellow",
                   "Orange",
                   "Light",
-                  "Dark"
+                  "Dark",
+                  "Gray"
                 ],
                 "type": "string",
                 "nullable": true
@@ -337,7 +398,8 @@
               "Yellow",
               "Orange",
               "Light",
-              "Dark"
+              "Dark",
+              "Gray"
             ],
             "type": "string",
             "nullable": true
