@@ -714,6 +714,8 @@ The response's `data` field contains the setup-file JSON with every widget's ful
 
 ## Common mistakes
 
+- **Writing fields the importer doesn't know.** Unknown keys on the file, a mapping, a `plan` or a `datasources[]` entry are ignored with a warning, never silently. A plan field written beside the plan (`"dateRange"` on the mapping) is ignored too: put it inside `plan`. A few spellings are read as aliases so a file written from the API's names still imports: `id` for `widgetId` when it is a widget UUID, and `dataSourceId` / `dataSource` / `datasource` for `datasourceId` when it names a declared datasource. Any other value under an alias is ignored with a warning. Write the canonical name; if both are present, the canonical one wins and the validator warns. A mapping's `name` or `title` is accepted as a label and not warned about.
+
 - **Mixing State A and State B in the same mapping.** A mapping with both `widgetId` and `type` but **without** the full State D export shape (`size`, `position`, and one of `path` / `plan`) is invalid — either wire an existing widget (State A: `widgetId` + `path`, no `type`) or create a new one (State B: `type` + `path`). Only exported State D mappings legitimately carry both.
 - **Including credentials in the file.** Setup files are designed to be shareable; credentials are configured in dashboardbase per-datasource. This is now enforced: `POST /tools/v1/setup-links` rejects a file carrying credential-shaped fields rather than quietly removing them.
 - **Using a `refreshInterval` outside the allowed set.** Only `1m`, `5m`, `10m`, `30m`.
