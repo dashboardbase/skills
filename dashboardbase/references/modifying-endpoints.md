@@ -24,6 +24,7 @@ Do not guess the widget type from the endpoint's name. A route called `/widgets/
 | An icon before the title, or an (i) explaining the metric | envelope `icon` / `hint` (**not** inside `data`) | `SKILL.md` → "Response envelope" |
 | A click-through link on the widget | envelope `actions` (**not** inside `data`) | `SKILL.md` → "Response envelope" |
 | Change a colour | `badge.color`, dataset `color`, indicator `color` | `SKILL.md` → `WidgetDataColor` |
+| Make one card stand out in a colour | envelope `color` (**not** inside `data`) | `SKILL.md` → "Response envelope" |
 | Another bar, another line, a second series | a new entry in `data.datasets` | `references/<widget>.md` → "Multiple series" |
 | Another column, row, slice, or list item | the widget's own arrays in `data` | `references/<widget>.md` → schema + "Variations" |
 | Raise an alert from the endpoint | envelope `alert` **and a toggle in the editor** | `references/alerting.md` |
@@ -40,7 +41,7 @@ Two placements catch people out every time:
 
 The widget is being polled right now, so a bad deploy shows up as a broken tile rather than a failed build.
 
-- **Keep the envelope to its six keys** — `title`, `icon`, `hint`, `actions`, `data`, `alert`. Adding a seventh is the most common way to break a working widget.
+- **Keep the envelope to its seven keys** — `title`, `icon`, `hint`, `color`, `actions`, `data`, `alert`. Adding an eighth is the most common way to break a working widget.
 - **Adding is safer than renaming.** A new optional field inside `data` renders on the next poll. Renaming or removing a key the widget already renders blanks that part of the tile.
 - **Adding `headers` is purely additive.** The strip appears above the widget on the next poll and nothing else moves — no setup-file change, no re-import. It is the cheapest answer to "can we also show X"; check the 6-block total first.
 - **Keep parallel arrays in step.** On a chart, `labels` and every dataset's `data` array must stay the same length. Adding a series means adding a whole `datasets` entry — not lengthening one array and leaving the others behind.
@@ -53,7 +54,7 @@ The widget is being polled right now, so a bad deploy shows up as a broken tile 
 
 | The change | Setup file | What the user has to do |
 | --- | --- | --- |
-| Anything inside `data`, `title`, `icon`, `hint`, `actions`, or `alert` | No change | Nothing — the next poll picks it up |
+| Anything inside `data`, `title`, `icon`, `hint`, `color`, `actions`, or `alert` | No change | Nothing — the next poll picks it up |
 | New endpoint, or the endpoint's URL / query string changed | Yes | Re-import, or edit the datasource URL in the app |
 | A new widget on the dashboard | Yes | Re-import, or add the widget in the app |
 | Widget changed type | Yes | Re-import, or replace the widget in the app |

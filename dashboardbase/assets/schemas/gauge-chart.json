@@ -54,7 +54,8 @@
                 "Yellow",
                 "Orange",
                 "Light",
-                "Dark"
+                "Dark",
+                "Gray"
               ],
               "type": "string",
               "nullable": true
@@ -83,7 +84,8 @@
             "Yellow",
             "Orange",
             "Light",
-            "Dark"
+            "Dark",
+            "Gray"
           ],
           "type": "string",
           "nullable": true
@@ -135,7 +137,17 @@
             "Yellow",
             "Orange",
             "Light",
-            "Dark"
+            "Dark",
+            "Gray"
+          ],
+          "type": "string",
+          "nullable": true
+        },
+        "style": {
+          "enum": [
+            "Solid",
+            "Striped",
+            "Outline"
           ],
           "type": "string",
           "nullable": true
@@ -199,7 +211,8 @@
                   "Yellow",
                   "Orange",
                   "Light",
-                  "Dark"
+                  "Dark",
+                  "Gray"
                 ],
                 "type": "string",
                 "nullable": true
@@ -228,7 +241,8 @@
               "Yellow",
               "Orange",
               "Light",
-              "Dark"
+              "Dark",
+              "Gray"
             ],
             "type": "string",
             "nullable": true

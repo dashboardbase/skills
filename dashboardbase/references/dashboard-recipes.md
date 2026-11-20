@@ -12,6 +12,8 @@ A recipe is a finished design: which widgets, which type each one is, and where 
 4. **Show the user the list** — title · widget type · what it shows — and build on a yes. One short confirmation, not a questionnaire.
 5. **Copy `position` / `size` exactly** into the setup file. They are the layout slots from `references/setup-files.md` → "Recommended layouts".
 
+**Lead with one coloured card.** The first tile of every recipe below — the number the board exists for — is the one to give the envelope's `color` (`"color": "Contrast"`, which stands out on any Scene, or `"Light"`, `"Dark"` or the brand's `"Blue"`). One coloured card per board reads as designed; more than two reads as noise. See `SKILL.md` → "Make it look good".
+
 Fewer headline numbers than the recipe has? Do not leave the slot empty — widen the rest so the row still spans 12 columns: three tiles are `w:4` at `x:0 / 4 / 8`, two are `w:6` at `x:0 / 6`. The full rules are in `references/setup-files.md` → "Composition rules".
 
 ## SaaS metrics

@@ -68,7 +68,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "Yellow",
                 "Orange",
                 "Light",
-                "Dark"
+                "Dark",
+                "Gray"
               ],
               "type": "string",
               "nullable": true
@@ -97,7 +98,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "Yellow",
             "Orange",
             "Light",
-            "Dark"
+            "Dark",
+            "Gray"
           ],
           "type": "string",
           "nullable": true
@@ -192,7 +194,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                   "Yellow",
                   "Orange",
                   "Light",
-                  "Dark"
+                  "Dark",
+                  "Gray"
                 ],
                 "type": "string",
                 "nullable": true
@@ -221,7 +224,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "Yellow",
               "Orange",
               "Light",
-              "Dark"
+              "Dark",
+              "Gray"
             ],
             "type": "string",
             "nullable": true
@@ -266,7 +270,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "Yellow",
               "Orange",
               "Light",
-              "Dark"
+              "Dark",
+              "Gray"
             ],
             "type": "string",
             "nullable": true

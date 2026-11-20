@@ -4,7 +4,7 @@ description: Use when designing or creating a dashboardbase dashboard end-to-end
 license: Proprietary. Free to use; not open source. LICENSE has complete terms.
 metadata:
   source-repo: dashboardbase-api
-  generated-at: "2026-11-16T09:24:56Z"
+  generated-at: "2026-11-20T09:44:49Z"
   api-version: "1.0.0"
   spec-version: "1.0"
 ---
@@ -96,7 +96,7 @@ One endpoint, one widget, one slot on the grid — instead of four endpoints and
    - The endpoint can be built but its data source can't be reached yet → offer the user a choice: wait, or return realistic sample data in the right shape now (hardcoded, with a `TODO` naming the real source) so the dashboard is connected and looks finished today. Only on their say-so, and say at handover exactly which widgets show sample numbers — never pass them off as real.
 5. **Write the setup file** per `references/setup-files.md` and save it as `.dashboardbase/<dashboard-slug>.json` in the repo — named after the dashboard, never a generic `dashboard.json`. Write it as part of the build, as soon as the endpoint paths are settled; only the handover in step 7 waits for live endpoints. If that path already exists and describes a different dashboard, pick a distinct slug rather than overwriting it — two near-identical file names in one directory is the failure mode to avoid. That directory is also the first thing to read when you join an existing project: an existing setup file gives you the `baseUrl` and the path convention outright.
 6. **Validate before handing over.**
-   - **If the `validate_widget_response` and `validate_setup_file` tools are available** (the dashboardbase MCP server is installed), use them — they check against the live contract, so they cannot drift from what the platform accepts. Pass `validate_widget_response` the **full response envelope** (`title` / `icon` / `hint` / `actions` / `data` / `alert`), not just `data`. No account or API key is needed.
+   - **If the `validate_widget_response` and `validate_setup_file` tools are available** (the dashboardbase MCP server is installed), use them — they check against the live contract, so they cannot drift from what the platform accepts. Pass `validate_widget_response` the **full response envelope** (`title` / `icon` / `hint` / `color` / `actions` / `data` / `alert`), not just `data`. No account or API key is needed.
    - **Otherwise**, validate each endpoint response's `data` against `assets/schemas/<widget>.json`, and the setup file against `assets/setup-file.schema.json` (or `POST /bff/v1/organizations/{orgId}/setup-files/validate`).
 
    Then run the validation loop below.
@@ -140,7 +140,7 @@ Two things are worth knowing without loading anything:
 
 - **Adding alerting is half code, half configuration.** Returning `alert` in the envelope does nothing until the user enables alerts on that widget in the dashboard editor, and the dashboard is published. Always say so when you hand the change over. See `references/alerting.md`.
 - **Changing how an endpoint authenticates is code *and* configuration, in that order.** Deploy the endpoint accepting both the old and the new credential, update the credential on every datasource pointing at it, and only then drop the old one. Reverse that order and every widget on the endpoint 401s. Request signing and the Endpoint Secret are the exceptions with nothing to configure — both are already sent on every request. See `references/authentication.md`.
-- **A payload-only change needs no re-import.** Anything inside `title`, `icon`, `hint`, `actions`, `data` or `alert` is picked up on the next poll. Only a new endpoint, a changed URL, or a new or retyped widget means updating `.dashboardbase/<slug>.json` and importing it again.
+- **A payload-only change needs no re-import.** Anything inside `title`, `icon`, `hint`, `color`, `actions`, `data` or `alert` is picked up on the next poll. Only a new endpoint, a changed URL, or a new or retyped widget means updating `.dashboardbase/<slug>.json` and importing it again.
 
 ## Response envelope (always true)
 
@@ -151,6 +151,7 @@ Every widget endpoint returns this shape:
   "title": "Optional widget title",
   "icon": "Cart",
   "hint": "Orders paid in the selected period, refunds excluded.",
+  "color": "Blue",
   "actions": [
     { "title": "View Details", "type": "link", "url": "https://example.com/details" }
   ],
@@ -162,11 +163,12 @@ Every widget endpoint returns this shape:
 - `title` (optional string) overrides the widget title configured in dashboardbase.
 - `icon` (optional) draws a small monochrome icon tile before the title, on every widget type. One of `Analytics`, `Bag`, `BarChart`, `Briefcase`, `Bug`, `Calendar`, `Card`, `Cart`, `Cash`, `Chat`, `CheckCircle`, `Cloud`, `Code`, `Cube`, `Desktop`, `Download`, `Eye`, `Flash`, `Gift`, `Globe`, `Heart`, `Home`, `Location`, `Mail`, `Megaphone`, `Notifications`, `People`, `Person`, `PersonAdd`, `Phone`, `PieChart`, `Pulse`, `Receipt`, `Rocket`, `Server`, `Shield`, `Speedometer`, `Star`, `Ticket`, `Time`, `TrendingDown`, `TrendingUp`, `Trophy`, `Wallet`, or `Warning`. An unknown name is ignored rather than failing the widget. Use it only where it adds meaning, and give a whole row of tiles icons or none.
 - `hint` (optional string) puts an (i) after the title; tapping it shows the text. Say what the number means and how it is calculated ("Paid orders in the period, refunds excluded"), in one or two sentences. Truncated beyond 280 characters.
+- `color` (optional) fills the whole card in one of `Success`, `Warning`, `Danger`, `Blue`, `Green`, `Red`, `Yellow`, `Orange`, `Light`, `Dark`, `Gray`, or `Contrast` — the same names as every other `color`, so a workspace's brand colours apply here too, plus `Contrast`: the card that always stands out from the board it is on (white on a dark board, near-black on a light one, milk or smoked glass on Glass). Prefer `Contrast` for a card that must stay in focus whichever Scene the dashboard wears. `Contrast` is a card colour only; inside a widget, `Light` already means the card's text colour. The content is re-inked to sit on it: a deep tone with light text on a dark board (yellow and orange stay bright, with dark text), a pale tone with dark text on a light one, `Light` a white card, `Dark` a near-black one, and on a Glass Scene the card stays frosted glass, tinted. Omit it for the board's own card. An unknown name is ignored rather than failing the widget. See "Make it look good" for when to use it.
 - `actions` (optional array) renders link actions in the widget header. `type` is currently always `"link"`. `url` must be an absolute `https://` URL.
 - `data` (required) is the widget-type-specific payload — see `references/<widget>.md` for each widget's exact shape.
 - `alert` (optional object) renders an alert banner on the widget and feeds alert notifications. Shape: `active` (boolean — `true` shows the banner, `false` clears it), `level` (one of `info`, `success`, `warning`, or `critical` — note these are lowercase, unlike the styling enums), and `message` (string; truncated beyond 200 characters). Works the same on every widget type.
 
-These six keys are the only ones allowed at the envelope level; `additionalProperties: false` applies to the `data` payload (see gotcha 2 below).
+These seven keys are the only ones allowed at the envelope level; `additionalProperties: false` applies to the `data` payload (see gotcha 2 below).
 
 ## Request: the `dateRange` query parameter
 
@@ -230,10 +232,12 @@ Dashboards read dramatically better when every widget uses the styling surface t
 - **Always include `header` on KPI, LineChart and BarChart** (`title` + `subtitle` + `badge`), even though the schema marks it optional on the charts: `title` = the headline aggregate for the period, `subtitle` = the context line (`"Last 7 days"`), `badge` = the colored trend (`{ "text": "+8%", "icon": "ArrowUp", "color": "Success" }`). A plotted series without a headline and a period is the single biggest cause of a dashboard looking unfinished. On every other widget a `header` is genuinely optional — a pie, gauge, table or status tile reads fine without one, so add it only when there is a headline worth showing. Clock, Countdown and Image have no `header` at all in their contract; adding one there fails `additionalProperties: false`.
 - **Reach for `headers` before you reach for another widget.** Every widget that takes a `header` also takes `headers` — an array of the same block, rendered as an equal-width strip above the content. `header` merges in front of it, so `header` plus `headers` may total at most **6**. Four numbers above one line chart is one endpoint and one widget, not four KPI tiles and four endpoints; it is usually the right shape when the numbers describe the same thing the chart plots. On a phone the strip wraps to two per row and the widget grows taller to fit.
 - **Color lives on badges and datasets, not in text.** `subtitle` renders as plain text; use `badge.color` with `ArrowUp` / `ArrowDown` for the colored accent, and per-dataset `color` to distinguish chart series.
+- **Highlight the one value that matters.** To make the latest period stand out in a BarChart, colour the dataset `Gray` and the last point `Light` (it takes the card's ink, so it reads black on a light board and white on a dark one). `Gray` is a neutral grey that is never re-branded. In a Table, a cell's `progress` (`{ "value": 86 }`, or `value` with `max`) draws an inline bar with its percentage — several per row are fine — and `progress.color: "Danger"` marks the rows that need attention; `bar` is the different, quiet ranking bar behind a whole row. A BarChart dataset's `style` hatches its bars (`Striped`) or draws only a dashed outline (`Outline`), and one value's `style` overrides it: striped past months, the current month `Solid` in `Light`, and the forecast months `Outline` make a year-to-date chart in a single dataset.
+- **Colour a card to lead the eye, not to decorate.** The envelope's `color` fills one card — the headline revenue tile, the one metric the room should read first — and lifts it off the board. One or two coloured cards per board, usually KPIs in the top row; colouring every card cancels it out. Prefer `Contrast` (white on a dark board, near-black on a light one, so it survives a change of Scene), `Light` or `Dark`, or the brand's `Blue`; keep `Success` / `Warning` / `Danger` for a card whose *state* is the message, and change it with the data rather than leaving a card permanently red. Inside a coloured card the default greys and a series in the card's own colour are re-inked to sit on it, so the payload needs no other change.
 - **Echo the active date range in `header.subtitle`** when handling `?dateRange=` — it shows users their filter is applied.
 - **Keep axis labels on, and short.** LineChart and BarChart show the category labels by default; they stay level and thin themselves to fit, so a 30- or 90-day daily series reads fine. Send short labels (`"Sep 9"`, `"Mon"`, `"Jan"`), not timestamps. `ticksX: false` is for a sparkline-style tile with no room for an axis; `ticksY: true` adds value labels to the left.
 - **Leave the chart's look to the defaults.** A LineChart is filled, drawn with straight segments, shows dots only on a short series and carries faint value gridlines without being asked; a BarChart carries the same gridlines. `fill`, `smooth`, `points` and `grid` exist to opt out (or into curves) — omit them unless the developer asks for a different look.
-- **Give a KPI its recent shape with `trend`** when the endpoint has the readings anyway: `"trend": [...]`, a plain array of numbers oldest first, ending with the headline value — or `{ "values": [...], "color", "smooth", "fill" }` when the line needs styling. A Table cell takes the same `trend`. It draws a sparkline beside the number where the tile has room and is left out where it doesn't — never move a number into a chart to get one.
+- **Give a KPI its recent shape with `trend`** when the endpoint has the readings anyway: `"trend": [...]`, a plain array of numbers oldest first, ending with the headline value — or `{ "values": [...], "color", "smooth", "fill" }` when the line needs styling. A Table cell takes the same `trend`. It draws a sparkline beside the number where the tile has room and is left out where it doesn't — never move a number into a chart to get one. Add `"type": "Bars"` to the object form for small bars instead of a line (three bars for this month against the last two, a dozen for a run of days). A KPI that is also a share of something (units sold of stock, seats filled) can draw its `progress` as a ring beside the number with `"shape": "Ring"` — in the trend's place, so send one or the other. Across a row of KPIs, mixing a line, bars and a ring reads as designed rather than repetitive.
 - **Show a goal or a baseline as data, not decoration.** A goal, quota, budget or SLA goes in `target: { "value": 50000, "label": "Q3 goal" }` on a LineChart or BarChart — one labelled line the axis always stretches to include. A previous period on a LineChart is an extra dataset with `"style": "Comparison"` (a dashed grey line behind the current one, compared in the tooltip). Send either only when the goal asks for it; never fake one with a flat or duplicate series.
 - **Stack parts of a total; put a rate on its own axis.** When BarChart series are parts of one whole in the same unit (MRR by plan, visitors by channel), send `"stacked": true` and the total in `header.title`. When the goal pairs a volume with a rate (signups and conversion, orders and AOV), keep the volume as bars and send the rate as a dataset with `"type": "Line"` and `"axis": "Right"`, its unit in each value's `postfix`. Never stack rates or mixed units, and never plot a percentage on the same axis as counts.
 - **Add link `actions`** so a widget clicks through to the underlying tool (Stripe, your admin, a runbook).
@@ -290,7 +294,7 @@ The widget reference filenames are: `bar-chart.md`, `clock.md`, `contributions-g
 ## Top 5 gotchas (full list: `references/gotchas.md`)
 
 1. **Enum casing.** `"color": "success"` is invalid — use `"Success"`.
-2. **Extra fields fail silently.** `additionalProperties: false` applies to the `data` payload — an unrecognised key inside `data` turns the render off. Strip them. The envelope level allows exactly `title`, `icon`, `hint`, `actions`, `data`, and `alert`.
+2. **Extra fields fail silently.** `additionalProperties: false` applies to the `data` payload — an unrecognised key inside `data` turns the render off. Strip them. The envelope level allows exactly `title`, `icon`, `hint`, `color`, `actions`, `data`, and `alert`.
 3. **Action URLs must be absolute HTTPS.** Relative URLs and `http://` are rejected.
 4. **`datasets` is always an array.** Even single-series charts use `"datasets": [{ ... }]`. Multi-series is just multiple entries — see each chart widget's "Multiple series" section.
 5. **`null` ≠ missing.** Most optional fields should be omitted rather than set to `null`. Returning `"color": null` may render differently from omitting `color`.
@@ -313,6 +317,7 @@ These tables are reflected from the source — every value listed here is accept
 | `Orange` |
 | `Light` |
 | `Dark` |
+| `Gray` |
 
 ### `WidgetDataAlign` (text alignment)
 
@@ -384,4 +389,4 @@ Each has its own reference file under `references/` — see the filename list ab
 
 ---
 
-*Skill generated at `2026-11-16T09:24:56Z` from the dashboardbase API contract.*
+*Skill generated at `2026-11-20T09:44:49Z` from the dashboardbase API contract.*
