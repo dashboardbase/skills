@@ -54,6 +54,8 @@ Mappings that create widgets (States B, C, and D) declare the widget with a `typ
 | Table | `table` | `references/table.md` |
 | Text | `text` | `references/text.md` |
 
+Write `type` with these slugs. The importer also reads `widgetType` as an alias, and either key accepts the widget's PascalCase name (`Status`, `LineChart`), so a file written from a plan's `Type:` line still imports. Give only one of the two; if both are present, `type` wins and the validator warns.
+
 ## The four mapping states
 
 Each entry in `mappings[]` is in exactly one of four states. You author States A–C by hand; State D is what the export endpoint produces.
