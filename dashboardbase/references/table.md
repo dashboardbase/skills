@@ -433,6 +433,34 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
         "additionalProperties": false
       },
       "nullable": true
+    },
+    "pagination": {
+      "required": [
+        "page",
+        "pageSize"
+      ],
+      "type": "object",
+      "properties": {
+        "page": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total": {
+          "type": "integer",
+          "format": "int32",
+          "nullable": true
+        },
+        "hasMore": {
+          "type": "boolean",
+          "nullable": true
+        }
+      },
+      "additionalProperties": false,
+      "nullable": true
     }
   },
   "additionalProperties": false
