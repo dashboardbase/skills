@@ -4,7 +4,7 @@ description: Use when designing or creating a dashboardbase dashboard end-to-end
 license: Proprietary. Free to use; not open source. LICENSE has complete terms.
 metadata:
   source-repo: dashboardbase-api
-  generated-at: "2026-11-20T09:44:49Z"
+  generated-at: "2026-11-22T11:44:49Z"
   api-version: "1.0.0"
   spec-version: "1.0"
 ---
@@ -140,6 +140,7 @@ Two things are worth knowing without loading anything:
 
 - **Adding alerting is half code, half configuration.** Returning `alert` in the envelope does nothing until the user enables alerts on that widget in the dashboard editor, and the dashboard is published. Always say so when you hand the change over. See `references/alerting.md`.
 - **Changing how an endpoint authenticates is code *and* configuration, in that order.** Deploy the endpoint accepting both the old and the new credential, update the credential on every datasource pointing at it, and only then drop the old one. Reverse that order and every widget on the endpoint 401s. Request signing and the Endpoint Secret are the exceptions with nothing to configure — both are already sent on every request. See `references/authentication.md`.
+- **View data is code only.** The widget's ⋮ menu calls the same endpoint with `view=data&page&pageSize&search&audience` and expects a paginated Table back; leave the normal response untouched. See `references/data-view.md`.
 - **A payload-only change needs no re-import.** Anything inside `title`, `icon`, `hint`, `color`, `actions`, `data` or `alert` is picked up on the next poll. Only a new endpoint, a changed URL, or a new or retyped widget means updating `.dashboardbase/<slug>.json` and importing it again.
 
 ## Response envelope (always true)
@@ -261,6 +262,7 @@ Load only what the current task needs — these files are progressive disclosure
 | Choosing, changing or adding **authentication** — a new method, a second method alongside it, or a rotation | `references/authentication.md` |
 | **Changing an endpoint that is already live** — adding a header or a header strip, badge, action link, colour, another series or column | `references/modifying-endpoints.md` |
 | Adding **alerting** to a widget, or an alert that isn't firing | `references/alerting.md` |
+| Adding **View data** (`?view=data`, the paginated table of rows behind a widget) | `references/data-view.md` |
 | Pushing **events / notifications / sounds** to a dashboard, or wiring an event webhook into an existing codebase | `references/events.md` |
 | Production **hosting** / TLS / status codes / latency | `references/hosting-and-http.md` |
 | Endpoint returns 200 but widget is broken — **debugging** | `references/gotchas.md` |
@@ -389,4 +391,4 @@ Each has its own reference file under `references/` — see the filename list ab
 
 ---
 
-*Skill generated at `2026-11-20T09:44:49Z` from the dashboardbase API contract.*
+*Skill generated at `2026-11-22T11:44:49Z` from the dashboardbase API contract.*
