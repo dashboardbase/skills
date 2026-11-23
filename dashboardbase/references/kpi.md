@@ -782,6 +782,50 @@ The headline number on a dashboard that may be shown on more than one Scene — 
 }
 ```
 
+### A glowing hero card
+
+The one number the whole board exists for — portfolio value, revenue this month — in a card that runs its colour from a bright corner to a deep one, so it glows above the flat cards around it.
+
+```json
+{
+  "title": "Current value",
+  "actions": [
+    {
+      "title": "View portfolio",
+      "type": "link",
+      "url": "https://example.com/portfolio"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "$5,723",
+      "subtitle": "this week",
+      "badge": {
+        "text": "+$420",
+        "icon": "ArrowUp",
+        "color": "Success"
+      }
+    },
+    "trend": [
+      4980,
+      5120,
+      5040,
+      5310,
+      5260,
+      5480,
+      5390,
+      5610,
+      5723
+    ]
+  },
+  "icon": "TrendingUp",
+  "color": {
+    "name": "Blue",
+    "style": "Gradient"
+  }
+}
+```
+
 ### A dark card that leads the board
 
 The headline number on a light board, or a second lead number beside a white card — set in a near-black card that stands out on any Scene.
