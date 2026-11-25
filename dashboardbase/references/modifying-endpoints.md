@@ -20,7 +20,7 @@ Do not guess the widget type from the endpoint's name. A route called `/widgets/
 | --- | --- | --- |
 | Headline number, subtitle, or a coloured trend badge | `data.header` — `title`, `subtitle`, `badge` | `references/<widget>.md` → "Header" |
 | A second, third or fourth headline number above the widget | `data.headers` — an array of the same block; `header` merges in front, 6 in total | `references/<widget>.md` → "More than one header" |
-| A badge icon (`ArrowUp` / `ArrowDown`) | `data.header.badge.icon` | `SKILL.md` → `WidgetDataIcon` |
+| A badge icon (`ArrowUp` / `ArrowDown` / `Star`) | `data.header.badge.icon` | `SKILL.md` → `WidgetDataIcon` |
 | An icon before the title, or an (i) explaining the metric | envelope `icon` / `hint` (**not** inside `data`) | `SKILL.md` → "Response envelope" |
 | A click-through link on the widget | envelope `actions` (**not** inside `data`) | `SKILL.md` → "Response envelope" |
 | Change a colour | `badge.color`, dataset `color`, indicator `color` | `SKILL.md` → `WidgetDataColor` |

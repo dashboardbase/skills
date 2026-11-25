@@ -37,7 +37,8 @@
             "icon": {
               "enum": [
                 "ArrowUp",
-                "ArrowDown"
+                "ArrowDown",
+                "Star"
               ],
               "type": "string",
               "nullable": true
@@ -54,7 +55,10 @@
                 "Orange",
                 "Light",
                 "Dark",
-                "Gray"
+                "Gray",
+                "Gray1",
+                "Gray3",
+                "Gray4"
               ],
               "type": "string",
               "nullable": true
@@ -63,7 +67,8 @@
               "enum": [
                 "Solid",
                 "Clear",
-                "Outline"
+                "Outline",
+                "Dot"
               ],
               "type": "string",
               "nullable": true
@@ -84,7 +89,10 @@
             "Orange",
             "Light",
             "Dark",
-            "Gray"
+            "Gray",
+            "Gray1",
+            "Gray3",
+            "Gray4"
           ],
           "type": "string",
           "nullable": true
@@ -96,6 +104,16 @@
             "L",
             "XL"
           ],
+          "type": "string",
+          "nullable": true
+        },
+        "unit": {
+          "maxLength": 24,
+          "type": "string",
+          "nullable": true
+        },
+        "label": {
+          "maxLength": 40,
           "type": "string",
           "nullable": true
         }
@@ -137,7 +155,10 @@
               "Orange",
               "Light",
               "Dark",
-              "Gray"
+              "Gray",
+              "Gray1",
+              "Gray3",
+              "Gray4"
             ],
             "type": "string",
             "nullable": true
@@ -145,9 +166,34 @@
           "shape": {
             "enum": [
               "Bar",
-              "Ring"
+              "Ring",
+              "Meter"
             ],
             "type": "string",
+            "nullable": true
+          },
+          "display": {
+            "maxLength": 24,
+            "type": "string",
+            "nullable": true
+          },
+          "marker": {
+            "required": [
+              "value"
+            ],
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "number",
+                "format": "double"
+              },
+              "label": {
+                "maxLength": 32,
+                "type": "string",
+                "nullable": true
+              }
+            },
+            "additionalProperties": false,
             "nullable": true
           }
         },
@@ -190,7 +236,8 @@
               "icon": {
                 "enum": [
                   "ArrowUp",
-                  "ArrowDown"
+                  "ArrowDown",
+                  "Star"
                 ],
                 "type": "string",
                 "nullable": true
@@ -207,7 +254,10 @@
                   "Orange",
                   "Light",
                   "Dark",
-                  "Gray"
+                  "Gray",
+                  "Gray1",
+                  "Gray3",
+                  "Gray4"
                 ],
                 "type": "string",
                 "nullable": true
@@ -216,7 +266,8 @@
                 "enum": [
                   "Solid",
                   "Clear",
-                  "Outline"
+                  "Outline",
+                  "Dot"
                 ],
                 "type": "string",
                 "nullable": true
@@ -237,7 +288,10 @@
               "Orange",
               "Light",
               "Dark",
-              "Gray"
+              "Gray",
+              "Gray1",
+              "Gray3",
+              "Gray4"
             ],
             "type": "string",
             "nullable": true
@@ -249,6 +303,16 @@
               "L",
               "XL"
             ],
+            "type": "string",
+            "nullable": true
+          },
+          "unit": {
+            "maxLength": 24,
+            "type": "string",
+            "nullable": true
+          },
+          "label": {
+            "maxLength": 40,
             "type": "string",
             "nullable": true
           }

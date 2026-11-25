@@ -48,6 +48,7 @@ Mappings that create widgets (States B, C, and D) declare the widget with a `typ
 | Image | `image` | `references/image.md` |
 | KPI | `kpi` | `references/kpi.md` |
 | LineChart | `line` | `references/line-chart.md` |
+| List | `list` | `references/list.md` |
 | PieChart | `pie` | `references/pie-chart.md` |
 | ProgressList | `progress` | `references/progress-list.md` |
 | Status | `status` | `references/status.md` |
@@ -277,8 +278,8 @@ A layout is a starting point; these rules are what make the result look finished
 | Slot role | Recommended widgets |
 | --- | --- |
 | `Kpi` | Clock, Countdown, GaugeChart, KPI, Status |
-| `Primary` | BarChart, ContributionsGrid, Image, LineChart, ProgressList, Table, Text |
-| `Secondary` | BarChart, Clock, ContributionsGrid, DonutChart, GaugeChart, Image, PieChart, ProgressList, Table, Text |
+| `Primary` | BarChart, ContributionsGrid, Image, LineChart, List, ProgressList, Table, Text |
+| `Secondary` | BarChart, Clock, ContributionsGrid, DonutChart, GaugeChart, Image, List, PieChart, ProgressList, Table, Text |
 
 ### Recommended widget sizes
 
@@ -296,6 +297,7 @@ tile has no room for its axis. Prefer the default when nothing else dictates the
 | Image | `w:3 h:2` | `w:6 h:4` | Primary, Secondary |
 | KPI | `w:2 h:1` | `w:3 h:1` | Kpi |
 | LineChart | `w:6 h:3` | `w:8 h:5` | Primary |
+| List | `w:3 h:2` | `w:4 h:4` | Secondary, Primary |
 | PieChart | `w:4 h:3` | `w:4 h:5` | Secondary |
 | ProgressList | `w:3 h:2` | `w:4 h:4` | Primary, Secondary |
 | Status | `w:2 h:1` | `w:3 h:1` | Kpi |
@@ -323,7 +325,7 @@ A balanced dashboard with KPIs and charts to get you started.
 | 3 | `x:6 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
 | 4 | `x:9 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
 | 5 | `x:0 y:1` | `w:8 h:5` | `Primary` | any `Primary` widget |
-| 6 | `x:8 y:1` | `w:4 h:5` | `Secondary` | BarChart, Clock, DonutChart, GaugeChart, Image, PieChart, ProgressList, Table, Text |
+| 6 | `x:8 y:1` | `w:4 h:5` | `Secondary` | BarChart, Clock, DonutChart, GaugeChart, Image, List, PieChart, ProgressList, Table, Text |
 
 #### Reversed Starter Kit
 
@@ -335,7 +337,7 @@ A starter kit with the second row's column order reversed.
 | 2 | `x:3 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
 | 3 | `x:6 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
 | 4 | `x:9 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
-| 5 | `x:0 y:1` | `w:4 h:5` | `Secondary` | BarChart, Clock, DonutChart, GaugeChart, Image, PieChart, ProgressList, Table, Text |
+| 5 | `x:0 y:1` | `w:4 h:5` | `Secondary` | BarChart, Clock, DonutChart, GaugeChart, Image, List, PieChart, ProgressList, Table, Text |
 | 6 | `x:4 y:1` | `w:8 h:5` | `Primary` | any `Primary` widget |
 
 #### Starter Kit Single Column
@@ -374,7 +376,7 @@ A starter kit with the second row split into two.
 | 2 | `x:3 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
 | 3 | `x:6 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
 | 4 | `x:9 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
-| 5 | `x:0 y:1` | `w:12 h:2` | `Primary` | Image, ProgressList, Text |
+| 5 | `x:0 y:1` | `w:12 h:2` | `Primary` | Image, List, ProgressList, Text |
 | 6 | `x:0 y:3` | `w:12 h:3` | `Secondary` | any `Secondary` widget |
 
 #### Starter Kit - Three Columns
@@ -387,9 +389,9 @@ A starter kit with three columns in the second row.
 | 2 | `x:3 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
 | 3 | `x:6 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
 | 4 | `x:9 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
-| 5 | `x:0 y:1` | `w:4 h:5` | `Primary` | BarChart, Image, ProgressList, Table, Text |
-| 6 | `x:4 y:1` | `w:4 h:5` | `Secondary` | BarChart, Clock, DonutChart, GaugeChart, Image, PieChart, ProgressList, Table, Text |
-| 7 | `x:8 y:1` | `w:4 h:5` | `Secondary` | BarChart, Clock, DonutChart, GaugeChart, Image, PieChart, ProgressList, Table, Text |
+| 5 | `x:0 y:1` | `w:4 h:5` | `Primary` | BarChart, Image, List, ProgressList, Table, Text |
+| 6 | `x:4 y:1` | `w:4 h:5` | `Secondary` | BarChart, Clock, DonutChart, GaugeChart, Image, List, PieChart, ProgressList, Table, Text |
+| 7 | `x:8 y:1` | `w:4 h:5` | `Secondary` | BarChart, Clock, DonutChart, GaugeChart, Image, List, PieChart, ProgressList, Table, Text |
 
 #### Two Columns
 
@@ -398,7 +400,7 @@ Two full-height columns side by side, one wide and one narrow.
 | Slot | position | size | role | fits |
 | --- | --- | --- | --- | --- |
 | 1 | `x:0 y:0` | `w:8 h:6` | `Primary` | any `Primary` widget |
-| 2 | `x:8 y:0` | `w:4 h:6` | `Secondary` | BarChart, Clock, DonutChart, GaugeChart, Image, PieChart, ProgressList, Table, Text |
+| 2 | `x:8 y:0` | `w:4 h:6` | `Secondary` | BarChart, Clock, DonutChart, GaugeChart, Image, List, PieChart, ProgressList, Table, Text |
 
 #### Spotlight
 
@@ -408,7 +410,7 @@ A wide full-height panel beside a stacked pair in a narrow column.
 | --- | --- | --- | --- | --- |
 | 1 | `x:0 y:0` | `w:8 h:6` | `Primary` | any `Primary` widget |
 | 2 | `x:8 y:0` | `w:4 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
-| 3 | `x:8 y:1` | `w:4 h:5` | `Secondary` | BarChart, Clock, DonutChart, GaugeChart, Image, PieChart, ProgressList, Table, Text |
+| 3 | `x:8 y:1` | `w:4 h:5` | `Secondary` | BarChart, Clock, DonutChart, GaugeChart, Image, List, PieChart, ProgressList, Table, Text |
 
 #### Reversed Spotlight
 
@@ -417,8 +419,120 @@ A stacked pair in a narrow column beside a wide full-height panel.
 | Slot | position | size | role | fits |
 | --- | --- | --- | --- | --- |
 | 1 | `x:0 y:0` | `w:4 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
-| 2 | `x:0 y:1` | `w:4 h:5` | `Secondary` | BarChart, Clock, DonutChart, GaugeChart, Image, PieChart, ProgressList, Table, Text |
+| 2 | `x:0 y:1` | `w:4 h:5` | `Secondary` | BarChart, Clock, DonutChart, GaugeChart, Image, List, PieChart, ProgressList, Table, Text |
 | 3 | `x:4 y:0` | `w:8 h:6` | `Primary` | any `Primary` widget |
+
+#### Overview
+
+Four KPIs, a wide chart beside a breakdown, then three cards — the classic analytics board.
+
+| Slot | position | size | role | fits |
+| --- | --- | --- | --- | --- |
+| 1 | `x:0 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 2 | `x:3 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 3 | `x:6 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 4 | `x:9 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 5 | `x:0 y:1` | `w:8 h:2` | `Primary` | Image, List, ProgressList, Text |
+| 6 | `x:8 y:1` | `w:4 h:2` | `Secondary` | Clock, GaugeChart, Image, List, ProgressList, Text |
+| 7 | `x:0 y:3` | `w:4 h:3` | `Secondary` | BarChart, Clock, DonutChart, GaugeChart, Image, List, PieChart, ProgressList, Table, Text |
+| 8 | `x:4 y:3` | `w:4 h:3` | `Secondary` | BarChart, Clock, DonutChart, GaugeChart, Image, List, PieChart, ProgressList, Table, Text |
+| 9 | `x:8 y:3` | `w:4 h:3` | `Secondary` | BarChart, Clock, DonutChart, GaugeChart, Image, List, PieChart, ProgressList, Table, Text |
+
+#### Pair and Trio
+
+Four KPIs, two charts side by side, then three cards below.
+
+| Slot | position | size | role | fits |
+| --- | --- | --- | --- | --- |
+| 1 | `x:0 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 2 | `x:3 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 3 | `x:6 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 4 | `x:9 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 5 | `x:0 y:1` | `w:6 h:2` | `Primary` | Image, List, ProgressList, Text |
+| 6 | `x:6 y:1` | `w:6 h:2` | `Primary` | Image, List, ProgressList, Text |
+| 7 | `x:0 y:3` | `w:4 h:3` | `Secondary` | BarChart, Clock, DonutChart, GaugeChart, Image, List, PieChart, ProgressList, Table, Text |
+| 8 | `x:4 y:3` | `w:4 h:3` | `Secondary` | BarChart, Clock, DonutChart, GaugeChart, Image, List, PieChart, ProgressList, Table, Text |
+| 9 | `x:8 y:3` | `w:4 h:3` | `Secondary` | BarChart, Clock, DonutChart, GaugeChart, Image, List, PieChart, ProgressList, Table, Text |
+
+#### Wide Chart and Trio
+
+Four KPIs, one full-width chart, then three cards below.
+
+| Slot | position | size | role | fits |
+| --- | --- | --- | --- | --- |
+| 1 | `x:0 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 2 | `x:3 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 3 | `x:6 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 4 | `x:9 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 5 | `x:0 y:1` | `w:12 h:2` | `Primary` | Image, List, ProgressList, Text |
+| 6 | `x:0 y:3` | `w:4 h:3` | `Secondary` | BarChart, Clock, DonutChart, GaugeChart, Image, List, PieChart, ProgressList, Table, Text |
+| 7 | `x:4 y:3` | `w:4 h:3` | `Secondary` | BarChart, Clock, DonutChart, GaugeChart, Image, List, PieChart, ProgressList, Table, Text |
+| 8 | `x:8 y:3` | `w:4 h:3` | `Secondary` | BarChart, Clock, DonutChart, GaugeChart, Image, List, PieChart, ProgressList, Table, Text |
+
+#### Storage
+
+Four KPIs over a full-width strip, two charts, then a wide list beside a breakdown.
+
+| Slot | position | size | role | fits |
+| --- | --- | --- | --- | --- |
+| 1 | `x:0 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 2 | `x:3 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 3 | `x:6 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 4 | `x:9 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 5 | `x:0 y:1` | `w:12 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 6 | `x:0 y:2` | `w:6 h:2` | `Primary` | Image, List, ProgressList, Text |
+| 7 | `x:6 y:2` | `w:6 h:2` | `Secondary` | Clock, GaugeChart, Image, List, ProgressList, Text |
+| 8 | `x:0 y:4` | `w:8 h:2` | `Primary` | Image, List, ProgressList, Text |
+| 9 | `x:8 y:4` | `w:4 h:2` | `Secondary` | Clock, GaugeChart, Image, List, ProgressList, Text |
+
+#### Hero and KPI Grid
+
+A headline chart beside a 2×2 grid of KPIs, then a breakdown beside a wide chart.
+
+| Slot | position | size | role | fits |
+| --- | --- | --- | --- | --- |
+| 1 | `x:0 y:0` | `w:6 h:2` | `Primary` | Image, List, ProgressList, Text |
+| 2 | `x:6 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 3 | `x:9 y:0` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 4 | `x:6 y:1` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 5 | `x:9 y:1` | `w:3 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 6 | `x:0 y:2` | `w:4 h:4` | `Secondary` | BarChart, Clock, DonutChart, GaugeChart, Image, List, PieChart, ProgressList, Table, Text |
+| 7 | `x:4 y:2` | `w:8 h:4` | `Primary` | any `Primary` widget |
+
+#### Mosaic
+
+Three rows of cards whose wide and narrow columns alternate — no KPI row.
+
+| Slot | position | size | role | fits |
+| --- | --- | --- | --- | --- |
+| 1 | `x:0 y:0` | `w:4 h:2` | `Secondary` | Clock, GaugeChart, Image, List, ProgressList, Text |
+| 2 | `x:4 y:0` | `w:4 h:2` | `Secondary` | Clock, GaugeChart, Image, List, ProgressList, Text |
+| 3 | `x:8 y:0` | `w:4 h:2` | `Secondary` | Clock, GaugeChart, Image, List, ProgressList, Text |
+| 4 | `x:0 y:2` | `w:4 h:2` | `Secondary` | Clock, GaugeChart, Image, List, ProgressList, Text |
+| 5 | `x:4 y:2` | `w:8 h:2` | `Primary` | Image, List, ProgressList, Text |
+| 6 | `x:0 y:4` | `w:8 h:2` | `Primary` | Image, List, ProgressList, Text |
+| 7 | `x:8 y:4` | `w:4 h:2` | `Secondary` | Clock, GaugeChart, Image, List, ProgressList, Text |
+
+#### Sidebar
+
+Two KPIs over a wide list, with a tall card running down the right.
+
+| Slot | position | size | role | fits |
+| --- | --- | --- | --- | --- |
+| 1 | `x:0 y:0` | `w:4 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 2 | `x:4 y:0` | `w:4 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 3 | `x:0 y:1` | `w:8 h:5` | `Primary` | any `Primary` widget |
+| 4 | `x:8 y:0` | `w:4 h:6` | `Secondary` | BarChart, Clock, DonutChart, GaugeChart, Image, List, PieChart, ProgressList, Table, Text |
+
+#### Strip, Chart and Table
+
+A full-width stat strip, a chart under it, then a full-width list — a page about one thing.
+
+| Slot | position | size | role | fits |
+| --- | --- | --- | --- | --- |
+| 1 | `x:0 y:0` | `w:12 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 2 | `x:0 y:1` | `w:12 h:2` | `Primary` | Image, List, ProgressList, Text |
+| 3 | `x:0 y:3` | `w:12 h:3` | `Secondary` | any `Secondary` widget |
 
 ### When no layout fits
 

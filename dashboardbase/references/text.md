@@ -52,7 +52,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "icon": {
               "enum": [
                 "ArrowUp",
-                "ArrowDown"
+                "ArrowDown",
+                "Star"
               ],
               "type": "string",
               "nullable": true
@@ -69,7 +70,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "Orange",
                 "Light",
                 "Dark",
-                "Gray"
+                "Gray",
+                "Gray1",
+                "Gray3",
+                "Gray4"
               ],
               "type": "string",
               "nullable": true
@@ -78,7 +82,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "enum": [
                 "Solid",
                 "Clear",
-                "Outline"
+                "Outline",
+                "Dot"
               ],
               "type": "string",
               "nullable": true
@@ -99,7 +104,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "Orange",
             "Light",
             "Dark",
-            "Gray"
+            "Gray",
+            "Gray1",
+            "Gray3",
+            "Gray4"
           ],
           "type": "string",
           "nullable": true
@@ -111,6 +119,16 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "L",
             "XL"
           ],
+          "type": "string",
+          "nullable": true
+        },
+        "unit": {
+          "maxLength": 24,
+          "type": "string",
+          "nullable": true
+        },
+        "label": {
+          "maxLength": 40,
           "type": "string",
           "nullable": true
         }
@@ -162,7 +180,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "icon": {
                 "enum": [
                   "ArrowUp",
-                  "ArrowDown"
+                  "ArrowDown",
+                  "Star"
                 ],
                 "type": "string",
                 "nullable": true
@@ -179,7 +198,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                   "Orange",
                   "Light",
                   "Dark",
-                  "Gray"
+                  "Gray",
+                  "Gray1",
+                  "Gray3",
+                  "Gray4"
                 ],
                 "type": "string",
                 "nullable": true
@@ -188,7 +210,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "enum": [
                   "Solid",
                   "Clear",
-                  "Outline"
+                  "Outline",
+                  "Dot"
                 ],
                 "type": "string",
                 "nullable": true
@@ -209,7 +232,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "Orange",
               "Light",
               "Dark",
-              "Gray"
+              "Gray",
+              "Gray1",
+              "Gray3",
+              "Gray4"
             ],
             "type": "string",
             "nullable": true
@@ -221,6 +247,16 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "L",
               "XL"
             ],
+            "type": "string",
+            "nullable": true
+          },
+          "unit": {
+            "maxLength": 24,
+            "type": "string",
+            "nullable": true
+          },
+          "label": {
+            "maxLength": 40,
             "type": "string",
             "nullable": true
           }
@@ -299,9 +335,57 @@ rejected.
 
 
 
+
+
 ## Variations
 
 Other shapes and styling for this widget — pick the one closest to your data:
+
+### Customer review
+
+A testimonial or latest review — the rating above, the words, and who said it.
+
+```json
+{
+  "title": "Exceeded my expectations",
+  "actions": [
+    {
+      "title": "All reviews",
+      "type": "link",
+      "url": "https://example.com/reviews"
+    }
+  ],
+  "data": {
+    "header": {
+      "subtitle": "Mar 12, 2025",
+      "badge": {
+        "text": "★★★★★",
+        "color": "Yellow",
+        "fill": "Clear"
+      }
+    },
+    "text": "I was skeptical at first, but this product has completely changed my daily routine. The quality is outstanding and it's so easy to use.",
+    "author": "Sarah J. · Verified purchase"
+  }
+}
+```
+
+### Message on a gradient card
+
+An announcement that should be impossible to miss, on a gradient card.
+
+```json
+{
+  "title": "Launch week",
+  "data": {
+    "text": "Dashboards ship on Thursday. Freeze merges to main from Wednesday noon."
+  },
+  "color": {
+    "name": "Blue",
+    "style": "Gradient"
+  }
+}
+```
 
 ### Attributed quote
 
@@ -317,6 +401,12 @@ A rotating quote with attribution — culture dashboards, kickoff screens.
 }
 ```
 
+### More examples
+
+To see one in full, add `?variant=<id>` to the example request above — it returns that example's complete response.
+
+- `text-contrast` — **Message on a contrast card.** A short notice lifted out of the board on a contrast card.
+
 ## Validation
 
 The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, dashboardbase renders the widget in an error state. Before declaring done, validate the response. If the `validate_widget_response` tool is available, call it with the full response body — that checks against the live contract. Otherwise validate the response's `data` field against `assets/schemas/text.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
@@ -328,7 +418,7 @@ Styling fields use the enums documented in `SKILL.md`:
 - `WidgetDataColor` — color of badges, datasets, values
 - `WidgetDataAlign` — text alignment
 - `WidgetDataSize` — text/icon size
-- `WidgetDataIcon` — `ArrowUp` / `ArrowDown`
+- `WidgetDataIcon` — `ArrowUp` / `ArrowDown` for a change, `Star` for a rating
 - `WidgetDataFill` — badge fill style
 
 All values are case-sensitive (`"Success"`, not `"success"`).

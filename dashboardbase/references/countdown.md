@@ -61,9 +61,29 @@ curl -X GET 'https://api.dashboardbase.com/example/countdown'
 
 
 
+
+
 ## Variations
 
 Other shapes and styling for this widget — pick the one closest to your data:
+
+### Countdown on a gradient card
+
+The date the whole room is working toward, on a gradient card.
+
+```json
+{
+  "title": "Launch",
+  "data": {
+    "target": "2027-03-01T09:00:00+00:00",
+    "label": "until launch"
+  },
+  "color": {
+    "name": "Red",
+    "style": "Gradient"
+  }
+}
+```
 
 ### Days since last incident
 
@@ -79,6 +99,12 @@ A streak that counts up from a past moment — days since the last incident/outa
 }
 ```
 
+### More examples
+
+To see one in full, add `?variant=<id>` to the example request above — it returns that example's complete response.
+
+- `countdown-contrast` — **Countdown on a contrast card.** A deadline lifted out of a row on a contrast card.
+
 ## Validation
 
 The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, dashboardbase renders the widget in an error state. Before declaring done, validate the response. If the `validate_widget_response` tool is available, call it with the full response body — that checks against the live contract. Otherwise validate the response's `data` field against `assets/schemas/countdown.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
@@ -90,7 +116,7 @@ Styling fields use the enums documented in `SKILL.md`:
 - `WidgetDataColor` — color of badges, datasets, values
 - `WidgetDataAlign` — text alignment
 - `WidgetDataSize` — text/icon size
-- `WidgetDataIcon` — `ArrowUp` / `ArrowDown`
+- `WidgetDataIcon` — `ArrowUp` / `ArrowDown` for a change, `Star` for a rating
 - `WidgetDataFill` — badge fill style
 
 All values are case-sensitive (`"Success"`, not `"success"`).

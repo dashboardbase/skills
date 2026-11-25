@@ -166,7 +166,8 @@
                   "text",
                   "clock",
                   "progress",
-                  "image"
+                  "image",
+                  "list"
                 ],
                 "description": "Widget type."
               },
@@ -254,7 +255,8 @@
                   "text",
                   "clock",
                   "progress",
-                  "image"
+                  "image",
+                  "list"
                 ],
                 "description": "Widget type."
               },
@@ -395,7 +397,8 @@
                   "text",
                   "clock",
                   "progress",
-                  "image"
+                  "image",
+                  "list"
                 ],
                 "description": "Widget type."
               },

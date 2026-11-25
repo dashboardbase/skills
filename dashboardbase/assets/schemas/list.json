@@ -1,0 +1,520 @@
+{
+  "required": [
+    "items"
+  ],
+  "type": "object",
+  "properties": {
+    "header": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "nullable": true
+        },
+        "subtitle": {
+          "type": "string",
+          "nullable": true
+        },
+        "align": {
+          "enum": [
+            "Left",
+            "Center",
+            "Right"
+          ],
+          "type": "string",
+          "nullable": true
+        },
+        "badge": {
+          "required": [
+            "text"
+          ],
+          "type": "object",
+          "properties": {
+            "text": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "icon": {
+              "enum": [
+                "ArrowUp",
+                "ArrowDown",
+                "Star"
+              ],
+              "type": "string",
+              "nullable": true
+            },
+            "color": {
+              "enum": [
+                "Success",
+                "Warning",
+                "Danger",
+                "Blue",
+                "Green",
+                "Red",
+                "Yellow",
+                "Orange",
+                "Light",
+                "Dark",
+                "Gray",
+                "Gray1",
+                "Gray3",
+                "Gray4"
+              ],
+              "type": "string",
+              "nullable": true
+            },
+            "fill": {
+              "enum": [
+                "Solid",
+                "Clear",
+                "Outline",
+                "Dot"
+              ],
+              "type": "string",
+              "nullable": true
+            }
+          },
+          "additionalProperties": false,
+          "nullable": true
+        },
+        "color": {
+          "enum": [
+            "Success",
+            "Warning",
+            "Danger",
+            "Blue",
+            "Green",
+            "Red",
+            "Yellow",
+            "Orange",
+            "Light",
+            "Dark",
+            "Gray",
+            "Gray1",
+            "Gray3",
+            "Gray4"
+          ],
+          "type": "string",
+          "nullable": true
+        },
+        "size": {
+          "enum": [
+            "S",
+            "M",
+            "L",
+            "XL"
+          ],
+          "type": "string",
+          "nullable": true
+        },
+        "unit": {
+          "maxLength": 24,
+          "type": "string",
+          "nullable": true
+        },
+        "label": {
+          "maxLength": 40,
+          "type": "string",
+          "nullable": true
+        }
+      },
+      "additionalProperties": false,
+      "nullable": true
+    },
+    "items": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "required": [
+          "title"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "subtitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "imageUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "icon": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "enum": [
+                  "Analytics",
+                  "Bag",
+                  "BarChart",
+                  "Briefcase",
+                  "Bug",
+                  "Calendar",
+                  "Card",
+                  "Cart",
+                  "Cash",
+                  "Chat",
+                  "CheckCircle",
+                  "Cloud",
+                  "Code",
+                  "Cube",
+                  "Desktop",
+                  "Download",
+                  "Eye",
+                  "Flash",
+                  "Gift",
+                  "Globe",
+                  "Heart",
+                  "Home",
+                  "Location",
+                  "Mail",
+                  "Megaphone",
+                  "Notifications",
+                  "People",
+                  "Person",
+                  "PersonAdd",
+                  "Phone",
+                  "PieChart",
+                  "Pulse",
+                  "Receipt",
+                  "Rocket",
+                  "Server",
+                  "Shield",
+                  "Speedometer",
+                  "Star",
+                  "Ticket",
+                  "Time",
+                  "TrendingDown",
+                  "TrendingUp",
+                  "Trophy",
+                  "Wallet",
+                  "Warning"
+                ],
+                "type": "string",
+                "nullable": true
+              },
+              "country": {
+                "type": "string",
+                "nullable": true
+              },
+              "initials": {
+                "type": "string",
+                "nullable": true
+              },
+              "color": {
+                "enum": [
+                  "Success",
+                  "Warning",
+                  "Danger",
+                  "Blue",
+                  "Green",
+                  "Red",
+                  "Yellow",
+                  "Orange",
+                  "Light",
+                  "Dark",
+                  "Gray",
+                  "Gray1",
+                  "Gray3",
+                  "Gray4"
+                ],
+                "type": "string",
+                "nullable": true
+              }
+            },
+            "additionalProperties": false,
+            "nullable": true
+          },
+          "date": {
+            "required": [
+              "day",
+              "month"
+            ],
+            "type": "object",
+            "properties": {
+              "month": {
+                "maxLength": 4,
+                "minLength": 1,
+                "type": "string"
+              },
+              "day": {
+                "maxLength": 2,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "additionalProperties": false,
+            "nullable": true
+          },
+          "color": {
+            "enum": [
+              "Success",
+              "Warning",
+              "Danger",
+              "Blue",
+              "Green",
+              "Red",
+              "Yellow",
+              "Orange",
+              "Light",
+              "Dark",
+              "Gray",
+              "Gray1",
+              "Gray3",
+              "Gray4"
+            ],
+            "type": "string",
+            "nullable": true
+          },
+          "value": {
+            "type": "string",
+            "nullable": true
+          },
+          "badge": {
+            "required": [
+              "text"
+            ],
+            "type": "object",
+            "properties": {
+              "text": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "icon": {
+                "enum": [
+                  "ArrowUp",
+                  "ArrowDown",
+                  "Star"
+                ],
+                "type": "string",
+                "nullable": true
+              },
+              "color": {
+                "enum": [
+                  "Success",
+                  "Warning",
+                  "Danger",
+                  "Blue",
+                  "Green",
+                  "Red",
+                  "Yellow",
+                  "Orange",
+                  "Light",
+                  "Dark",
+                  "Gray",
+                  "Gray1",
+                  "Gray3",
+                  "Gray4"
+                ],
+                "type": "string",
+                "nullable": true
+              },
+              "fill": {
+                "enum": [
+                  "Solid",
+                  "Clear",
+                  "Outline",
+                  "Dot"
+                ],
+                "type": "string",
+                "nullable": true
+              }
+            },
+            "additionalProperties": false,
+            "nullable": true
+          },
+          "avatars": {
+            "required": [
+              "items"
+            ],
+            "type": "object",
+            "properties": {
+              "items": {
+                "maxItems": 10,
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "initials": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "imageUrl": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "color": {
+                      "enum": [
+                        "Success",
+                        "Warning",
+                        "Danger",
+                        "Blue",
+                        "Green",
+                        "Red",
+                        "Yellow",
+                        "Orange",
+                        "Light",
+                        "Dark",
+                        "Gray",
+                        "Gray1",
+                        "Gray3",
+                        "Gray4"
+                      ],
+                      "type": "string",
+                      "nullable": true
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "more": {
+                "maximum": 2147483647,
+                "minimum": 0,
+                "type": "integer",
+                "format": "int32",
+                "nullable": true
+              }
+            },
+            "additionalProperties": false,
+            "nullable": true
+          },
+          "done": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "link": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "headers": {
+      "maxItems": 6,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "subtitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "align": {
+            "enum": [
+              "Left",
+              "Center",
+              "Right"
+            ],
+            "type": "string",
+            "nullable": true
+          },
+          "badge": {
+            "required": [
+              "text"
+            ],
+            "type": "object",
+            "properties": {
+              "text": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "icon": {
+                "enum": [
+                  "ArrowUp",
+                  "ArrowDown",
+                  "Star"
+                ],
+                "type": "string",
+                "nullable": true
+              },
+              "color": {
+                "enum": [
+                  "Success",
+                  "Warning",
+                  "Danger",
+                  "Blue",
+                  "Green",
+                  "Red",
+                  "Yellow",
+                  "Orange",
+                  "Light",
+                  "Dark",
+                  "Gray",
+                  "Gray1",
+                  "Gray3",
+                  "Gray4"
+                ],
+                "type": "string",
+                "nullable": true
+              },
+              "fill": {
+                "enum": [
+                  "Solid",
+                  "Clear",
+                  "Outline",
+                  "Dot"
+                ],
+                "type": "string",
+                "nullable": true
+              }
+            },
+            "additionalProperties": false,
+            "nullable": true
+          },
+          "color": {
+            "enum": [
+              "Success",
+              "Warning",
+              "Danger",
+              "Blue",
+              "Green",
+              "Red",
+              "Yellow",
+              "Orange",
+              "Light",
+              "Dark",
+              "Gray",
+              "Gray1",
+              "Gray3",
+              "Gray4"
+            ],
+            "type": "string",
+            "nullable": true
+          },
+          "size": {
+            "enum": [
+              "S",
+              "M",
+              "L",
+              "XL"
+            ],
+            "type": "string",
+            "nullable": true
+          },
+          "unit": {
+            "maxLength": 24,
+            "type": "string",
+            "nullable": true
+          },
+          "label": {
+            "maxLength": 40,
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "nullable": true
+    }
+  },
+  "additionalProperties": false
+}
