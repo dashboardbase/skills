@@ -37,7 +37,8 @@
             "icon": {
               "enum": [
                 "ArrowUp",
-                "ArrowDown"
+                "ArrowDown",
+                "Star"
               ],
               "type": "string",
               "nullable": true
@@ -161,7 +162,8 @@
               "icon": {
                 "enum": [
                   "ArrowUp",
-                  "ArrowDown"
+                  "ArrowDown",
+                  "Star"
                 ],
                 "type": "string",
                 "nullable": true

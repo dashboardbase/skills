@@ -71,6 +71,8 @@ curl -X GET 'https://api.dashboardbase.com/example/clock'
 
 
 
+
+
 ## Variations
 
 Other shapes and styling for this widget — pick the one closest to your data:
@@ -136,7 +138,7 @@ Styling fields use the enums documented in `SKILL.md`:
 - `WidgetDataColor` — color of badges, datasets, values
 - `WidgetDataAlign` — text alignment
 - `WidgetDataSize` — text/icon size
-- `WidgetDataIcon` — `ArrowUp` / `ArrowDown`
+- `WidgetDataIcon` — `ArrowUp` / `ArrowDown` for a change, `Star` for a rating
 - `WidgetDataFill` — badge fill style
 
 All values are case-sensitive (`"Success"`, not `"success"`).

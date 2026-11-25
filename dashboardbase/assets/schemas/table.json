@@ -37,7 +37,8 @@
             "icon": {
               "enum": [
                 "ArrowUp",
-                "ArrowDown"
+                "ArrowDown",
+                "Star"
               ],
               "type": "string",
               "nullable": true
@@ -152,7 +153,8 @@
                 "icon": {
                   "enum": [
                     "ArrowUp",
-                    "ArrowDown"
+                    "ArrowDown",
+                    "Star"
                   ],
                   "type": "string",
                   "nullable": true
@@ -310,6 +312,89 @@
               },
               "additionalProperties": false,
               "nullable": true
+            },
+            "icon": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "enum": [
+                    "Analytics",
+                    "Bag",
+                    "BarChart",
+                    "Briefcase",
+                    "Bug",
+                    "Calendar",
+                    "Card",
+                    "Cart",
+                    "Cash",
+                    "Chat",
+                    "CheckCircle",
+                    "Cloud",
+                    "Code",
+                    "Cube",
+                    "Desktop",
+                    "Download",
+                    "Eye",
+                    "Flash",
+                    "Gift",
+                    "Globe",
+                    "Heart",
+                    "Home",
+                    "Location",
+                    "Mail",
+                    "Megaphone",
+                    "Notifications",
+                    "People",
+                    "Person",
+                    "PersonAdd",
+                    "Phone",
+                    "PieChart",
+                    "Pulse",
+                    "Receipt",
+                    "Rocket",
+                    "Server",
+                    "Shield",
+                    "Speedometer",
+                    "Star",
+                    "Ticket",
+                    "Time",
+                    "TrendingDown",
+                    "TrendingUp",
+                    "Trophy",
+                    "Wallet",
+                    "Warning"
+                  ],
+                  "type": "string",
+                  "nullable": true
+                },
+                "country": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "initials": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "color": {
+                  "enum": [
+                    "Success",
+                    "Warning",
+                    "Danger",
+                    "Blue",
+                    "Green",
+                    "Red",
+                    "Yellow",
+                    "Orange",
+                    "Light",
+                    "Dark",
+                    "Gray"
+                  ],
+                  "type": "string",
+                  "nullable": true
+                }
+              },
+              "additionalProperties": false,
+              "nullable": true
             }
           },
           "additionalProperties": false
@@ -352,7 +437,8 @@
               "icon": {
                 "enum": [
                   "ArrowUp",
-                  "ArrowDown"
+                  "ArrowDown",
+                  "Star"
                 ],
                 "type": "string",
                 "nullable": true

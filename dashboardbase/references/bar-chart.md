@@ -52,7 +52,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "icon": {
               "enum": [
                 "ArrowUp",
-                "ArrowDown"
+                "ArrowDown",
+                "Star"
               ],
               "type": "string",
               "nullable": true
@@ -291,7 +292,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "icon": {
                 "enum": [
                   "ArrowUp",
-                  "ArrowDown"
+                  "ArrowDown",
+                  "Star"
                 ],
                 "type": "string",
                 "nullable": true
@@ -571,6 +573,8 @@ The canonical example shows two datasets ("Series A" and "Series B") with no exp
   ]
 }
 ```
+
+
 
 ## Variations
 
@@ -1554,7 +1558,7 @@ Styling fields use the enums documented in `SKILL.md`:
 - `WidgetDataColor` — color of badges, datasets, values
 - `WidgetDataAlign` — text alignment
 - `WidgetDataSize` — text/icon size
-- `WidgetDataIcon` — `ArrowUp` / `ArrowDown`
+- `WidgetDataIcon` — `ArrowUp` / `ArrowDown` for a change, `Star` for a rating
 - `WidgetDataFill` — badge fill style
 
 All values are case-sensitive (`"Success"`, not `"success"`).

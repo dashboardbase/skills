@@ -52,7 +52,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "icon": {
               "enum": [
                 "ArrowUp",
-                "ArrowDown"
+                "ArrowDown",
+                "Star"
               ],
               "type": "string",
               "nullable": true
@@ -201,7 +202,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "icon": {
                 "enum": [
                   "ArrowUp",
-                  "ArrowDown"
+                  "ArrowDown",
+                  "Star"
                 ],
                 "type": "string",
                 "nullable": true
@@ -432,6 +434,8 @@ Styled — a white curve with no fill:
   "trend": { "values": [9800, 10150, 10400, 10900, 11300, 11800, 12345], "color": "Light", "smooth": true, "fill": false }
 }
 ```
+
+
 
 ## Variations
 
@@ -782,6 +786,50 @@ The headline number on a dashboard that may be shown on more than one Scene — 
 }
 ```
 
+### A glowing hero card
+
+The one number the whole board exists for — portfolio value, revenue this month — in a card that runs its colour from a bright corner to a deep one, so it glows above the flat cards around it.
+
+```json
+{
+  "title": "Current value",
+  "actions": [
+    {
+      "title": "View portfolio",
+      "type": "link",
+      "url": "https://example.com/portfolio"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "$5,723",
+      "subtitle": "this week",
+      "badge": {
+        "text": "+$420",
+        "icon": "ArrowUp",
+        "color": "Success"
+      }
+    },
+    "trend": [
+      4980,
+      5120,
+      5040,
+      5310,
+      5260,
+      5480,
+      5390,
+      5610,
+      5723
+    ]
+  },
+  "icon": "TrendingUp",
+  "color": {
+    "name": "Blue",
+    "style": "Gradient"
+  }
+}
+```
+
 ### A dark card that leads the board
 
 The headline number on a light board, or a second lead number beside a white card — set in a near-black card that stands out on any Scene.
@@ -909,7 +957,7 @@ Styling fields use the enums documented in `SKILL.md`:
 - `WidgetDataColor` — color of badges, datasets, values
 - `WidgetDataAlign` — text alignment
 - `WidgetDataSize` — text/icon size
-- `WidgetDataIcon` — `ArrowUp` / `ArrowDown`
+- `WidgetDataIcon` — `ArrowUp` / `ArrowDown` for a change, `Star` for a rating
 - `WidgetDataFill` — badge fill style
 
 All values are case-sensitive (`"Success"`, not `"success"`).
