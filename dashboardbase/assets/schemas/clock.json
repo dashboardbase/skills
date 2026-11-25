@@ -11,7 +11,9 @@
       "nullable": true
     },
     "showDate": {
+      "title": "Show date",
       "type": "boolean",
+      "default": false,
       "nullable": true
     },
     "label": {
@@ -25,6 +27,7 @@
         "Analog"
       ],
       "type": "string",
+      "title": "Clock face",
       "nullable": true
     }
   },

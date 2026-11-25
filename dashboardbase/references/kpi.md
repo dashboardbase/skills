@@ -4,7 +4,7 @@
 
 ## Purpose
 
-Show a single headline number with optional subtitle and trend badge — ideal for MRR, active users, conversion rate, error count, anything you'd put in a 'big number' tile. Add an optional `progress` field to turn it into a progress-to-goal tile (e.g. 'MRR $8.2k / $10k') with a right-aligned cap label and a thin bar under the number. Add an optional `trend` (the recent readings, oldest first) to draw a sparkline beside the number.
+Show a single headline number with optional subtitle and trend badge — ideal for MRR, active users, conversion rate, error count, anything you'd put in a 'big number' tile. Add an optional `progress` field to turn it into a progress-to-goal tile (e.g. 'MRR $8.2k / $10k') with a right-aligned cap label and a thin bar under the number (or `shape: Meter` for a row of segmented ticks). Add `segments` to split a total into 2–6 parts on one bar with a legend (Online / Offline, storage by type). Add an optional `trend` (the recent readings, oldest first) to draw a sparkline beside the number.
 
 In a setup file, this widget's `type` is `kpi` (see `references/setup-files.md`).
 
@@ -52,7 +52,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "icon": {
               "enum": [
                 "ArrowUp",
-                "ArrowDown"
+                "ArrowDown",
+                "Star"
               ],
               "type": "string",
               "nullable": true
@@ -69,7 +70,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "Orange",
                 "Light",
                 "Dark",
-                "Gray"
+                "Gray",
+                "Gray1",
+                "Gray3",
+                "Gray4"
               ],
               "type": "string",
               "nullable": true
@@ -78,7 +82,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "enum": [
                 "Solid",
                 "Clear",
-                "Outline"
+                "Outline",
+                "Dot"
               ],
               "type": "string",
               "nullable": true
@@ -99,7 +104,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "Orange",
             "Light",
             "Dark",
-            "Gray"
+            "Gray",
+            "Gray1",
+            "Gray3",
+            "Gray4"
           ],
           "type": "string",
           "nullable": true
@@ -111,6 +119,16 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "L",
             "XL"
           ],
+          "type": "string",
+          "nullable": true
+        },
+        "unit": {
+          "maxLength": 24,
+          "type": "string",
+          "nullable": true
+        },
+        "label": {
+          "maxLength": 40,
           "type": "string",
           "nullable": true
         }
@@ -148,7 +166,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "Orange",
             "Light",
             "Dark",
-            "Gray"
+            "Gray",
+            "Gray1",
+            "Gray3",
+            "Gray4"
           ],
           "type": "string",
           "nullable": true
@@ -156,9 +177,34 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
         "shape": {
           "enum": [
             "Bar",
-            "Ring"
+            "Ring",
+            "Meter"
           ],
           "type": "string",
+          "nullable": true
+        },
+        "display": {
+          "maxLength": 24,
+          "type": "string",
+          "nullable": true
+        },
+        "marker": {
+          "required": [
+            "value"
+          ],
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "number",
+              "format": "double"
+            },
+            "label": {
+              "maxLength": 32,
+              "type": "string",
+              "nullable": true
+            }
+          },
+          "additionalProperties": false,
           "nullable": true
         }
       },
@@ -201,7 +247,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "icon": {
                 "enum": [
                   "ArrowUp",
-                  "ArrowDown"
+                  "ArrowDown",
+                  "Star"
                 ],
                 "type": "string",
                 "nullable": true
@@ -218,7 +265,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                   "Orange",
                   "Light",
                   "Dark",
-                  "Gray"
+                  "Gray",
+                  "Gray1",
+                  "Gray3",
+                  "Gray4"
                 ],
                 "type": "string",
                 "nullable": true
@@ -227,7 +277,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "enum": [
                   "Solid",
                   "Clear",
-                  "Outline"
+                  "Outline",
+                  "Dot"
                 ],
                 "type": "string",
                 "nullable": true
@@ -248,7 +299,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "Orange",
               "Light",
               "Dark",
-              "Gray"
+              "Gray",
+              "Gray1",
+              "Gray3",
+              "Gray4"
             ],
             "type": "string",
             "nullable": true
@@ -260,6 +314,16 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "L",
               "XL"
             ],
+            "type": "string",
+            "nullable": true
+          },
+          "unit": {
+            "maxLength": 24,
+            "type": "string",
+            "nullable": true
+          },
+          "label": {
+            "maxLength": 40,
             "type": "string",
             "nullable": true
           }
@@ -277,7 +341,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
           "items": {
             "type": "number",
             "format": "double"
-          }
+          },
+          "x-placeholder": true
         },
         {
           "required": [
@@ -292,7 +357,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "items": {
                 "type": "number",
                 "format": "double"
-              }
+              },
+              "x-placeholder": true
             },
             "color": {
               "enum": [
@@ -306,17 +372,24 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "Orange",
                 "Light",
                 "Dark",
-                "Gray"
+                "Gray",
+                "Gray1",
+                "Gray3",
+                "Gray4"
               ],
               "type": "string",
               "nullable": true
             },
             "smooth": {
+              "title": "Smooth line",
               "type": "boolean",
+              "default": false,
               "nullable": true
             },
             "fill": {
+              "title": "Filled area",
               "type": "boolean",
+              "default": true,
               "nullable": true
             },
             "type": {
@@ -325,12 +398,68 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "Bars"
               ],
               "type": "string",
+              "title": "Trend style",
               "nullable": true
             }
           },
           "additionalProperties": false
         }
       ],
+      "nullable": true
+    },
+    "segments": {
+      "maxItems": 6,
+      "type": "array",
+      "items": {
+        "required": [
+          "label",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "label": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "value": {
+            "type": "number",
+            "format": "double"
+          },
+          "color": {
+            "enum": [
+              "Success",
+              "Warning",
+              "Danger",
+              "Blue",
+              "Green",
+              "Red",
+              "Yellow",
+              "Orange",
+              "Light",
+              "Dark",
+              "Gray",
+              "Gray1",
+              "Gray3",
+              "Gray4"
+            ],
+            "type": "string",
+            "nullable": true
+          },
+          "display": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "nullable": true
+    },
+    "strip": {
+      "enum": [
+        "Headline",
+        "Equal"
+      ],
+      "type": "string",
       "nullable": true
     }
   },
@@ -433,280 +562,19 @@ Styled — a white curve with no fill:
 }
 ```
 
+
+
 ## Variations
 
 Other shapes and styling for this widget — pick the one closest to your data:
 
-### Monthly recurring revenue
+### Revenue with an icon and trend
 
-A monetary, point-in-time metric (MRR, ARR, balance) where the headline is a currency value.
-
-```json
-{
-  "title": "MRR",
-  "actions": [
-    {
-      "title": "View Details",
-      "type": "link",
-      "url": "https://example.com/mrr-details"
-    }
-  ],
-  "data": {
-    "header": {
-      "title": "$12,345",
-      "subtitle": "vs last month",
-      "badge": {
-        "text": "+$1,120",
-        "icon": "ArrowUp",
-        "color": "Success"
-      }
-    }
-  }
-}
-```
-
-### Active users (count)
-
-A whole-number count of currently-active entities (active users, online devices, open tickets).
+The everyday headline tile of a KPI row — a currency total, a small icon naming it, and the change against last period in colour.
 
 ```json
 {
-  "title": "Daily active users",
-  "actions": [
-    {
-      "title": "View Details",
-      "type": "link",
-      "url": "https://example.com/dau-details"
-    }
-  ],
-  "data": {
-    "header": {
-      "title": "2,543",
-      "subtitle": "vs last month",
-      "badge": {
-        "text": "+12%",
-        "icon": "ArrowUp",
-        "color": "Success"
-      }
-    }
-  }
-}
-```
-
-### Alert metric (outline badge)
-
-A metric where a high value is bad (churn, error rate) — colour the badge to draw the eye.
-
-```json
-{
-  "title": "Churn rate",
-  "actions": [
-    {
-      "title": "View Cohorts",
-      "type": "link",
-      "url": "https://example.com/churn"
-    }
-  ],
-  "data": {
-    "header": {
-      "title": "4.8%",
-      "subtitle": "vs last month",
-      "badge": {
-        "text": "+0.6%",
-        "icon": "ArrowUp",
-        "color": "Danger",
-        "fill": "Outline"
-      }
-    }
-  }
-}
-```
-
-### Metric with a critical alert
-
-A metric that has breached a threshold and should surface a critical alert banner.
-
-```json
-{
-  "title": "Error rate",
-  "actions": [
-    {
-      "title": "View Incidents",
-      "type": "link",
-      "url": "https://example.com/incidents"
-    }
-  ],
-  "data": {
-    "header": {
-      "title": "8.2%",
-      "subtitle": "vs last hour",
-      "badge": {
-        "text": "+3.4%",
-        "icon": "ArrowUp",
-        "color": "Danger"
-      }
-    }
-  },
-  "alert": {
-    "active": true,
-    "level": "critical",
-    "message": "Error rate above the 5% threshold"
-  }
-}
-```
-
-### Progress toward a goal (MRR / cap)
-
-A headline number that is tracking toward a goal or cap — 'MRR $8.2k / $10k'. Add the optional `progress` field.
-
-```json
-{
-  "title": "MRR",
-  "actions": [
-    {
-      "title": "View Details",
-      "type": "link",
-      "url": "https://example.com/mrr-details"
-    }
-  ],
-  "data": {
-    "header": {
-      "title": "$8,200",
-      "subtitle": "toward $10k goal",
-      "badge": {
-        "text": "+$820",
-        "icon": "ArrowUp",
-        "color": "Success"
-      }
-    },
-    "progress": {
-      "value": 8200,
-      "max": 10000,
-      "label": "Goal 10.000 $"
-    }
-  }
-}
-```
-
-### Several totals in one tile
-
-Several totals that belong together — pages, users, organizations, dashboards — in one widget and one endpoint instead of a row of separate KPI tiles.
-
-```json
-{
-  "title": "Platform totals",
-  "actions": [
-    {
-      "title": "View Details",
-      "type": "link",
-      "url": "https://example.com/platform-totals"
-    }
-  ],
-  "data": {
-    "header": {
-      "title": "1,284",
-      "subtitle": "Total pages",
-      "badge": {
-        "text": "+64",
-        "icon": "ArrowUp",
-        "color": "Success"
-      }
-    },
-    "headers": [
-      {
-        "title": "318",
-        "subtitle": "Total users"
-      },
-      {
-        "title": "96",
-        "subtitle": "Total organizations"
-      },
-      {
-        "title": "42",
-        "subtitle": "Total dashboards"
-      }
-    ]
-  }
-}
-```
-
-### Headline with a sparkline
-
-A headline number whose recent shape matters as much as its value — MRR over the last weeks, signups over the last days — without giving it a whole chart.
-
-```json
-{
-  "title": "MRR",
-  "actions": [
-    {
-      "title": "View Details",
-      "type": "link",
-      "url": "https://example.com/mrr-details"
-    }
-  ],
-  "data": {
-    "header": {
-      "title": "$12,345",
-      "subtitle": "vs last month",
-      "badge": {
-        "text": "+8%",
-        "icon": "ArrowUp",
-        "color": "Success"
-      }
-    },
-    "trend": [
-      9800,
-      10150,
-      10050,
-      10400,
-      10900,
-      10750,
-      11300,
-      11800,
-      11650,
-      12345
-    ]
-  }
-}
-```
-
-### Title with an icon and an explanation
-
-A row of headline tiles where an icon helps tell them apart, or a metric whose definition viewers ask about (what counts as revenue, which orders are included).
-
-```json
-{
-  "title": "Revenue",
-  "actions": [
-    {
-      "title": "Open orders",
-      "type": "link",
-      "url": "https://example.com/orders"
-    }
-  ],
-  "data": {
-    "header": {
-      "title": "$48,120",
-      "subtitle": "vs last month",
-      "badge": {
-        "text": "+9.2%",
-        "icon": "ArrowUp",
-        "color": "Success"
-      }
-    }
-  },
-  "icon": "Cash",
-  "hint": "Paid orders in the selected period, before refunds and excluding tax and shipping."
-}
-```
-
-### A white card that leads the board
-
-The one headline number the room should read first — revenue year to date, MRR — lifted off a dark board in a white card.
-
-```json
-{
-  "title": "Revenue, year to date",
+  "title": "Total Revenue",
   "actions": [
     {
       "title": "View report",
@@ -716,187 +584,201 @@ The one headline number the room should read first — revenue year to date, MRR
   ],
   "data": {
     "header": {
-      "title": "$1,721,974",
-      "subtitle": "Best month: June, $220k",
+      "title": "$45,231.89",
+      "subtitle": "vs last month",
       "badge": {
-        "text": "+12%",
+        "text": "+20.1%",
+        "icon": "ArrowUp",
+        "color": "Success"
+      }
+    }
+  },
+  "icon": "Cash"
+}
+```
+
+### Count with a unit and a detail line
+
+A count that needs its unit to read (files, minutes, seats) plus one line of context under it — storage used, share of the total.
+
+```json
+{
+  "title": "Documents",
+  "actions": [
+    {
+      "title": "View more",
+      "type": "link",
+      "url": "https://example.com/files/documents"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "1,390",
+      "subtitle": "200 GB · 16% of used storage",
+      "unit": "files"
+    }
+  },
+  "icon": "Cloud"
+}
+```
+
+### Change pill beside the number
+
+A product-analytics tile where the change is the point: an outlined pill with the arrow, and a plain caption under the number.
+
+```json
+{
+  "title": "Daily active users",
+  "actions": [
+    {
+      "title": "Open analytics",
+      "type": "link",
+      "url": "https://example.com/dau"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "3,450",
+      "subtitle": "vs last week",
+      "badge": {
+        "text": "+12.1%",
+        "icon": "ArrowUp",
+        "color": "Success",
+        "fill": "Outline"
+      }
+    }
+  }
+}
+```
+
+### Usage against a cap as a meter
+
+Consumption toward a plan limit or quota — tokens, API calls, seats — drawn as a row of segmented ticks under the number.
+
+```json
+{
+  "title": "Volume",
+  "actions": [
+    {
+      "title": "Usage",
+      "type": "link",
+      "url": "https://example.com/usage"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "2,450,230",
+      "subtitle": "Total tokens generated",
+      "unit": "of 5,000,000"
+    },
+    "progress": {
+      "value": 2450230,
+      "max": 5000000,
+      "color": "Green",
+      "shape": "Meter"
+    }
+  }
+}
+```
+
+### Total split into two channels
+
+A total that is the sum of two or three parts the reader compares — online vs offline, new vs returning — as one split bar with a legend.
+
+```json
+{
+  "title": "Bookings",
+  "actions": [
+    {
+      "title": "Open bookings",
+      "type": "link",
+      "url": "https://example.com/bookings"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "20,395",
+      "subtitle": "total bookings vs previous period",
+      "badge": {
+        "text": "+11.2%",
         "icon": "ArrowUp",
         "color": "Success"
       }
     },
-    "trend": [
-      98000,
-      112000,
-      131000,
-      126000,
-      158000,
-      220000,
-      174000,
-      181000,
-      169000,
-      188000
+    "segments": [
+      {
+        "label": "Online",
+        "value": 14839,
+        "color": "Light",
+        "display": "14,839"
+      },
+      {
+        "label": "Offline",
+        "value": 5556,
+        "color": "Gray",
+        "display": "5,556"
+      }
     ]
-  },
-  "icon": "TrendingUp",
-  "color": "Light"
+  }
 }
 ```
 
-### A card that stays in focus on any Scene
+### Score out of a maximum
 
-The headline number on a dashboard that may be shown on more than one Scene — white on the dark board, near-black on a light one, glass on Glass — so it always stands out from the cards around it.
+A rating or score that only reads against its scale — 8.9 out of 10, 4.5 out of 5 — with the change since last period.
 
 ```json
 {
-  "title": "MRR",
+  "title": "Average KPI",
   "actions": [
     {
       "title": "View details",
       "type": "link",
-      "url": "https://example.com/mrr"
+      "url": "https://example.com/kpi"
     }
   ],
   "data": {
     "header": {
-      "title": "$84,210",
-      "subtitle": "vs last month",
+      "title": "8.9",
+      "subtitle": "vs last week",
       "badge": {
-        "text": "+9.4%",
+        "text": "+0.8%",
         "icon": "ArrowUp",
         "color": "Success"
-      }
-    },
-    "trend": [
-      71200,
-      73400,
-      74100,
-      76800,
-      78300,
-      80900,
-      82100,
-      84210
-    ]
+      },
+      "unit": "/10"
+    }
   },
-  "icon": "TrendingUp",
-  "color": "Contrast"
+  "icon": "Star"
 }
 ```
 
-### A dark card that leads the board
+### More examples
 
-The headline number on a light board, or a second lead number beside a white card — set in a near-black card that stands out on any Scene.
+To see one in full, add `?variant=<id>` to the example request above — it returns that example's complete response.
 
-```json
-{
-  "title": "Active sales",
-  "actions": [
-    {
-      "title": "See orders",
-      "type": "link",
-      "url": "https://example.com/orders"
-    }
-  ],
-  "data": {
-    "header": {
-      "title": "$48,320",
-      "subtitle": "vs last month",
-      "badge": {
-        "text": "+14.2%",
-        "icon": "ArrowUp",
-        "color": "Success"
-      }
-    },
-    "trend": [
-      36100,
-      38900,
-      37400,
-      40200,
-      42800,
-      41500,
-      44900,
-      46300,
-      45100,
-      48320
-    ]
-  },
-  "icon": "Cart",
-  "color": "Dark"
-}
-```
-
-### Headline with small bars
-
-A headline number whose last few periods read better as separate bars than as a line — this month against the two before, or a run of days where each day stands on its own.
-
-```json
-{
-  "title": "Active sales",
-  "actions": [
-    {
-      "title": "See orders",
-      "type": "link",
-      "url": "https://example.com/orders"
-    }
-  ],
-  "data": {
-    "header": {
-      "title": "$48,320",
-      "subtitle": "this month",
-      "badge": {
-        "text": "14.2%",
-        "icon": "ArrowUp",
-        "color": "Success",
-        "fill": "Solid"
-      }
-    },
-    "trend": {
-      "values": [
-        36900,
-        42300,
-        48320
-      ],
-      "type": "Bars"
-    }
-  },
-  "color": "Dark"
-}
-```
-
-### Headline with a progress ring
-
-A headline number that is also a share of something — units sold against stock, seats filled, a quota reached — shown as a small ring with its percentage beside the number.
-
-```json
-{
-  "title": "Units sold",
-  "actions": [
-    {
-      "title": "See products",
-      "type": "link",
-      "url": "https://example.com/products"
-    }
-  ],
-  "data": {
-    "header": {
-      "title": "3,842",
-      "subtitle": "vs last month",
-      "badge": {
-        "text": "6.4%",
-        "icon": "ArrowUp",
-        "color": "Success",
-        "fill": "Solid"
-      }
-    },
-    "progress": {
-      "value": 3842,
-      "max": 5000,
-      "label": "Of stock",
-      "shape": "Ring"
-    }
-  },
-  "color": "Gray"
-}
-```
+- `kpi-stat-strip` — **Row of stats in one card.** Four to six headline numbers that belong together — orders, sales, commission, refund rate — as one joined card with a hairline between each, instead of a row of separate tiles.
+- `kpi-links-strip` — **Stat strip with a unit and change.** A summary strip over a list page — active out of allowed, clicks, rates — where one block reads against a cap and the rest carry their change.
+- `kpi-leads-down` — **Count that fell, in red.** A count tile in a row of four where this one moved the wrong way — the red change tells the reader where to look first.
+- `kpi-balance-currency` — **Balance with its currency code.** A balance or account total where the currency code belongs beside the amount, not in it — one tile per currency.
+- `kpi-goal-meter-gradient` — **Goal meter on a gradient card.** The one goal the board is about — a hit rate or target share on a glowing card so it leads the row.
+- `kpi-split-storage` — **Storage by type on one bar.** Capacity used, broken down by what fills it — storage by file type, budget by department — with what is left as the last part.
+- `kpi-split-attendance` — **Share of the day in three parts.** A rate whose make-up matters as much as the headline — on time, day off, sick — in one bar under the number.
+- `kpi-attendance-contrast` — **Headline on a contrast card.** The KPI a room should read first, lifted out of the row on a contrast card that stays legible on any Scene.
+- `kpi-saas-mrr` — **Monthly recurring revenue.** A monetary, point-in-time metric (MRR, ARR, balance) where the headline is a currency value.
+- `kpi-app-dau` — **Active users (count).** A whole-number count of currently-active entities (active users, online devices, open tickets).
+- `kpi-churn-alert` — **Alert metric (outline badge).** A metric where a high value is bad (churn, error rate) — colour the badge to draw the eye.
+- `kpi-error-rate-alert` — **Metric with a critical alert.** A metric that has breached a threshold and should surface a critical alert banner.
+- `kpi-mrr-goal` — **Progress toward a goal (MRR / cap).** A headline number that is tracking toward a goal or cap — 'MRR $8.2k / $10k'. Add the optional `progress` field.
+- `kpi-multi-header` — **Several totals in one tile.** Several totals that belong together — pages, users, organizations, dashboards — in one widget and one endpoint instead of a row of separate KPI tiles.
+- `kpi-sparkline` — **Headline with a sparkline.** A headline number whose recent shape matters as much as its value — MRR over the last weeks, signups over the last days — without giving it a whole chart.
+- `kpi-icon-hint` — **Title with an icon and an explanation.** A row of headline tiles where an icon helps tell them apart, or a metric whose definition viewers ask about (what counts as revenue, which orders are included).
+- `kpi-color-light` — **A white card that leads the board.** The one headline number the room should read first — revenue year to date, MRR — lifted off a dark board in a white card.
+- `kpi-color-contrast` — **A card that stays in focus on any Scene.** The headline number on a dashboard that may be shown on more than one Scene — white on the dark board, near-black on a light one, glass on Glass — so it always stands out from the cards around it.
+- `kpi-color-gradient` — **A glowing hero card.** The one number the whole board exists for — portfolio value, revenue this month — in a card that runs its colour from a bright corner to a deep one, so it glows above the flat cards around it.
+- `kpi-color-dark` — **A dark card that leads the board.** The headline number on a light board, or a second lead number beside a white card — set in a near-black card that stands out on any Scene.
+- `kpi-trend-bars` — **Headline with small bars.** A headline number whose last few periods read better as separate bars than as a line — this month against the two before, or a run of days where each day stands on its own.
+- `kpi-ring` — **Headline with a progress ring.** A headline number that is also a share of something — units sold against stock, seats filled, a quota reached — shown as a small ring with its percentage beside the number.
 
 ## Validation
 
@@ -909,7 +791,7 @@ Styling fields use the enums documented in `SKILL.md`:
 - `WidgetDataColor` — color of badges, datasets, values
 - `WidgetDataAlign` — text alignment
 - `WidgetDataSize` — text/icon size
-- `WidgetDataIcon` — `ArrowUp` / `ArrowDown`
+- `WidgetDataIcon` — `ArrowUp` / `ArrowDown` for a change, `Star` for a rating
 - `WidgetDataFill` — badge fill style
 
 All values are case-sensitive (`"Success"`, not `"success"`).
@@ -925,4 +807,7 @@ All values are case-sensitive (`"Success"`, not `"success"`).
 - Ending `trend` on a different period than the headline — its last point is read as "now" beside the number, so it should be the reading `header.title` shows.
 - Drawing bars with a second widget — a KPI's `trend` takes `"type": "Bars"` (`"trend": { "values": [31, 38, 44], "type": "Bars" }`) for a row of small bars beside the number instead of a line: three for this month against the last two, a dozen or more for a run of days.
 - Putting a ring progress next to a sparkline — `progress.shape: "Ring"` draws the goal as a small ring beside the number, in the same place a trend goes, so send one or the other. Without `shape` (or with `Bar`) it stays the thin bar under the number.
+- Building a split bar (Orders 62% / Visits 25%, Online / Offline, storage by file type) out of a `progress` — send `segments` instead: 2–6 parts, each `{ "label": "Online", "value": 14839, "color": "Light" }` (add `display` to show a formatted value such as `"522 GB"`). Widths are each part's share of the sum and the legend shows the share; it replaces `progress` and `trend`. Give the tile two rows — the legend sits under the bar — and keep it to four parts on a narrow tile.
+- Writing the unit into the headline (`"901 files"`, `"8.9/10"`) — put the number in `header.title` and the suffix in `header.unit` (`"files"`, `"/10"`, `"USD"`, `"of 5,000,000"`); it is drawn smaller and muted so the number stays the headline.
+- Building a row of separate KPI tiles for 4–6 numbers of equal weight (orders, sales, commission, refund rate) — send one KPI with `header` plus `headers` and `"strip": "Equal"`: every block at the same size across the card's width, a hairline between each. Name each block with `label` (`"Orders"` above `"315"`) and keep `subtitle` for the comparison, or leave it out so a one-row tile still fits.
 - Sending more than 6 header blocks — `header` and `headers` together may hold at most 6, one per pair of grid columns. Everything past the sixth is a validation error, not a silent truncation.

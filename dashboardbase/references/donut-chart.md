@@ -52,7 +52,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "icon": {
               "enum": [
                 "ArrowUp",
-                "ArrowDown"
+                "ArrowDown",
+                "Star"
               ],
               "type": "string",
               "nullable": true
@@ -69,7 +70,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "Orange",
                 "Light",
                 "Dark",
-                "Gray"
+                "Gray",
+                "Gray1",
+                "Gray3",
+                "Gray4"
               ],
               "type": "string",
               "nullable": true
@@ -78,7 +82,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "enum": [
                 "Solid",
                 "Clear",
-                "Outline"
+                "Outline",
+                "Dot"
               ],
               "type": "string",
               "nullable": true
@@ -99,7 +104,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "Orange",
             "Light",
             "Dark",
-            "Gray"
+            "Gray",
+            "Gray1",
+            "Gray3",
+            "Gray4"
           ],
           "type": "string",
           "nullable": true
@@ -111,6 +119,16 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "L",
             "XL"
           ],
+          "type": "string",
+          "nullable": true
+        },
+        "unit": {
+          "maxLength": 24,
+          "type": "string",
+          "nullable": true
+        },
+        "label": {
+          "maxLength": 40,
           "type": "string",
           "nullable": true
         }
@@ -167,7 +185,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                     "Orange",
                     "Light",
                     "Dark",
-                    "Gray"
+                    "Gray",
+                    "Gray1",
+                    "Gray3",
+                    "Gray4"
                   ],
                   "type": "string",
                   "nullable": true
@@ -184,7 +205,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               },
               "additionalProperties": false
             },
-            "nullable": true
+            "nullable": true,
+            "x-placeholder": true
           },
           "label": {
             "type": "string",
@@ -204,7 +226,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "Orange",
                 "Light",
                 "Dark",
-                "Gray"
+                "Gray",
+                "Gray1",
+                "Gray3",
+                "Gray4"
               ],
               "type": "string"
             },
@@ -250,7 +275,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "icon": {
                 "enum": [
                   "ArrowUp",
-                  "ArrowDown"
+                  "ArrowDown",
+                  "Star"
                 ],
                 "type": "string",
                 "nullable": true
@@ -267,7 +293,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                   "Orange",
                   "Light",
                   "Dark",
-                  "Gray"
+                  "Gray",
+                  "Gray1",
+                  "Gray3",
+                  "Gray4"
                 ],
                 "type": "string",
                 "nullable": true
@@ -276,7 +305,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "enum": [
                   "Solid",
                   "Clear",
-                  "Outline"
+                  "Outline",
+                  "Dot"
                 ],
                 "type": "string",
                 "nullable": true
@@ -297,7 +327,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "Orange",
               "Light",
               "Dark",
-              "Gray"
+              "Gray",
+              "Gray1",
+              "Gray3",
+              "Gray4"
             ],
             "type": "string",
             "nullable": true
@@ -309,6 +342,16 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "L",
               "XL"
             ],
+            "type": "string",
+            "nullable": true
+          },
+          "unit": {
+            "maxLength": 24,
+            "type": "string",
+            "nullable": true
+          },
+          "label": {
+            "maxLength": 40,
             "type": "string",
             "nullable": true
           }
@@ -435,9 +478,178 @@ The canonical example omits `color` — the default palette renders well without
 }
 ```
 
+
+
 ## Variations
 
 Other shapes and styling for this widget — pick the one closest to your data:
+
+### Visitors by source, five colours
+
+Where traffic or revenue comes from — five sources in distinct colours, the total in the middle, value and share in the legend.
+
+```json
+{
+  "title": "Store Visits by Source",
+  "actions": [
+    {
+      "title": "Traffic",
+      "type": "link",
+      "url": "https://example.com/traffic"
+    }
+  ],
+  "data": {
+    "header": {
+      "subtitle": "Where your visitors come from"
+    },
+    "labels": [
+      "Direct",
+      "Social",
+      "Email",
+      "Referrals",
+      "Other"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 287
+          },
+          {
+            "value": 275
+          },
+          {
+            "value": 200
+          },
+          {
+            "value": 190
+          },
+          {
+            "value": 173
+          }
+        ],
+        "label": "Visitors",
+        "color": [
+          "Green",
+          "Blue",
+          "Orange",
+          "Red",
+          "Light"
+        ]
+      }
+    ]
+  }
+}
+```
+
+### Three states in greys
+
+A breakdown that should stay calm — confirmed, checked in, checked out — in three tones of the card's ink.
+
+```json
+{
+  "title": "Reservations",
+  "actions": [
+    {
+      "title": "Bookings",
+      "type": "link",
+      "url": "https://example.com/bookings"
+    }
+  ],
+  "data": {
+    "header": {
+      "subtitle": "Status of this week's bookings"
+    },
+    "labels": [
+      "Confirmed",
+      "Checked in",
+      "Checked out"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 180
+          },
+          {
+            "value": 120
+          },
+          {
+            "value": 62
+          }
+        ],
+        "label": "Bookings",
+        "color": [
+          "Light",
+          "Gray",
+          "Dark"
+        ]
+      }
+    ]
+  }
+}
+```
+
+### Breakdown on a gradient card
+
+A share-of-total that is the board's focus, on a gradient card with the slices in the card's ink.
+
+```json
+{
+  "title": "Sales Analytics",
+  "actions": [
+    {
+      "title": "Channels",
+      "type": "link",
+      "url": "https://example.com/channels"
+    }
+  ],
+  "data": {
+    "header": {
+      "subtitle": "Revenue by sales channel"
+    },
+    "labels": [
+      "Online",
+      "Offline",
+      "Agent",
+      "Marketing"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 3425,
+            "prefix": "$"
+          },
+          {
+            "value": 3120,
+            "prefix": "$"
+          },
+          {
+            "value": 2472,
+            "prefix": "$"
+          },
+          {
+            "value": 5120,
+            "prefix": "$"
+          }
+        ],
+        "label": "Revenue",
+        "color": [
+          "Light",
+          "Gray",
+          "Dark",
+          "Light"
+        ]
+      }
+    ]
+  },
+  "color": {
+    "name": "Blue",
+    "style": "Gradient"
+  }
+}
+```
 
 ### Subscription plan mix
 
@@ -479,118 +691,13 @@ Share of customers (or revenue) across subscription tiers.
 }
 ```
 
-### Ring breakdown with a success alert
+### More examples
 
-A tier breakdown where a target was hit — surface a success alert above the ring.
+To see one in full, add `?variant=<id>` to the example request above — it returns that example's complete response.
 
-```json
-{
-  "title": "Plan mix",
-  "actions": [
-    {
-      "title": "View Plans",
-      "type": "link",
-      "url": "https://example.com/plans"
-    }
-  ],
-  "data": {
-    "labels": [
-      "Free",
-      "Pro",
-      "Enterprise"
-    ],
-    "datasets": [
-      {
-        "data": [
-          {
-            "value": 380
-          },
-          {
-            "value": 240
-          },
-          {
-            "value": 48
-          }
-        ],
-        "label": "Customers"
-      }
-    ]
-  },
-  "alert": {
-    "active": true,
-    "level": "success",
-    "message": "Pro plan adoption hit the quarterly goal"
-  }
-}
-```
-
-### Ring with a header strip
-
-A category ring that should also carry the total and the top category as headline numbers.
-
-```json
-{
-  "title": "Sales by category",
-  "actions": [
-    {
-      "title": "Open catalog",
-      "type": "link",
-      "url": "https://example.com/catalog"
-    }
-  ],
-  "data": {
-    "header": {
-      "title": "$52,500",
-      "subtitle": "Sales",
-      "badge": {
-        "text": "+6.2%",
-        "icon": "ArrowUp",
-        "color": "Success"
-      }
-    },
-    "labels": [
-      "Electronics",
-      "Clothing",
-      "Home Goods",
-      "Books"
-    ],
-    "datasets": [
-      {
-        "data": [
-          {
-            "value": 30000
-          },
-          {
-            "value": 5000
-          },
-          {
-            "value": 10000
-          },
-          {
-            "value": 7500
-          }
-        ],
-        "label": "Sales"
-      }
-    ],
-    "headers": [
-      {
-        "title": "Electronics",
-        "subtitle": "Top category"
-      },
-      {
-        "title": "1,942",
-        "subtitle": "Orders",
-        "badge": {
-          "text": "+3.1%",
-          "icon": "ArrowUp",
-          "color": "Success"
-        }
-      }
-    ]
-  }
-}
-```
+- `donut-contrast` — **Breakdown on a contrast card.** A share-of-total lifted out of the board on a contrast card.
+- `donut-goal-alert` — **Ring breakdown with a success alert.** A tier breakdown where a target was hit — surface a success alert above the ring.
+- `donut-multi-header` — **Ring with a header strip.** A category ring that should also carry the total and the top category as headline numbers.
 
 ## Validation
 
@@ -603,7 +710,7 @@ Styling fields use the enums documented in `SKILL.md`:
 - `WidgetDataColor` — color of badges, datasets, values
 - `WidgetDataAlign` — text alignment
 - `WidgetDataSize` — text/icon size
-- `WidgetDataIcon` — `ArrowUp` / `ArrowDown`
+- `WidgetDataIcon` — `ArrowUp` / `ArrowDown` for a change, `Star` for a rating
 - `WidgetDataFill` — badge fill style
 
 All values are case-sensitive (`"Success"`, not `"success"`).

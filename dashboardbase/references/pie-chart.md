@@ -52,7 +52,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "icon": {
               "enum": [
                 "ArrowUp",
-                "ArrowDown"
+                "ArrowDown",
+                "Star"
               ],
               "type": "string",
               "nullable": true
@@ -69,7 +70,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "Orange",
                 "Light",
                 "Dark",
-                "Gray"
+                "Gray",
+                "Gray1",
+                "Gray3",
+                "Gray4"
               ],
               "type": "string",
               "nullable": true
@@ -78,7 +82,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "enum": [
                 "Solid",
                 "Clear",
-                "Outline"
+                "Outline",
+                "Dot"
               ],
               "type": "string",
               "nullable": true
@@ -99,7 +104,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "Orange",
             "Light",
             "Dark",
-            "Gray"
+            "Gray",
+            "Gray1",
+            "Gray3",
+            "Gray4"
           ],
           "type": "string",
           "nullable": true
@@ -111,6 +119,16 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "L",
             "XL"
           ],
+          "type": "string",
+          "nullable": true
+        },
+        "unit": {
+          "maxLength": 24,
+          "type": "string",
+          "nullable": true
+        },
+        "label": {
+          "maxLength": 40,
           "type": "string",
           "nullable": true
         }
@@ -171,7 +189,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                     "Orange",
                     "Light",
                     "Dark",
-                    "Gray"
+                    "Gray",
+                    "Gray1",
+                    "Gray3",
+                    "Gray4"
                   ],
                   "type": "string",
                   "nullable": true
@@ -187,7 +208,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 }
               },
               "additionalProperties": false
-            }
+            },
+            "x-placeholder": true
           },
           "label": {
             "minLength": 1,
@@ -207,7 +229,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "Orange",
                 "Light",
                 "Dark",
-                "Gray"
+                "Gray",
+                "Gray1",
+                "Gray3",
+                "Gray4"
               ],
               "type": "string"
             },
@@ -253,7 +278,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "icon": {
                 "enum": [
                   "ArrowUp",
-                  "ArrowDown"
+                  "ArrowDown",
+                  "Star"
                 ],
                 "type": "string",
                 "nullable": true
@@ -270,7 +296,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                   "Orange",
                   "Light",
                   "Dark",
-                  "Gray"
+                  "Gray",
+                  "Gray1",
+                  "Gray3",
+                  "Gray4"
                 ],
                 "type": "string",
                 "nullable": true
@@ -279,7 +308,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "enum": [
                   "Solid",
                   "Clear",
-                  "Outline"
+                  "Outline",
+                  "Dot"
                 ],
                 "type": "string",
                 "nullable": true
@@ -300,7 +330,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "Orange",
               "Light",
               "Dark",
-              "Gray"
+              "Gray",
+              "Gray1",
+              "Gray3",
+              "Gray4"
             ],
             "type": "string",
             "nullable": true
@@ -312,6 +345,16 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "L",
               "XL"
             ],
+            "type": "string",
+            "nullable": true
+          },
+          "unit": {
+            "maxLength": 24,
+            "type": "string",
+            "nullable": true
+          },
+          "label": {
+            "maxLength": 40,
             "type": "string",
             "nullable": true
           }
@@ -432,9 +475,118 @@ The canonical example omits `color` because the default palette renders well wit
 
 Pie charts typically use a single dataset; `datasets` is still an array for shape consistency with Bar/Line.
 
+
+
 ## Variations
 
 Other shapes and styling for this widget — pick the one closest to your data:
+
+### Cost split by model
+
+Spend or usage split across a few named things — models, vendors, plans — with the share of each.
+
+```json
+{
+  "title": "Cost Breakdown",
+  "actions": [
+    {
+      "title": "Billing",
+      "type": "link",
+      "url": "https://example.com/billing"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "$97.61",
+      "subtitle": "Share of total cost"
+    },
+    "labels": [
+      "GPT-4",
+      "Claude 3 Opus",
+      "Gemini"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 51.96,
+            "prefix": "$"
+          },
+          {
+            "value": 27.68,
+            "prefix": "$"
+          },
+          {
+            "value": 17.97,
+            "prefix": "$"
+          }
+        ],
+        "label": "Cost",
+        "color": [
+          "Light",
+          "Gray",
+          "Dark"
+        ]
+      }
+    ]
+  }
+}
+```
+
+### Share on a gradient card
+
+A share-of-total on a glowing card for the one breakdown a board is about.
+
+```json
+{
+  "title": "Devices",
+  "actions": [
+    {
+      "title": "Devices",
+      "type": "link",
+      "url": "https://example.com/devices"
+    }
+  ],
+  "data": {
+    "header": {
+      "subtitle": "Today's sessions"
+    },
+    "labels": [
+      "Desktop",
+      "Mobile",
+      "Tablet"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 58,
+            "postfix": "%"
+          },
+          {
+            "value": 34,
+            "postfix": "%"
+          },
+          {
+            "value": 8,
+            "postfix": "%"
+          }
+        ],
+        "label": "Sessions",
+        "color": [
+          "Light",
+          "Gray",
+          "Dark"
+        ]
+      }
+    ]
+  },
+  "color": {
+    "name": "Red",
+    "style": "Gradient"
+  }
+}
+```
 
 ### Platform breakdown
 
@@ -476,113 +628,13 @@ Distribution of users/sessions across platforms or segments.
 }
 ```
 
-### Share of total with an info alert
+### More examples
 
-A breakdown drawn from a sample or estimate — add an info alert so viewers read it with the right caveat.
+To see one in full, add `?variant=<id>` to the example request above — it returns that example's complete response.
 
-```json
-{
-  "title": "Market Share",
-  "actions": [
-    {
-      "title": "View Details",
-      "type": "link",
-      "url": "https://example.com/piechart-details"
-    }
-  ],
-  "data": {
-    "labels": [
-      "Product A",
-      "Product B",
-      "Product C"
-    ],
-    "datasets": [
-      {
-        "data": [
-          {
-            "value": 30
-          },
-          {
-            "value": 50
-          },
-          {
-            "value": 20
-          }
-        ],
-        "label": "Share"
-      }
-    ]
-  },
-  "alert": {
-    "active": true,
-    "level": "info",
-    "message": "Shares are based on a 7-day sample"
-  }
-}
-```
-
-### Breakdown with a header strip
-
-A share-of-total chart that should also state the total and the leading slice, without a second widget.
-
-```json
-{
-  "title": "Traffic sources",
-  "actions": [
-    {
-      "title": "Open analytics",
-      "type": "link",
-      "url": "https://example.com/analytics"
-    }
-  ],
-  "data": {
-    "header": {
-      "title": "24,806",
-      "subtitle": "Sessions",
-      "badge": {
-        "text": "+9.4%",
-        "icon": "ArrowUp",
-        "color": "Success"
-      }
-    },
-    "labels": [
-      "Organic",
-      "Direct",
-      "Referral",
-      "Paid"
-    ],
-    "datasets": [
-      {
-        "data": [
-          {
-            "value": 11200
-          },
-          {
-            "value": 6400
-          },
-          {
-            "value": 4300
-          },
-          {
-            "value": 2906
-          }
-        ],
-        "label": "Sessions"
-      }
-    ],
-    "headers": [
-      {
-        "title": "45%",
-        "subtitle": "Organic share"
-      },
-      {
-        "title": "2.8",
-        "subtitle": "Pages / session"
-      }
-    ]
-  }
-}
-```
+- `pie-contrast` — **Share on a contrast card.** A share-of-total lifted out of the board on a contrast card.
+- `pie-sample-alert` — **Share of total with an info alert.** A breakdown drawn from a sample or estimate — add an info alert so viewers read it with the right caveat.
+- `pie-multi-header` — **Breakdown with a header strip.** A share-of-total chart that should also state the total and the leading slice, without a second widget.
 
 ## Validation
 
@@ -595,7 +647,7 @@ Styling fields use the enums documented in `SKILL.md`:
 - `WidgetDataColor` — color of badges, datasets, values
 - `WidgetDataAlign` — text alignment
 - `WidgetDataSize` — text/icon size
-- `WidgetDataIcon` — `ArrowUp` / `ArrowDown`
+- `WidgetDataIcon` — `ArrowUp` / `ArrowDown` for a change, `Star` for a rating
 - `WidgetDataFill` — badge fill style
 
 All values are case-sensitive (`"Success"`, not `"success"`).

@@ -37,7 +37,8 @@
             "icon": {
               "enum": [
                 "ArrowUp",
-                "ArrowDown"
+                "ArrowDown",
+                "Star"
               ],
               "type": "string",
               "nullable": true
@@ -54,7 +55,10 @@
                 "Orange",
                 "Light",
                 "Dark",
-                "Gray"
+                "Gray",
+                "Gray1",
+                "Gray3",
+                "Gray4"
               ],
               "type": "string",
               "nullable": true
@@ -63,7 +67,8 @@
               "enum": [
                 "Solid",
                 "Clear",
-                "Outline"
+                "Outline",
+                "Dot"
               ],
               "type": "string",
               "nullable": true
@@ -84,7 +89,10 @@
             "Orange",
             "Light",
             "Dark",
-            "Gray"
+            "Gray",
+            "Gray1",
+            "Gray3",
+            "Gray4"
           ],
           "type": "string",
           "nullable": true
@@ -96,6 +104,16 @@
             "L",
             "XL"
           ],
+          "type": "string",
+          "nullable": true
+        },
+        "unit": {
+          "maxLength": 24,
+          "type": "string",
+          "nullable": true
+        },
+        "label": {
+          "maxLength": 40,
           "type": "string",
           "nullable": true
         }
@@ -137,7 +155,8 @@
             },
             "imageUrl": {
               "type": "string",
-              "nullable": true
+              "nullable": true,
+              "x-placeholder": true
             },
             "badge": {
               "required": [
@@ -152,7 +171,8 @@
                 "icon": {
                   "enum": [
                     "ArrowUp",
-                    "ArrowDown"
+                    "ArrowDown",
+                    "Star"
                   ],
                   "type": "string",
                   "nullable": true
@@ -169,7 +189,10 @@
                     "Orange",
                     "Light",
                     "Dark",
-                    "Gray"
+                    "Gray",
+                    "Gray1",
+                    "Gray3",
+                    "Gray4"
                   ],
                   "type": "string",
                   "nullable": true
@@ -178,7 +201,8 @@
                   "enum": [
                     "Solid",
                     "Clear",
-                    "Outline"
+                    "Outline",
+                    "Dot"
                   ],
                   "type": "string",
                   "nullable": true
@@ -189,7 +213,8 @@
             },
             "link": {
               "type": "string",
-              "nullable": true
+              "nullable": true,
+              "x-placeholder": true
             },
             "bar": {
               "maximum": 100,
@@ -207,7 +232,8 @@
                   "items": {
                     "type": "number",
                     "format": "double"
-                  }
+                  },
+                  "x-placeholder": true
                 },
                 {
                   "required": [
@@ -222,7 +248,8 @@
                       "items": {
                         "type": "number",
                         "format": "double"
-                      }
+                      },
+                      "x-placeholder": true
                     },
                     "color": {
                       "enum": [
@@ -236,17 +263,24 @@
                         "Orange",
                         "Light",
                         "Dark",
-                        "Gray"
+                        "Gray",
+                        "Gray1",
+                        "Gray3",
+                        "Gray4"
                       ],
                       "type": "string",
                       "nullable": true
                     },
                     "smooth": {
+                      "title": "Smooth line",
                       "type": "boolean",
+                      "default": false,
                       "nullable": true
                     },
                     "fill": {
+                      "title": "Filled area",
                       "type": "boolean",
+                      "default": true,
                       "nullable": true
                     },
                     "type": {
@@ -255,6 +289,7 @@
                         "Bars"
                       ],
                       "type": "string",
+                      "title": "Trend style",
                       "nullable": true
                     }
                   },
@@ -294,7 +329,10 @@
                     "Orange",
                     "Light",
                     "Dark",
-                    "Gray"
+                    "Gray",
+                    "Gray1",
+                    "Gray3",
+                    "Gray4"
                   ],
                   "type": "string",
                   "nullable": true
@@ -302,7 +340,118 @@
                 "shape": {
                   "enum": [
                     "Bar",
-                    "Ring"
+                    "Ring",
+                    "Meter"
+                  ],
+                  "type": "string",
+                  "nullable": true
+                },
+                "display": {
+                  "maxLength": 24,
+                  "type": "string",
+                  "nullable": true
+                },
+                "marker": {
+                  "required": [
+                    "value"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "number",
+                      "format": "double"
+                    },
+                    "label": {
+                      "maxLength": 32,
+                      "type": "string",
+                      "nullable": true
+                    }
+                  },
+                  "additionalProperties": false,
+                  "nullable": true
+                }
+              },
+              "additionalProperties": false,
+              "nullable": true
+            },
+            "icon": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "enum": [
+                    "Analytics",
+                    "Bag",
+                    "BarChart",
+                    "Briefcase",
+                    "Bug",
+                    "Calendar",
+                    "Card",
+                    "Cart",
+                    "Cash",
+                    "Chat",
+                    "CheckCircle",
+                    "Cloud",
+                    "Code",
+                    "Cube",
+                    "Desktop",
+                    "Download",
+                    "Eye",
+                    "Flash",
+                    "Gift",
+                    "Globe",
+                    "Heart",
+                    "Home",
+                    "Location",
+                    "Mail",
+                    "Megaphone",
+                    "Notifications",
+                    "People",
+                    "Person",
+                    "PersonAdd",
+                    "Phone",
+                    "PieChart",
+                    "Pulse",
+                    "Receipt",
+                    "Rocket",
+                    "Server",
+                    "Shield",
+                    "Speedometer",
+                    "Star",
+                    "Ticket",
+                    "Time",
+                    "TrendingDown",
+                    "TrendingUp",
+                    "Trophy",
+                    "Wallet",
+                    "Warning"
+                  ],
+                  "type": "string",
+                  "nullable": true
+                },
+                "country": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "initials": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "color": {
+                  "enum": [
+                    "Success",
+                    "Warning",
+                    "Danger",
+                    "Blue",
+                    "Green",
+                    "Red",
+                    "Yellow",
+                    "Orange",
+                    "Light",
+                    "Dark",
+                    "Gray",
+                    "Gray1",
+                    "Gray3",
+                    "Gray4"
                   ],
                   "type": "string",
                   "nullable": true
@@ -310,11 +459,99 @@
               },
               "additionalProperties": false,
               "nullable": true
+            },
+            "subtitle": {
+              "type": "string",
+              "nullable": true
+            },
+            "actions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "type": {
+                    "enum": [
+                      "link"
+                    ],
+                    "type": "string"
+                  },
+                  "url": {
+                    "type": "string",
+                    "nullable": true,
+                    "x-placeholder": true
+                  }
+                },
+                "additionalProperties": false
+              },
+              "nullable": true
+            },
+            "avatars": {
+              "required": [
+                "items"
+              ],
+              "type": "object",
+              "properties": {
+                "items": {
+                  "maxItems": 10,
+                  "minItems": 1,
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "initials": {
+                        "type": "string",
+                        "nullable": true
+                      },
+                      "imageUrl": {
+                        "type": "string",
+                        "nullable": true,
+                        "x-placeholder": true
+                      },
+                      "color": {
+                        "enum": [
+                          "Success",
+                          "Warning",
+                          "Danger",
+                          "Blue",
+                          "Green",
+                          "Red",
+                          "Yellow",
+                          "Orange",
+                          "Light",
+                          "Dark",
+                          "Gray",
+                          "Gray1",
+                          "Gray3",
+                          "Gray4"
+                        ],
+                        "type": "string",
+                        "nullable": true
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "more": {
+                  "maximum": 2147483647,
+                  "minimum": 0,
+                  "type": "integer",
+                  "format": "int32",
+                  "nullable": true
+                }
+              },
+              "additionalProperties": false,
+              "nullable": true,
+              "x-placeholder": true
             }
           },
           "additionalProperties": false
         }
-      }
+      },
+      "x-placeholder": true
     },
     "headers": {
       "maxItems": 6,
@@ -352,7 +589,8 @@
               "icon": {
                 "enum": [
                   "ArrowUp",
-                  "ArrowDown"
+                  "ArrowDown",
+                  "Star"
                 ],
                 "type": "string",
                 "nullable": true
@@ -369,7 +607,10 @@
                   "Orange",
                   "Light",
                   "Dark",
-                  "Gray"
+                  "Gray",
+                  "Gray1",
+                  "Gray3",
+                  "Gray4"
                 ],
                 "type": "string",
                 "nullable": true
@@ -378,7 +619,8 @@
                 "enum": [
                   "Solid",
                   "Clear",
-                  "Outline"
+                  "Outline",
+                  "Dot"
                 ],
                 "type": "string",
                 "nullable": true
@@ -399,7 +641,10 @@
               "Orange",
               "Light",
               "Dark",
-              "Gray"
+              "Gray",
+              "Gray1",
+              "Gray3",
+              "Gray4"
             ],
             "type": "string",
             "nullable": true
@@ -411,6 +656,16 @@
               "L",
               "XL"
             ],
+            "type": "string",
+            "nullable": true
+          },
+          "unit": {
+            "maxLength": 24,
+            "type": "string",
+            "nullable": true
+          },
+          "label": {
+            "maxLength": 40,
             "type": "string",
             "nullable": true
           }

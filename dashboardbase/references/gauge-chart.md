@@ -53,7 +53,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "icon": {
               "enum": [
                 "ArrowUp",
-                "ArrowDown"
+                "ArrowDown",
+                "Star"
               ],
               "type": "string",
               "nullable": true
@@ -70,7 +71,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "Orange",
                 "Light",
                 "Dark",
-                "Gray"
+                "Gray",
+                "Gray1",
+                "Gray3",
+                "Gray4"
               ],
               "type": "string",
               "nullable": true
@@ -79,7 +83,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "enum": [
                 "Solid",
                 "Clear",
-                "Outline"
+                "Outline",
+                "Dot"
               ],
               "type": "string",
               "nullable": true
@@ -100,7 +105,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "Orange",
             "Light",
             "Dark",
-            "Gray"
+            "Gray",
+            "Gray1",
+            "Gray3",
+            "Gray4"
           ],
           "type": "string",
           "nullable": true
@@ -112,6 +120,16 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "L",
             "XL"
           ],
+          "type": "string",
+          "nullable": true
+        },
+        "unit": {
+          "maxLength": 24,
+          "type": "string",
+          "nullable": true
+        },
+        "label": {
+          "maxLength": 40,
           "type": "string",
           "nullable": true
         }
@@ -153,7 +171,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "Orange",
             "Light",
             "Dark",
-            "Gray"
+            "Gray",
+            "Gray1",
+            "Gray3",
+            "Gray4"
           ],
           "type": "string",
           "nullable": true
@@ -210,7 +231,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "icon": {
                 "enum": [
                   "ArrowUp",
-                  "ArrowDown"
+                  "ArrowDown",
+                  "Star"
                 ],
                 "type": "string",
                 "nullable": true
@@ -227,7 +249,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                   "Orange",
                   "Light",
                   "Dark",
-                  "Gray"
+                  "Gray",
+                  "Gray1",
+                  "Gray3",
+                  "Gray4"
                 ],
                 "type": "string",
                 "nullable": true
@@ -236,7 +261,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "enum": [
                   "Solid",
                   "Clear",
-                  "Outline"
+                  "Outline",
+                  "Dot"
                 ],
                 "type": "string",
                 "nullable": true
@@ -257,7 +283,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "Orange",
               "Light",
               "Dark",
-              "Gray"
+              "Gray",
+              "Gray1",
+              "Gray3",
+              "Gray4"
             ],
             "type": "string",
             "nullable": true
@@ -269,6 +298,16 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "L",
               "XL"
             ],
+            "type": "string",
+            "nullable": true
+          },
+          "unit": {
+            "maxLength": 24,
+            "type": "string",
+            "nullable": true
+          },
+          "label": {
+            "maxLength": 40,
             "type": "string",
             "nullable": true
           }
@@ -355,9 +394,96 @@ rejected.
 
 
 
+
+
 ## Variations
 
 Other shapes and styling for this widget — pick the one closest to your data:
+
+### Share completed
+
+A completion rate — tickets closed, tasks done — as a half-dial with the percentage in the middle.
+
+```json
+{
+  "title": "Tickets",
+  "actions": [
+    {
+      "title": "Support",
+      "type": "link",
+      "url": "https://example.com/support"
+    }
+  ],
+  "data": {
+    "header": {
+      "subtitle": "Support requests this week"
+    },
+    "value": {
+      "value": 88,
+      "postfix": "%"
+    },
+    "maxValue": 100
+  }
+}
+```
+
+### Capacity used of the total
+
+Space or quota consumed against a fixed total, the unit on the reading and the total under it.
+
+```json
+{
+  "title": "Storage",
+  "actions": [
+    {
+      "title": "Storage",
+      "type": "link",
+      "url": "https://example.com/storage"
+    }
+  ],
+  "data": {
+    "header": {
+      "subtitle": "1,232 GB of 2 TB"
+    },
+    "value": {
+      "value": 1232,
+      "postfix": " GB"
+    },
+    "maxValue": 2048
+  }
+}
+```
+
+### Gauge on a gradient card
+
+A single utilisation reading as the board's hero, on a gradient card.
+
+```json
+{
+  "title": "CPU",
+  "actions": [
+    {
+      "title": "Servers",
+      "type": "link",
+      "url": "https://example.com/servers"
+    }
+  ],
+  "data": {
+    "header": {
+      "subtitle": "Across 12 nodes"
+    },
+    "value": {
+      "value": 64,
+      "postfix": "%"
+    },
+    "maxValue": 100
+  },
+  "color": {
+    "name": "Green",
+    "style": "Gradient"
+  }
+}
+```
 
 ### Percentage with unit postfix
 
@@ -447,38 +573,12 @@ A capacity or quota dial where the recent change matters as much as the level �
 }
 ```
 
-### Utilisation with a warning alert
+### More examples
 
-A utilisation dial nearing its ceiling — raise a warning alert before it maxes out.
+To see one in full, add `?variant=<id>` to the example request above — it returns that example's complete response.
 
-```json
-{
-  "title": "Server Load",
-  "actions": [
-    {
-      "title": "View Metrics",
-      "type": "link",
-      "url": "https://example.com/metrics"
-    }
-  ],
-  "data": {
-    "header": {
-      "title": "87%",
-      "subtitle": "Current"
-    },
-    "value": {
-      "value": 87,
-      "postfix": "%"
-    },
-    "maxValue": 100
-  },
-  "alert": {
-    "active": true,
-    "level": "warning",
-    "message": "Server load above 80%"
-  }
-}
-```
+- `gauge-contrast` — **Gauge on a contrast card.** A single reading lifted out of the board on a contrast card.
+- `gauge-load-alert` — **Utilisation with a warning alert.** A utilisation dial nearing its ceiling — raise a warning alert before it maxes out.
 
 ## Validation
 
@@ -491,7 +591,7 @@ Styling fields use the enums documented in `SKILL.md`:
 - `WidgetDataColor` — color of badges, datasets, values
 - `WidgetDataAlign` — text alignment
 - `WidgetDataSize` — text/icon size
-- `WidgetDataIcon` — `ArrowUp` / `ArrowDown`
+- `WidgetDataIcon` — `ArrowUp` / `ArrowDown` for a change, `Star` for a rating
 - `WidgetDataFill` — badge fill style
 
 All values are case-sensitive (`"Success"`, not `"success"`).
