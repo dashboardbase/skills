@@ -434,6 +434,26 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
       "type": "boolean",
       "default": false,
       "nullable": true
+    },
+    "barWidth": {
+      "enum": [
+        "Regular",
+        "Slim"
+      ],
+      "type": "string",
+      "title": "Bar width",
+      "default": 0,
+      "nullable": true
+    },
+    "barShape": {
+      "enum": [
+        "Rounded",
+        "Pill"
+      ],
+      "type": "string",
+      "title": "Bar ends",
+      "default": 0,
+      "nullable": true
     }
   },
   "additionalProperties": false
@@ -492,7 +512,7 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "value": 55
           }
         ],
-        "label": "Series A"
+        "label": "Online"
       },
       {
         "data": [
@@ -515,7 +535,7 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "value": 27
           }
         ],
-        "label": "Series B"
+        "label": "In store"
       }
     ]
   }
@@ -574,14 +594,14 @@ rejected.
 
 ## Multiple series
 
-The canonical example shows two datasets ("Series A" and "Series B") with no explicit colors — colors are optional and the default palette renders well. To color a series explicitly, set `color` on the dataset; to recolor an individual bar, set `color` on a single `WidgetDataValue` inside `data`. The `labels` array is shared and should match the length of each dataset's `data` array.
+The canonical example shows two datasets ("Online" and "In store") with no explicit colors — colors are optional and the default palette renders well. To color a series explicitly, set `color` on the dataset; to recolor an individual bar, set `color` on a single `WidgetDataValue` inside `data`. The `labels` array is shared and should match the length of each dataset's `data` array.
 
 ```json
 {
   "labels": ["Jan", "Feb"],
   "datasets": [
-    { "label": "Series A", "color": "Blue", "data": [{"value": 65}, {"value": 59}] },
-    { "label": "Series B", "color": "Green", "data": [{"value": 28}, {"value": 48}] }
+    { "label": "Online", "color": "Blue", "data": [{"value": 65}, {"value": 59}] },
+    { "label": "In store", "color": "Green", "data": [{"value": 28}, {"value": 48}] }
   ]
 }
 ```
@@ -596,7 +616,7 @@ The canonical example shows two datasets ("Series A" and "Series B") with no exp
 }
 ```
 
-**Stack the series** with `stacked: true` when they are parts of one whole in the same unit — MRR by plan, visitors by channel, tickets by priority. The top of each column is the total, so put that total in `header.title`. Do not stack series that do not add up (rates, mixed units, negative values).
+**Stack the series** with `stacked: true` when they are parts of one whole in the same unit — MRR by plan, visitors by channel, tickets by priority. The top of each column is the total, so put that total in `header.title`. Do not stack series that do not add up (rates, mixed units).
 
 ```json
 {
@@ -609,6 +629,22 @@ The canonical example shows two datasets ("Series A" and "Series B") with no exp
   ]
 }
 ```
+
+**Negative values** are drawn below a zero line — profit and loss, net cash flow, gains and losses. Colour each bar by its sign through the value's `color`. In a stacked chart a negative series stacks downward from zero on its own, so a column can carry what came in above the line and what went out below it.
+
+```json
+{
+  "stacked": true,
+  "barShape": "Pill",
+  "labels": ["Q1", "Q2", "Q3"],
+  "datasets": [
+    { "label": "Inflow", "data": [{"value": 42000, "prefix": "$"}, {"value": 51000, "prefix": "$"}, {"value": 48000, "prefix": "$"}] },
+    { "label": "Outflow", "data": [{"value": -18000, "prefix": "$"}, {"value": -26000, "prefix": "$"}, {"value": -21000, "prefix": "$"}] }
+  ]
+}
+```
+
+**Shape the bars** with `barWidth: "Slim"` (thin bars, wide gaps — a long daily series) and `barShape: "Pill"` (both ends rounded, lifted off zero — bars above and below the axis read as separate pills).
 
 **Draw a rate over the bars** (a combo chart) by giving one dataset `type: "Line"`. When its values are on a different scale from the bars — a percentage over counts — also set `axis: "Right"`, so it gets its own scale on the right edge. A unit such as `%` goes in each value's `postfix` and is used for that axis and the tooltip. Line series are never stacked, and `target` always measures against the left axis.
 
@@ -701,6 +737,345 @@ A run of months where this month is the headline — dark bars with the current 
 }
 ```
 
+### Inflow over outflow as pills
+
+Money in and money out per period on one chart — inflow rising above zero, outflow hanging below it, each bar a pill.
+
+```json
+{
+  "title": "Cash flow",
+  "actions": [
+    {
+      "title": "Statements",
+      "type": "link",
+      "url": "https://example.com/cash-flow"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "$608,000",
+      "subtitle": "Net inflow vs last year",
+      "badge": {
+        "text": "+87.7%",
+        "icon": "ArrowUp",
+        "color": "Success"
+      }
+    },
+    "labels": [
+      "Q1 '22",
+      "Q2 '22",
+      "Q3 '22",
+      "Q4 '22",
+      "Q1 '23",
+      "Q2 '23",
+      "Q3 '23",
+      "Q4 '23",
+      "Q1 '24",
+      "Q2 '24",
+      "Q3 '24"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 31000,
+            "prefix": "$"
+          },
+          {
+            "value": 38000,
+            "prefix": "$"
+          },
+          {
+            "value": 41000,
+            "prefix": "$"
+          },
+          {
+            "value": 46000,
+            "prefix": "$"
+          },
+          {
+            "value": 44000,
+            "prefix": "$"
+          },
+          {
+            "value": 55000,
+            "prefix": "$"
+          },
+          {
+            "value": 60000,
+            "prefix": "$"
+          },
+          {
+            "value": 58000,
+            "prefix": "$"
+          },
+          {
+            "value": 66000,
+            "prefix": "$"
+          },
+          {
+            "value": 70000,
+            "prefix": "$"
+          },
+          {
+            "value": 69000,
+            "prefix": "$"
+          }
+        ],
+        "label": "Inflow",
+        "color": "Light"
+      },
+      {
+        "data": [
+          {
+            "value": -14000,
+            "prefix": "$"
+          },
+          {
+            "value": -17000,
+            "prefix": "$"
+          },
+          {
+            "value": -15000,
+            "prefix": "$"
+          },
+          {
+            "value": -19000,
+            "prefix": "$"
+          },
+          {
+            "value": -16000,
+            "prefix": "$"
+          },
+          {
+            "value": -21000,
+            "prefix": "$"
+          },
+          {
+            "value": -18000,
+            "prefix": "$"
+          },
+          {
+            "value": -24000,
+            "prefix": "$"
+          },
+          {
+            "value": -23000,
+            "prefix": "$"
+          },
+          {
+            "value": -22000,
+            "prefix": "$"
+          },
+          {
+            "value": -20000,
+            "prefix": "$"
+          }
+        ],
+        "label": "Outflow",
+        "color": "Gray3"
+      }
+    ],
+    "ticksY": true,
+    "grid": true,
+    "stacked": true,
+    "barShape": "Pill"
+  }
+}
+```
+
+### Slim daily bars with today lit
+
+A long daily series that should read as a rhythm — thirty thin bars in grey, today in the card's ink.
+
+```json
+{
+  "title": "Gross volume",
+  "actions": [
+    {
+      "title": "Payments",
+      "type": "link",
+      "url": "https://example.com/payments"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "$3,528,199",
+      "subtitle": "$3,077,692 last month",
+      "badge": {
+        "text": "+14.6%",
+        "icon": "ArrowUp",
+        "color": "Success"
+      }
+    },
+    "labels": [
+      "Nov 1",
+      "Nov 2",
+      "Nov 3",
+      "Nov 4",
+      "Nov 5",
+      "Nov 6",
+      "Nov 7",
+      "Nov 8",
+      "Nov 9",
+      "Nov 10",
+      "Nov 11",
+      "Nov 12",
+      "Nov 13",
+      "Nov 14",
+      "Nov 15",
+      "Nov 16",
+      "Nov 17",
+      "Nov 18",
+      "Nov 19",
+      "Nov 20",
+      "Nov 21",
+      "Nov 22",
+      "Nov 23",
+      "Nov 24",
+      "Nov 25",
+      "Nov 26",
+      "Nov 27",
+      "Nov 28",
+      "Nov 29",
+      "Nov 30"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 92000,
+            "prefix": "$"
+          },
+          {
+            "value": 118000,
+            "prefix": "$"
+          },
+          {
+            "value": 104000,
+            "prefix": "$"
+          },
+          {
+            "value": 131000,
+            "prefix": "$"
+          },
+          {
+            "value": 97000,
+            "prefix": "$"
+          },
+          {
+            "value": 88000,
+            "prefix": "$"
+          },
+          {
+            "value": 142000,
+            "prefix": "$"
+          },
+          {
+            "value": 126000,
+            "prefix": "$"
+          },
+          {
+            "value": 109000,
+            "prefix": "$"
+          },
+          {
+            "value": 95000,
+            "prefix": "$"
+          },
+          {
+            "value": 151000,
+            "prefix": "$"
+          },
+          {
+            "value": 133000,
+            "prefix": "$"
+          },
+          {
+            "value": 120000,
+            "prefix": "$"
+          },
+          {
+            "value": 101000,
+            "prefix": "$"
+          },
+          {
+            "value": 98000,
+            "prefix": "$"
+          },
+          {
+            "value": 137000,
+            "prefix": "$"
+          },
+          {
+            "value": 159000,
+            "prefix": "$"
+          },
+          {
+            "value": 128000,
+            "prefix": "$"
+          },
+          {
+            "value": 112000,
+            "prefix": "$"
+          },
+          {
+            "value": 104000,
+            "prefix": "$"
+          },
+          {
+            "value": 146000,
+            "prefix": "$"
+          },
+          {
+            "value": 162000,
+            "prefix": "$"
+          },
+          {
+            "value": 139000,
+            "prefix": "$"
+          },
+          {
+            "value": 118000,
+            "prefix": "$"
+          },
+          {
+            "value": 107000,
+            "prefix": "$"
+          },
+          {
+            "value": 152000,
+            "prefix": "$"
+          },
+          {
+            "value": 168000,
+            "prefix": "$"
+          },
+          {
+            "value": 141000,
+            "prefix": "$"
+          },
+          {
+            "value": 126000,
+            "prefix": "$"
+          },
+          {
+            "value": 173000,
+            "prefix": "$",
+            "color": "Light"
+          }
+        ],
+        "label": "Gross volume",
+        "color": "Gray"
+      }
+    ],
+    "ticksY": true,
+    "grid": true,
+    "barWidth": "Slim"
+  }
+}
+```
+
 ### Two series with their totals
 
 Two channels side by side per month — desktop and mobile, plan A and plan B — with each series' total in the header.
@@ -789,23 +1164,29 @@ Two channels side by side per month — desktop and mobile, plan A and plan B �
 }
 ```
 
-### Stacked bars in two tones
+### Profit and loss by month
 
-A monthly total and its two parts in one bar — transfers by device, revenue by new vs existing — in light and grey.
+A result that can go either way — net profit, cash flow, net new customers — with the losing months hanging below a zero line.
 
 ```json
 {
-  "title": "Monthly File Transfer",
+  "title": "Net profit",
   "actions": [
     {
-      "title": "Transfers",
+      "title": "P&L",
       "type": "link",
-      "url": "https://example.com/transfers"
+      "url": "https://example.com/profit-and-loss"
     }
   ],
   "data": {
     "header": {
-      "subtitle": "Transfers by device, last 12 months"
+      "title": "$48,600",
+      "subtitle": "Net, last 12 months",
+      "badge": {
+        "text": "+$12.4k",
+        "icon": "ArrowUp",
+        "color": "Success"
+      }
     },
     "labels": [
       "Jan",
@@ -825,121 +1206,109 @@ A monthly total and its two parts in one bar — transfers by device, revenue by
       {
         "data": [
           {
-            "value": 310
+            "value": 8200,
+            "prefix": "$",
+            "color": "Success"
           },
           {
-            "value": 620
+            "value": 6400,
+            "prefix": "$",
+            "color": "Success"
           },
           {
-            "value": 520
+            "value": -3100,
+            "prefix": "$",
+            "color": "Danger"
           },
           {
-            "value": 160
+            "value": 4800,
+            "prefix": "$",
+            "color": "Success"
           },
           {
-            "value": 470
+            "value": 9100,
+            "prefix": "$",
+            "color": "Success"
           },
           {
-            "value": 460
+            "value": -5600,
+            "prefix": "$",
+            "color": "Danger"
           },
           {
-            "value": 260
+            "value": -2200,
+            "prefix": "$",
+            "color": "Danger"
           },
           {
-            "value": 640
+            "value": 7300,
+            "prefix": "$",
+            "color": "Success"
           },
           {
-            "value": 380
+            "value": 10400,
+            "prefix": "$",
+            "color": "Success"
           },
           {
-            "value": 630
+            "value": 6900,
+            "prefix": "$",
+            "color": "Success"
           },
           {
-            "value": 480
+            "value": -4100,
+            "prefix": "$",
+            "color": "Danger"
           },
           {
-            "value": 640
+            "value": 6400,
+            "prefix": "$",
+            "color": "Success"
           }
         ],
-        "label": "Desktop",
-        "color": "Light"
-      },
-      {
-        "data": [
-          {
-            "value": 90
-          },
-          {
-            "value": 410
-          },
-          {
-            "value": 250
-          },
-          {
-            "value": 410
-          },
-          {
-            "value": 280
-          },
-          {
-            "value": 290
-          },
-          {
-            "value": 210
-          },
-          {
-            "value": 460
-          },
-          {
-            "value": 320
-          },
-          {
-            "value": 390
-          },
-          {
-            "value": 350
-          },
-          {
-            "value": 430
-          }
-        ],
-        "label": "Mobile",
-        "color": "Gray"
+        "label": "Net profit"
       }
     ],
-    "stacked": true
+    "ticksY": true,
+    "grid": true
   }
 }
 ```
 
-### Thirty days of paired bars
+### Daily make-up above and below zero
 
-A month of daily volume in two series — input and output, reads and writes — with the axis and grid for reading values off.
+A month of days split into what counts for you above the line and what counts against you below it — occupied and available rooms over rooms not ready.
 
 ```json
 {
-  "title": "Daily token consumption",
+  "title": "Occupancy",
   "actions": [
     {
-      "title": "Usage",
+      "title": "Rooms",
       "type": "link",
-      "url": "https://example.com/usage"
+      "url": "https://example.com/rooms"
     }
   ],
   "data": {
     "header": {
-      "subtitle": "Input and output token volume across your workspace"
+      "title": "78%",
+      "subtitle": "Occupancy rate, November",
+      "badge": {
+        "text": "+3.2%",
+        "icon": "ArrowUp",
+        "color": "Success"
+      }
     },
     "labels": [
-      "1",
-      "2",
-      "3",
-      "4",
-      "5",
-      "6",
-      "7",
-      "8",
-      "9",
+      "01",
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07",
+      "08",
+      "09",
       "10",
       "11",
       "12",
@@ -966,563 +1335,296 @@ A month of daily volume in two series — input and output, reads and writes —
       {
         "data": [
           {
-            "value": 520
-          },
-          {
-            "value": 410
-          },
-          {
-            "value": 590
-          },
-          {
-            "value": 1200
-          },
-          {
-            "value": 650
-          },
-          {
-            "value": 500
-          },
-          {
-            "value": 540
-          },
-          {
-            "value": 680
-          },
-          {
-            "value": 1290
-          },
-          {
-            "value": 570
-          },
-          {
-            "value": 600
-          },
-          {
-            "value": 500
-          },
-          {
-            "value": 720
-          },
-          {
-            "value": 650
-          },
-          {
-            "value": 670
-          },
-          {
-            "value": 660
-          },
-          {
-            "value": 740
-          },
-          {
-            "value": 1780
-          },
-          {
-            "value": 500
-          },
-          {
-            "value": 470
-          },
-          {
-            "value": 1250
-          },
-          {
-            "value": 760
-          },
-          {
-            "value": 640
-          },
-          {
-            "value": 570
-          },
-          {
-            "value": 540
-          },
-          {
-            "value": 690
-          },
-          {
-            "value": 1160
-          },
-          {
-            "value": 690
-          },
-          {
-            "value": 580
-          },
-          {
-            "value": 470
-          }
-        ],
-        "label": "Input tokens",
-        "color": "Light"
-      },
-      {
-        "data": [
-          {
-            "value": 240
-          },
-          {
-            "value": 190
-          },
-          {
-            "value": 270
-          },
-          {
-            "value": 560
-          },
-          {
-            "value": 300
-          },
-          {
-            "value": 240
-          },
-          {
-            "value": 250
-          },
-          {
-            "value": 310
-          },
-          {
-            "value": 600
-          },
-          {
-            "value": 270
-          },
-          {
-            "value": 280
-          },
-          {
-            "value": 240
-          },
-          {
-            "value": 330
-          },
-          {
-            "value": 300
-          },
-          {
-            "value": 310
-          },
-          {
-            "value": 300
-          },
-          {
-            "value": 340
-          },
-          {
-            "value": 820
-          },
-          {
-            "value": 240
-          },
-          {
-            "value": 230
-          },
-          {
-            "value": 580
-          },
-          {
-            "value": 350
-          },
-          {
-            "value": 300
-          },
-          {
-            "value": 270
-          },
-          {
-            "value": 260
-          },
-          {
-            "value": 320
-          },
-          {
-            "value": 540
-          },
-          {
-            "value": 330
-          },
-          {
-            "value": 270
-          },
-          {
-            "value": 220
-          }
-        ],
-        "label": "Output tokens",
-        "color": "Gray"
-      }
-    ],
-    "ticksY": true,
-    "grid": true
-  }
-}
-```
-
-### Ranked locations, horizontal
-
-A ranked breakdown by place or category where names are long — horizontal bars, the largest on top.
-
-```json
-{
-  "title": "Sales by Location",
-  "actions": [
-    {
-      "title": "Export",
-      "type": "link",
-      "url": "https://example.com/locations"
-    }
-  ],
-  "data": {
-    "header": {
-      "subtitle": "Income in the last 28 days"
-    },
-    "labels": [
-      "Canada",
-      "Greenland",
-      "Russia",
-      "China",
-      "Australia",
-      "Greece",
-      "Germany",
-      "Brazil"
-    ],
-    "datasets": [
-      {
-        "data": [
-          {
-            "value": 1270,
-            "prefix": "$",
-            "postfix": "K"
-          },
-          {
-            "value": 1200,
-            "prefix": "$",
-            "postfix": "K"
-          },
-          {
-            "value": 945,
-            "prefix": "$",
-            "postfix": "K"
-          },
-          {
-            "value": 900,
-            "prefix": "$",
-            "postfix": "K"
-          },
-          {
-            "value": 675,
-            "prefix": "$",
-            "postfix": "K"
-          },
-          {
-            "value": 475,
-            "prefix": "$",
-            "postfix": "K"
-          },
-          {
-            "value": 410,
-            "prefix": "$",
-            "postfix": "K"
-          },
-          {
-            "value": 360,
-            "prefix": "$",
-            "postfix": "K"
-          }
-        ],
-        "label": "Sales",
-        "color": "Gray"
-      }
-    ],
-    "indexAxis": "y",
-    "grid": false
-  }
-}
-```
-
-### Daily stack across five channels
-
-Daily volume split across up to five sources — channels, regions, plans — stacked down the grey ramp (Light, Gray1, Gray, Gray3, Gray4) so every part stays distinct without a hue.
-
-```json
-{
-  "title": "Clicks by channel",
-  "actions": [
-    {
-      "title": "Links",
-      "type": "link",
-      "url": "https://example.com/links"
-    }
-  ],
-  "data": {
-    "header": {
-      "subtitle": "4,957 clicks in the last 14 days. Today is counted until 10:00."
-    },
-    "labels": [
-      "Nov 11",
-      "Nov 12",
-      "Nov 13",
-      "Nov 14",
-      "Nov 15",
-      "Nov 16",
-      "Nov 17",
-      "Nov 18",
-      "Nov 19",
-      "Nov 20",
-      "Nov 21",
-      "Nov 22",
-      "Nov 23",
-      "Nov 24"
-    ],
-    "datasets": [
-      {
-        "data": [
-          {
-            "value": 20
-          },
-          {
-            "value": 10
-          },
-          {
-            "value": 20
-          },
-          {
-            "value": 20
-          },
-          {
-            "value": 20
-          },
-          {
-            "value": 100
-          },
-          {
-            "value": 135
-          },
-          {
-            "value": 140
-          },
-          {
-            "value": 150
-          },
-          {
-            "value": 180
-          },
-          {
-            "value": 120
-          },
-          {
-            "value": 150
-          },
-          {
-            "value": 200
-          },
-          {
-            "value": 90
-          }
-        ],
-        "label": "YouTube",
-        "color": "Light"
-      },
-      {
-        "data": [
-          {
-            "value": 110
-          },
-          {
-            "value": 120
-          },
-          {
-            "value": 100
-          },
-          {
-            "value": 55
-          },
-          {
-            "value": 105
-          },
-          {
             "value": 95
           },
           {
-            "value": 105
-          },
-          {
-            "value": 90
-          },
-          {
-            "value": 95
-          },
-          {
-            "value": 150
-          },
-          {
-            "value": 95
-          },
-          {
-            "value": 110
-          },
-          {
-            "value": 160
+            "value": 78
           },
           {
             "value": 60
-          }
-        ],
-        "label": "TikTok",
-        "color": "Gray1"
-      },
-      {
-        "data": [
-          {
-            "value": 110
           },
           {
-            "value": 140
+            "value": 75
           },
           {
             "value": 100
+          },
+          {
+            "value": 112
           },
           {
             "value": 80
           },
           {
-            "value": 90
+            "value": 92
           },
           {
-            "value": 105
+            "value": 98
           },
           {
-            "value": 100
+            "value": 110
           },
           {
-            "value": 100
+            "value": 84
           },
           {
-            "value": 95
+            "value": 108
           },
           {
-            "value": 180
+            "value": 114
           },
           {
-            "value": 150
+            "value": 120
           },
           {
-            "value": 170
+            "value": 118
           },
           {
-            "value": 200
+            "value": 88
           },
           {
-            "value": 70
+            "value": 84
+          },
+          {
+            "value": 136
+          },
+          {
+            "value": 140
+          },
+          {
+            "value": 132
+          },
+          {
+            "value": 96
+          },
+          {
+            "value": 108
+          },
+          {
+            "value": 92
+          },
+          {
+            "value": 102
+          },
+          {
+            "value": 126
+          },
+          {
+            "value": 124
+          },
+          {
+            "value": 138
+          },
+          {
+            "value": 128
+          },
+          {
+            "value": 108
+          },
+          {
+            "value": 114
           }
         ],
-        "label": "Instagram",
+        "label": "Occupied",
+        "color": "Light"
+      },
+      {
+        "data": [
+          {
+            "value": 25
+          },
+          {
+            "value": 30
+          },
+          {
+            "value": 30
+          },
+          {
+            "value": 28
+          },
+          {
+            "value": 30
+          },
+          {
+            "value": 25
+          },
+          {
+            "value": 35
+          },
+          {
+            "value": 28
+          },
+          {
+            "value": 26
+          },
+          {
+            "value": 20
+          },
+          {
+            "value": 22
+          },
+          {
+            "value": 22
+          },
+          {
+            "value": 30
+          },
+          {
+            "value": 30
+          },
+          {
+            "value": 30
+          },
+          {
+            "value": 35
+          },
+          {
+            "value": 30
+          },
+          {
+            "value": 24
+          },
+          {
+            "value": 30
+          },
+          {
+            "value": 26
+          },
+          {
+            "value": 34
+          },
+          {
+            "value": 34
+          },
+          {
+            "value": 34
+          },
+          {
+            "value": 30
+          },
+          {
+            "value": 22
+          },
+          {
+            "value": 24
+          },
+          {
+            "value": 28
+          },
+          {
+            "value": 32
+          },
+          {
+            "value": 40
+          },
+          {
+            "value": 30
+          }
+        ],
+        "label": "Available",
         "color": "Gray"
       },
       {
         "data": [
           {
-            "value": 35
+            "value": -30
           },
           {
-            "value": 35
+            "value": -28
           },
           {
-            "value": 30
+            "value": -25
           },
           {
-            "value": 30
+            "value": -40
           },
           {
-            "value": 40
+            "value": -32
           },
           {
-            "value": 45
+            "value": -30
           },
           {
-            "value": 40
+            "value": -22
           },
           {
-            "value": 50
+            "value": -28
           },
           {
-            "value": 40
+            "value": -26
           },
           {
-            "value": 85
+            "value": -24
           },
           {
-            "value": 45
+            "value": -36
           },
           {
-            "value": 40
+            "value": -30
           },
           {
-            "value": 85
+            "value": -32
           },
           {
-            "value": 15
+            "value": -26
+          },
+          {
+            "value": -22
+          },
+          {
+            "value": -24
+          },
+          {
+            "value": -18
+          },
+          {
+            "value": -36
+          },
+          {
+            "value": -46
+          },
+          {
+            "value": -34
+          },
+          {
+            "value": -30
+          },
+          {
+            "value": -28
+          },
+          {
+            "value": -34
+          },
+          {
+            "value": -46
+          },
+          {
+            "value": -24
+          },
+          {
+            "value": -28
+          },
+          {
+            "value": -22
+          },
+          {
+            "value": -30
+          },
+          {
+            "value": -48
+          },
+          {
+            "value": -26
           }
         ],
-        "label": "Blog",
+        "label": "Not ready",
         "color": "Gray3"
-      },
-      {
-        "data": [
-          {
-            "value": 25
-          },
-          {
-            "value": 25
-          },
-          {
-            "value": 20
-          },
-          {
-            "value": 15
-          },
-          {
-            "value": 20
-          },
-          {
-            "value": 20
-          },
-          {
-            "value": 25
-          },
-          {
-            "value": 25
-          },
-          {
-            "value": 20
-          },
-          {
-            "value": 35
-          },
-          {
-            "value": 30
-          },
-          {
-            "value": 25
-          },
-          {
-            "value": 40
-          },
-          {
-            "value": 10
-          }
-        ],
-        "label": "Newsletter",
-        "color": "Gray4"
       }
     ],
     "ticksY": true,
     "grid": true,
-    "stacked": true
+    "stacked": true,
+    "barWidth": "Slim"
   }
 }
 ```
@@ -1531,10 +1633,14 @@ Daily volume split across up to five sources — channels, regions, plans — st
 
 To see one in full, add `?variant=<id>` to the example request above — it returns that example's complete response.
 
+- `bar-stacked-two-tone` — **Stacked bars in two tones.** A monthly total and its two parts in one bar — transfers by device, revenue by new vs existing — in light and grey.
 - `bar-best-day` — **Week with its best day called out.** A week of daily totals where the best day is lit and named beside the weekly total.
+- `bar-daily-tokens` — **Thirty days of paired bars.** A month of daily volume in two series — input and output, reads and writes — with the axis and grid for reading values off.
+- `bar-horizontal-locations` — **Ranked locations, horizontal.** A ranked breakdown by place or category where names are long — horizontal bars, the largest on top.
 - `bar-commission-by-day` — **Thirty days with the total on the right.** A month of daily earnings or orders as one series, with the period total and the best day pinned to the right of the header.
+- `bar-clicks-by-channel` — **Daily stack across five channels.** Daily volume split across up to five sources — channels, regions, plans — stacked down the grey ramp (Light, Gray1, Gray, Gray3, Gray4) so every part stays distinct without a hue.
 - `bar-attendance-stacked` — **Daily make-up in three tones.** Each day split into three states — on time, late, absent — stacked so the full height is the headcount.
-- `bar-green-gradient` — **Bars on a gradient card.** The one chart a board is about — monthly growth on a glowing card, bars in the card's ink.
+- `bar-green-gradient` — **Bars on a gradient card.** The one chart a board is about — a week of revenue on a gradient card, bars in the card's ink.
 - `bar-contrast` — **Bars on a contrast card.** A comparison chart lifted out of the board on a contrast card — it reads first on any Scene.
 - `bar-revenue-by-category` — **Single series breakdown.** A single metric broken down by category (revenue per category, signups per plan).
 - `bar-multi-series` — **Segment split.** Comparing two segments of the same total side by side (new vs returning, mobile vs desktop).
@@ -1576,6 +1682,7 @@ All values are case-sensitive (`"Success"`, not `"success"`).
 - Turning `ticksX` off for a long daily series — the labels stay level and thin themselves to fit, so thirty or ninety dates read fine. Leave them on and keep each label short (`"Sep 9"`, not `"2026-09-09T00:00:00Z"`); the dates are what make the trend readable.
 - Setting `grid` just to make the chart look finished — omit it. Faint value gridlines are the default; `grid: false` only exists to switch them off.
 - Drawing a goal as an extra dataset of identical bars — send `target: { "value": 12, "label": "Quota" }` instead. It draws one labelled line across every bar and keeps it in view even when no bar reaches it.
+- Shifting values up so they stay positive, or sending a loss as a positive bar in red — send the negative number. The chart draws a zero line and hangs the bar below it.
 - Stacking series that do not add up — `stacked: true` says the columns are a total. A rate, an average or a series in another unit belongs on a line (`type: "Line"`, `axis: "Right"`) instead.
 - Putting a percentage on the same axis as counts in the hundreds — it flattens into a line along the bottom. Give the rate series `axis: "Right"` so it gets its own scale.
 - Making every dataset a line — a BarChart needs at least one bar series. For lines only, use a LineChart.

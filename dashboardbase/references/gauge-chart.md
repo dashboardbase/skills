@@ -443,13 +443,13 @@ Space or quota consumed against a fixed total, the unit on the reading and the t
   ],
   "data": {
     "header": {
-      "subtitle": "1,232 GB of 2 TB"
+      "subtitle": "816 GB free"
     },
     "value": {
-      "value": 1232,
-      "postfix": " GB"
+      "value": 1.2,
+      "postfix": " TB"
     },
-    "maxValue": 2048
+    "maxValue": 2
   }
 }
 ```

@@ -347,7 +347,7 @@ A testimonial or latest review — the rating above, the words, and who said it.
 
 ```json
 {
-  "title": "Exceeded my expectations",
+  "title": "Warm, but runs small",
   "actions": [
     {
       "title": "All reviews",
@@ -359,12 +359,12 @@ A testimonial or latest review — the rating above, the words, and who said it.
     "header": {
       "subtitle": "Mar 12, 2025",
       "badge": {
-        "text": "★★★★★",
+        "text": "★★★★☆",
         "color": "Yellow",
         "fill": "Clear"
       }
     },
-    "text": "I was skeptical at first, but this product has completely changed my daily routine. The quality is outstanding and it's so easy to use.",
+    "text": "Wore it on a week of cold morning runs and never needed a second layer. Order a size up if you're between sizes.",
     "author": "Sarah J. · Verified purchase"
   }
 }

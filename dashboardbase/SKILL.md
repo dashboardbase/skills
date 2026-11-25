@@ -4,7 +4,7 @@ description: Use when designing or creating a dashboardbase dashboard end-to-end
 license: Proprietary. Free to use; not open source. LICENSE has complete terms.
 metadata:
   source-repo: dashboardbase-api
-  generated-at: "2026-11-25T11:14:06Z"
+  generated-at: "2026-11-25T19:51:23Z"
   api-version: "1.0.0"
   spec-version: "1.0"
 ---
@@ -405,4 +405,4 @@ Each has its own reference file under `references/` — see the filename list ab
 
 ---
 
-*Skill generated at `2026-11-25T11:14:06Z` from the dashboardbase API contract.*
+*Skill generated at `2026-11-25T19:51:23Z` from the dashboardbase API contract.*

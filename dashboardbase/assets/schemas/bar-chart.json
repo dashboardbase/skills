@@ -419,6 +419,26 @@
       "type": "boolean",
       "default": false,
       "nullable": true
+    },
+    "barWidth": {
+      "enum": [
+        "Regular",
+        "Slim"
+      ],
+      "type": "string",
+      "title": "Bar width",
+      "default": 0,
+      "nullable": true
+    },
+    "barShape": {
+      "enum": [
+        "Rounded",
+        "Pill"
+      ],
+      "type": "string",
+      "title": "Bar ends",
+      "default": 0,
+      "nullable": true
     }
   },
   "additionalProperties": false

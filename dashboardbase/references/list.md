@@ -804,28 +804,28 @@ A to-do list where priority matters — a coloured dot per task, the due time an
     },
     "items": [
       {
-        "title": "Create a design training for beginners.",
+        "title": "Create a design training for beginners",
         "subtitle": "Low Priority · Today, 12:30 · Design Education",
         "color": "Gray"
       },
       {
-        "title": "Have a meeting with the new design team.",
+        "title": "Have a meeting with the new design team",
         "subtitle": "Medium Priority · Today, 10:00 · Meeting",
         "color": "Warning",
         "done": true
       },
       {
-        "title": "Respond to customer support emails.",
+        "title": "Respond to customer support emails",
         "subtitle": "High Priority · Tomorrow, 16:30 · Customer Support",
         "color": "Danger"
       },
       {
-        "title": "Review the Q4 project budget with finance.",
+        "title": "Review the Q4 project budget with finance",
         "subtitle": "Medium Priority · Thu, 11:00 · Planning",
         "color": "Warning"
       },
       {
-        "title": "Share sprint retrospective notes with the team.",
+        "title": "Share sprint retrospective notes with the team",
         "subtitle": "Low Priority · Fri, 15:00 · Team",
         "color": "Gray"
       }
@@ -855,31 +855,31 @@ A short list of people — leads, new signups, at-risk accounts — with where t
     "items": [
       {
         "title": "Jessica Chen",
-        "subtitle": "New York, Albany",
+        "subtitle": "Albany, NY",
         "icon": {
           "initials": "JC"
         },
         "value": "2d ago"
       },
       {
-        "title": "John Doe",
-        "subtitle": "California, LA",
+        "title": "Jonas Dahl",
+        "subtitle": "Los Angeles, CA",
         "icon": {
           "initials": "JD"
         },
         "value": "3d ago"
       },
       {
-        "title": "Hailee S.",
-        "subtitle": "New York, Troy",
+        "title": "Hailey Simmons",
+        "subtitle": "Troy, NY",
         "icon": {
           "initials": "HS"
         },
         "value": "5d ago"
       },
       {
-        "title": "Evan Chris",
-        "subtitle": "Ohio, Columbus",
+        "title": "Evan Christensen",
+        "subtitle": "Columbus, OH",
         "icon": {
           "initials": "EC"
         },
@@ -984,23 +984,7 @@ A ranked list where each row is a place — the flag, its change under the name,
         "icon": {
           "country": "US"
         },
-        "value": "$1,999.00"
-      },
-      {
-        "title": "Brazil",
-        "subtitle": "+20.1% vs last month",
-        "icon": {
-          "country": "BR"
-        },
-        "value": "$39.00"
-      },
-      {
-        "title": "India",
-        "subtitle": "-5% vs last month",
-        "icon": {
-          "country": "IN"
-        },
-        "value": "$299.00"
+        "value": "$48,920"
       },
       {
         "title": "Australia",
@@ -1008,7 +992,23 @@ A ranked list where each row is a place — the flag, its change under the name,
         "icon": {
           "country": "AU"
         },
-        "value": "$99.00"
+        "value": "$14,310"
+      },
+      {
+        "title": "Brazil",
+        "subtitle": "+20.1% vs last month",
+        "icon": {
+          "country": "BR"
+        },
+        "value": "$12,460"
+      },
+      {
+        "title": "India",
+        "subtitle": "-5% vs last month",
+        "icon": {
+          "country": "IN"
+        },
+        "value": "$6,240"
       }
     ]
   }
@@ -1031,15 +1031,15 @@ Named steps or channels with a number and how it moved — an icon each, the cou
   ],
   "data": {
     "header": {
-      "subtitle": "8.5K social visitors"
+      "subtitle": "Last 30 days"
     },
     "items": [
       {
-        "title": "Emails",
+        "title": "Emails sent",
         "icon": {
           "name": "Mail"
         },
-        "value": "1,503",
+        "value": "12,400",
         "badge": {
           "text": "-0.3%",
           "color": "Danger",
@@ -1071,11 +1071,11 @@ Named steps or channels with a number and how it moved — an icon each, the cou
         }
       },
       {
-        "title": "Subscribe",
+        "title": "Subscribed",
         "icon": {
           "name": "PersonAdd"
         },
-        "value": "490",
+        "value": "142",
         "badge": {
           "text": "+8.5%",
           "color": "Success",

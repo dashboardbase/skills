@@ -471,7 +471,7 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
 
 ```json
 {
-  "title": "Total Sales",
+  "title": "Conversion rate",
   "actions": [
     {
       "title": "View Report",
@@ -481,10 +481,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
   ],
   "data": {
     "header": {
-      "title": "5.4%",
+      "title": "3.2%",
       "subtitle": "vs last month",
       "badge": {
-        "text": "-1%",
+        "text": "-0.4%",
         "icon": "ArrowDown",
         "color": "Danger"
       }
@@ -549,8 +549,8 @@ rejected.
 
 ```json
 {
-  "header": { "title": "$12,345", "subtitle": "vs last month", "badge": { "text": "+8%", "icon": "ArrowUp", "color": "Success" } },
-  "trend": [9800, 10150, 10400, 10900, 11300, 11800, 12345]
+  "header": { "title": "$31,460", "subtitle": "vs last month", "badge": { "text": "+8%", "icon": "ArrowUp", "color": "Success" } },
+  "trend": [25800, 26400, 27300, 28100, 29400, 30100, 31460]
 }
 ```
 
@@ -558,7 +558,7 @@ Styled — a white curve with no fill:
 
 ```json
 {
-  "trend": { "values": [9800, 10150, 10400, 10900, 11300, 11800, 12345], "color": "Light", "smooth": true, "fill": false }
+  "trend": { "values": [25800, 26400, 27300, 28100, 29400, 30100, 31460], "color": "Light", "smooth": true, "fill": false }
 }
 ```
 
@@ -584,7 +584,7 @@ The everyday headline tile of a KPI row — a currency total, a small icon namin
   ],
   "data": {
     "header": {
-      "title": "$45,231.89",
+      "title": "$45,232",
       "subtitle": "vs last month",
       "badge": {
         "text": "+20.1%",
@@ -729,20 +729,20 @@ A rating or score that only reads against its scale — 8.9 out of 10, 4.5 out o
 
 ```json
 {
-  "title": "Average KPI",
+  "title": "Team satisfaction",
   "actions": [
     {
-      "title": "View details",
+      "title": "View survey",
       "type": "link",
-      "url": "https://example.com/kpi"
+      "url": "https://example.com/survey"
     }
   ],
   "data": {
     "header": {
       "title": "8.9",
-      "subtitle": "vs last week",
+      "subtitle": "vs last quarter",
       "badge": {
-        "text": "+0.8%",
+        "text": "+0.2",
         "icon": "ArrowUp",
         "color": "Success"
       },
@@ -761,7 +761,7 @@ To see one in full, add `?variant=<id>` to the example request above — it retu
 - `kpi-links-strip` — **Stat strip with a unit and change.** A summary strip over a list page — active out of allowed, clicks, rates — where one block reads against a cap and the rest carry their change.
 - `kpi-leads-down` — **Count that fell, in red.** A count tile in a row of four where this one moved the wrong way — the red change tells the reader where to look first.
 - `kpi-balance-currency` — **Balance with its currency code.** A balance or account total where the currency code belongs beside the amount, not in it — one tile per currency.
-- `kpi-goal-meter-gradient` — **Goal meter on a gradient card.** The one goal the board is about — a hit rate or target share on a glowing card so it leads the row.
+- `kpi-goal-meter-gradient` — **Goal meter on a gradient card.** The one goal the board is about — a hit rate or target share on a gradient card so it leads the row.
 - `kpi-split-storage` — **Storage by type on one bar.** Capacity used, broken down by what fills it — storage by file type, budget by department — with what is left as the last part.
 - `kpi-split-attendance` — **Share of the day in three parts.** A rate whose make-up matters as much as the headline — on time, day off, sick — in one bar under the number.
 - `kpi-attendance-contrast` — **Headline on a contrast card.** The KPI a room should read first, lifted out of the row on a contrast card that stays legible on any Scene.
@@ -775,7 +775,7 @@ To see one in full, add `?variant=<id>` to the example request above — it retu
 - `kpi-icon-hint` — **Title with an icon and an explanation.** A row of headline tiles where an icon helps tell them apart, or a metric whose definition viewers ask about (what counts as revenue, which orders are included).
 - `kpi-color-light` — **A white card that leads the board.** The one headline number the room should read first — revenue year to date, MRR — lifted off a dark board in a white card.
 - `kpi-color-contrast` — **A card that stays in focus on any Scene.** The headline number on a dashboard that may be shown on more than one Scene — white on the dark board, near-black on a light one, glass on Glass — so it always stands out from the cards around it.
-- `kpi-color-gradient` — **A glowing hero card.** The one number the whole board exists for — portfolio value, revenue this month — in a card that runs its colour from a bright corner to a deep one, so it glows above the flat cards around it.
+- `kpi-color-gradient` — **Card shaded in one colour.** A headline number in a brand colour, shaded from a lighter corner to a deeper one — the Gradient card style. Use it for one card at most; the rest of the board stays flat.
 - `kpi-color-dark` — **A dark card that leads the board.** The headline number on a light board, or a second lead number beside a white card — set in a near-black card that stands out on any Scene.
 - `kpi-trend-bars` — **Headline with small bars.** A headline number whose last few periods read better as separate bars than as a line — this month against the two before, or a run of days where each day stands on its own.
 - `kpi-ring` — **Headline with a progress ring.** A headline number that is also a share of something — units sold against stock, seats filled, a quota reached — shown as a small ring with its percentage beside the number.

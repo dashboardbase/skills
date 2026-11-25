@@ -637,9 +637,9 @@ A share-of-total that is the board's focus, on a gradient card with the slices i
         "label": "Revenue",
         "color": [
           "Light",
+          "Gray1",
           "Gray",
-          "Dark",
-          "Light"
+          "Gray3"
         ]
       }
     ]
