@@ -6,7 +6,8 @@
   "properties": {
     "url": {
       "minLength": 1,
-      "type": "string"
+      "type": "string",
+      "x-placeholder": true
     },
     "alt": {
       "type": "string",

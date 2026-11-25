@@ -52,7 +52,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "icon": {
               "enum": [
                 "ArrowUp",
-                "ArrowDown"
+                "ArrowDown",
+                "Star"
               ],
               "type": "string",
               "nullable": true
@@ -69,7 +70,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "Orange",
                 "Light",
                 "Dark",
-                "Gray"
+                "Gray",
+                "Gray1",
+                "Gray3",
+                "Gray4"
               ],
               "type": "string",
               "nullable": true
@@ -78,7 +82,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "enum": [
                 "Solid",
                 "Clear",
-                "Outline"
+                "Outline",
+                "Dot"
               ],
               "type": "string",
               "nullable": true
@@ -99,7 +104,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "Orange",
             "Light",
             "Dark",
-            "Gray"
+            "Gray",
+            "Gray1",
+            "Gray3",
+            "Gray4"
           ],
           "type": "string",
           "nullable": true
@@ -113,6 +121,16 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
           ],
           "type": "string",
           "nullable": true
+        },
+        "unit": {
+          "maxLength": 24,
+          "type": "string",
+          "nullable": true
+        },
+        "label": {
+          "maxLength": 40,
+          "type": "string",
+          "nullable": true
         }
       },
       "additionalProperties": false,
@@ -124,7 +142,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
         "Error",
         "Warning"
       ],
-      "type": "string"
+      "type": "string",
+      "x-placeholder": true
     },
     "mode": {
       "enum": [
@@ -178,7 +197,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "icon": {
                 "enum": [
                   "ArrowUp",
-                  "ArrowDown"
+                  "ArrowDown",
+                  "Star"
                 ],
                 "type": "string",
                 "nullable": true
@@ -195,7 +215,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                   "Orange",
                   "Light",
                   "Dark",
-                  "Gray"
+                  "Gray",
+                  "Gray1",
+                  "Gray3",
+                  "Gray4"
                 ],
                 "type": "string",
                 "nullable": true
@@ -204,7 +227,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "enum": [
                   "Solid",
                   "Clear",
-                  "Outline"
+                  "Outline",
+                  "Dot"
                 ],
                 "type": "string",
                 "nullable": true
@@ -225,7 +249,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "Orange",
               "Light",
               "Dark",
-              "Gray"
+              "Gray",
+              "Gray1",
+              "Gray3",
+              "Gray4"
             ],
             "type": "string",
             "nullable": true
@@ -237,6 +264,16 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "L",
               "XL"
             ],
+            "type": "string",
+            "nullable": true
+          },
+          "unit": {
+            "maxLength": 24,
+            "type": "string",
+            "nullable": true
+          },
+          "label": {
+            "maxLength": 40,
             "type": "string",
             "nullable": true
           }
@@ -271,7 +308,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "Orange",
               "Light",
               "Dark",
-              "Gray"
+              "Gray",
+              "Gray1",
+              "Gray3",
+              "Gray4"
             ],
             "type": "string",
             "nullable": true
@@ -382,9 +422,29 @@ rejected.
 
 Give the widget the whole board (12 columns, full height) to use it as a full-screen health dashboard on a TV.
 
+
+
 ## Variations
 
 Other shapes and styling for this widget — pick the one closest to your data:
+
+### Healthy on a gradient card
+
+The one system the room watches, on a gradient card that turns the whole tile into the signal.
+
+```json
+{
+  "title": "Payments API",
+  "data": {
+    "status": "Ok",
+    "caption": "All checks passing"
+  },
+  "color": {
+    "name": "Green",
+    "style": "Gradient"
+  }
+}
+```
 
 ### Healthy heartbeat (pulsing)
 
@@ -460,69 +520,6 @@ A service is down/erroring — pair the Error indicator with a header naming the
 }
 ```
 
-### Outage with a critical alert
-
-A service is fully down — pair the Error indicator with a critical alert spelling out the impact.
-
-```json
-{
-  "title": "Payments API",
-  "actions": [
-    {
-      "title": "Open Incident",
-      "type": "link",
-      "url": "https://example.com/incident"
-    }
-  ],
-  "data": {
-    "header": {
-      "title": "Down",
-      "subtitle": "All checks failing"
-    },
-    "status": "Error"
-  },
-  "alert": {
-    "active": true,
-    "level": "critical",
-    "message": "Payments API has been down for 8 minutes"
-  }
-}
-```
-
-### Healthy with a header strip
-
-A health tile that should also carry uptime and time-since-last-incident, instead of three separate tiles.
-
-```json
-{
-  "title": "Platform health",
-  "actions": [
-    {
-      "title": "Check Logs",
-      "type": "link",
-      "url": "https://example.com/status-logs"
-    }
-  ],
-  "data": {
-    "header": {
-      "title": "Operational",
-      "subtitle": "All checks passing"
-    },
-    "status": "Ok",
-    "headers": [
-      {
-        "title": "99.98%",
-        "subtitle": "Uptime, 30d"
-      },
-      {
-        "title": "42 days",
-        "subtitle": "Since last incident"
-      }
-    ]
-  }
-}
-```
-
 ### Overall health with a legend per service
 
 A health board where one indicator gives the overall verdict and a `legend` lists each service or check with its own colour — give it the whole board to use it as a full-screen health dashboard.
@@ -594,218 +591,22 @@ A service is up but slow or partly failing — send `Warning` instead of `Error`
 }
 ```
 
-### Flower (illustrated)
+### More examples
 
-A friendly one-widget board for a TV — a flower that blooms while everything is healthy, droops when degraded and wilts when down. Omit `caption` for the built-in sentence.
+To see one in full, add `?variant=<id>` to the example request above — it returns that example's complete response.
 
-```json
-{
-  "title": "Shop",
-  "actions": [
-    {
-      "title": "Check Logs",
-      "type": "link",
-      "url": "https://example.com/status-logs"
-    }
-  ],
-  "data": {
-    "status": "Ok",
-    "mode": "Flower"
-  }
-}
-```
-
-### Coffee (illustrated)
-
-A light-hearted office board — steam rises while all is well and stops when something is down.
-
-```json
-{
-  "title": "Is it fine?",
-  "actions": [
-    {
-      "title": "Check Logs",
-      "type": "link",
-      "url": "https://example.com/status-logs"
-    }
-  ],
-  "data": {
-    "status": "Ok",
-    "mode": "Coffee"
-  }
-}
-```
-
-### Weather, degraded (illustrated)
-
-A forecast-style board — clear skies when healthy, a cloud over the sun when degraded, a storm when down. Here a custom `caption` names the slow service.
-
-```json
-{
-  "title": "Forecast",
-  "actions": [
-    {
-      "title": "Check Logs",
-      "type": "link",
-      "url": "https://example.com/status-logs"
-    }
-  ],
-  "data": {
-    "status": "Warning",
-    "mode": "Weather",
-    "caption": "A cloud over Search."
-  }
-}
-```
-
-### Rubber duck, down (illustrated)
-
-An engineering-team board — the duck bobs calmly when there is nothing to debug and starts talking when something breaks. Pairs well with a `legend` of the services behind it.
-
-```json
-{
-  "title": "Production",
-  "actions": [
-    {
-      "title": "Check Logs",
-      "type": "link",
-      "url": "https://example.com/status-logs"
-    }
-  ],
-  "data": {
-    "status": "Error",
-    "mode": "RubberDuck",
-    "legend": [
-      {
-        "label": "API",
-        "color": "Success",
-        "value": "112 ms"
-      },
-      {
-        "label": "Payments",
-        "color": "Danger",
-        "value": "Down"
-      },
-      {
-        "label": "Search",
-        "color": "Success",
-        "value": "84 ms"
-      }
-    ]
-  }
-}
-```
-
-### Rocket (illustrated)
-
-A launch or deploy board — the rocket hovers on its flame while healthy, sputters when degraded and lands when down.
-
-```json
-{
-  "title": "Launch",
-  "actions": [
-    {
-      "title": "Check Logs",
-      "type": "link",
-      "url": "https://example.com/status-logs"
-    }
-  ],
-  "data": {
-    "status": "Ok",
-    "mode": "Rocket"
-  }
-}
-```
-
-### Open sign, down (illustrated)
-
-A shop board — the sign reads OPEN while checkout works and flips to BACK SOON when it is down.
-
-```json
-{
-  "title": "Shop",
-  "actions": [
-    {
-      "title": "Open Store Admin",
-      "type": "link",
-      "url": "https://example.com/store-admin"
-    }
-  ],
-  "data": {
-    "status": "Error",
-    "mode": "OpenSign",
-    "caption": "Checkout is down. Back soon."
-  }
-}
-```
-
-### Delivery van, degraded (illustrated)
-
-An order-fulfilment board — the van drives while orders flow, slows when degraded and parks with its hazard lights on when down.
-
-```json
-{
-  "title": "Orders",
-  "actions": [
-    {
-      "title": "Open Store Admin",
-      "type": "link",
-      "url": "https://example.com/store-admin"
-    }
-  ],
-  "data": {
-    "status": "Warning",
-    "mode": "DeliveryVan"
-  }
-}
-```
-
-### Shopping bag (illustrated)
-
-A storefront board — products drop into the bag as orders come in, slow to a trickle when degraded and stop when checkout is down.
-
-```json
-{
-  "title": "Checkout",
-  "actions": [
-    {
-      "title": "Open Store Admin",
-      "type": "link",
-      "url": "https://example.com/store-admin"
-    }
-  ],
-  "data": {
-    "status": "Ok",
-    "mode": "ShoppingBag"
-  }
-}
-```
-
-### Flower with a header and no caption
-
-An illustrated mode under a header, with the sentence turned off — send `caption` as an empty string to show the illustration alone.
-
-```json
-{
-  "title": "Shop",
-  "actions": [
-    {
-      "title": "Check Logs",
-      "type": "link",
-      "url": "https://example.com/status-logs"
-    }
-  ],
-  "data": {
-    "header": {
-      "title": "Operational",
-      "subtitle": "All checks passing"
-    },
-    "status": "Ok",
-    "mode": "Flower",
-    "caption": ""
-  }
-}
-```
+- `status-contrast` — **Status on a contrast card.** A status tile lifted out of a row on a contrast card.
+- `status-outage-alert` — **Outage with a critical alert.** A service is fully down — pair the Error indicator with a critical alert spelling out the impact.
+- `status-multi-header` — **Healthy with a header strip.** A health tile that should also carry uptime and time-since-last-incident, instead of three separate tiles.
+- `status-flower` — **Flower (illustrated).** A friendly one-widget board for a TV — a flower that blooms while everything is healthy, droops when degraded and wilts when down. Omit `caption` for the built-in sentence.
+- `status-coffee` — **Coffee (illustrated).** A light-hearted office board — steam rises while all is well and stops when something is down.
+- `status-weather-warning` — **Weather, degraded (illustrated).** A forecast-style board — clear skies when healthy, a cloud over the sun when degraded, a storm when down. Here a custom `caption` names the slow service.
+- `status-rubber-duck-error` — **Rubber duck, down (illustrated).** An engineering-team board — the duck bobs calmly when there is nothing to debug and starts talking when something breaks. Pairs well with a `legend` of the services behind it.
+- `status-rocket` — **Rocket (illustrated).** A launch or deploy board — the rocket hovers on its flame while healthy, sputters when degraded and lands when down.
+- `status-open-sign-error` — **Open sign, down (illustrated).** A shop board — the sign reads OPEN while checkout works and flips to BACK SOON when it is down.
+- `status-delivery-van-warning` — **Delivery van, degraded (illustrated).** An order-fulfilment board — the van drives while orders flow, slows when degraded and parks with its hazard lights on when down.
+- `status-shopping-bag` — **Shopping bag (illustrated).** A storefront board — products drop into the bag as orders come in, slow to a trickle when degraded and stop when checkout is down.
+- `status-flower-no-caption` — **Flower with a header and no caption.** An illustrated mode under a header, with the sentence turned off — send `caption` as an empty string to show the illustration alone.
 
 ## Validation
 
@@ -818,7 +619,7 @@ Styling fields use the enums documented in `SKILL.md`:
 - `WidgetDataColor` — color of badges, datasets, values
 - `WidgetDataAlign` — text alignment
 - `WidgetDataSize` — text/icon size
-- `WidgetDataIcon` — `ArrowUp` / `ArrowDown`
+- `WidgetDataIcon` — `ArrowUp` / `ArrowDown` for a change, `Star` for a rating
 - `WidgetDataFill` — badge fill style
 
 All values are case-sensitive (`"Success"`, not `"success"`).

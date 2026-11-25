@@ -52,7 +52,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "icon": {
               "enum": [
                 "ArrowUp",
-                "ArrowDown"
+                "ArrowDown",
+                "Star"
               ],
               "type": "string",
               "nullable": true
@@ -69,7 +70,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "Orange",
                 "Light",
                 "Dark",
-                "Gray"
+                "Gray",
+                "Gray1",
+                "Gray3",
+                "Gray4"
               ],
               "type": "string",
               "nullable": true
@@ -78,7 +82,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "enum": [
                 "Solid",
                 "Clear",
-                "Outline"
+                "Outline",
+                "Dot"
               ],
               "type": "string",
               "nullable": true
@@ -99,7 +104,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "Orange",
             "Light",
             "Dark",
-            "Gray"
+            "Gray",
+            "Gray1",
+            "Gray3",
+            "Gray4"
           ],
           "type": "string",
           "nullable": true
@@ -111,6 +119,16 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             "L",
             "XL"
           ],
+          "type": "string",
+          "nullable": true
+        },
+        "unit": {
+          "maxLength": 24,
+          "type": "string",
+          "nullable": true
+        },
+        "label": {
+          "maxLength": 40,
           "type": "string",
           "nullable": true
         }
@@ -167,7 +185,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                     "Orange",
                     "Light",
                     "Dark",
-                    "Gray"
+                    "Gray",
+                    "Gray1",
+                    "Gray3",
+                    "Gray4"
                   ],
                   "type": "string",
                   "nullable": true
@@ -184,7 +205,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               },
               "additionalProperties": false
             },
-            "nullable": true
+            "nullable": true,
+            "x-placeholder": true
           },
           "label": {
             "type": "string",
@@ -202,7 +224,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "Orange",
               "Light",
               "Dark",
-              "Gray"
+              "Gray",
+              "Gray1",
+              "Gray3",
+              "Gray4"
             ],
             "type": "string",
             "nullable": true
@@ -220,15 +245,21 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
       }
     },
     "fill": {
+      "title": "Filled area",
       "type": "boolean",
+      "default": true,
       "nullable": true
     },
     "ticksX": {
+      "title": "X-axis labels",
       "type": "boolean",
+      "default": true,
       "nullable": true
     },
     "ticksY": {
+      "title": "Y-axis labels",
       "type": "boolean",
+      "default": false,
       "nullable": true
     },
     "headers": {
@@ -267,7 +298,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "icon": {
                 "enum": [
                   "ArrowUp",
-                  "ArrowDown"
+                  "ArrowDown",
+                  "Star"
                 ],
                 "type": "string",
                 "nullable": true
@@ -284,7 +316,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                   "Orange",
                   "Light",
                   "Dark",
-                  "Gray"
+                  "Gray",
+                  "Gray1",
+                  "Gray3",
+                  "Gray4"
                 ],
                 "type": "string",
                 "nullable": true
@@ -293,7 +328,8 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
                 "enum": [
                   "Solid",
                   "Clear",
-                  "Outline"
+                  "Outline",
+                  "Dot"
                 ],
                 "type": "string",
                 "nullable": true
@@ -314,7 +350,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
               "Orange",
               "Light",
               "Dark",
-              "Gray"
+              "Gray",
+              "Gray1",
+              "Gray3",
+              "Gray4"
             ],
             "type": "string",
             "nullable": true
@@ -328,6 +367,16 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
             ],
             "type": "string",
             "nullable": true
+          },
+          "unit": {
+            "maxLength": 24,
+            "type": "string",
+            "nullable": true
+          },
+          "label": {
+            "maxLength": 40,
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -335,15 +384,20 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
       "nullable": true
     },
     "smooth": {
+      "title": "Smooth lines",
       "type": "boolean",
+      "default": false,
       "nullable": true
     },
     "points": {
+      "title": "Points",
       "type": "boolean",
       "nullable": true
     },
     "grid": {
+      "title": "Gridlines",
       "type": "boolean",
+      "default": true,
       "nullable": true
     },
     "target": {
@@ -519,9 +573,447 @@ The canonical example shows a single dataset because colors and multi-series are
 }
 ```
 
+
+
 ## Variations
 
 Other shapes and styling for this widget — pick the one closest to your data:
+
+### Minimal area under a headline
+
+A headline total with its trend as a soft area underneath — no grid, no value axis, just the shape.
+
+```json
+{
+  "title": "Total Revenue",
+  "actions": [
+    {
+      "title": "Revenue",
+      "type": "link",
+      "url": "https://example.com/revenue"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "$15,231.89",
+      "subtitle": "vs last month",
+      "badge": {
+        "text": "+20.1%",
+        "icon": "ArrowUp",
+        "color": "Success"
+      }
+    },
+    "labels": [
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 9800,
+            "prefix": "$"
+          },
+          {
+            "value": 10200,
+            "prefix": "$"
+          },
+          {
+            "value": 10100,
+            "prefix": "$"
+          },
+          {
+            "value": 11900,
+            "prefix": "$"
+          },
+          {
+            "value": 11700,
+            "prefix": "$"
+          },
+          {
+            "value": 12100,
+            "prefix": "$"
+          },
+          {
+            "value": 12900,
+            "prefix": "$"
+          },
+          {
+            "value": 15231,
+            "prefix": "$"
+          }
+        ],
+        "label": "Revenue",
+        "color": "Light"
+      }
+    ],
+    "fill": true,
+    "ticksY": false,
+    "smooth": true,
+    "grid": false
+  }
+}
+```
+
+### Two coloured series with fill
+
+Two series that must never be confused — returning vs new, paid vs organic — in green and yellow with a soft fill.
+
+```json
+{
+  "title": "Returning Rate",
+  "actions": [
+    {
+      "title": "Customers",
+      "type": "link",
+      "url": "https://example.com/customers"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "$42,379",
+      "subtitle": "vs last period",
+      "badge": {
+        "text": "+2.5%",
+        "icon": "ArrowUp",
+        "color": "Success"
+      }
+    },
+    "labels": [
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 1200,
+            "prefix": "$"
+          },
+          {
+            "value": 1500,
+            "prefix": "$"
+          },
+          {
+            "value": 2600,
+            "prefix": "$"
+          },
+          {
+            "value": 1900,
+            "prefix": "$"
+          },
+          {
+            "value": 2800,
+            "prefix": "$"
+          },
+          {
+            "value": 1700,
+            "prefix": "$"
+          },
+          {
+            "value": 3000,
+            "prefix": "$"
+          },
+          {
+            "value": 1900,
+            "prefix": "$"
+          },
+          {
+            "value": 2000,
+            "prefix": "$"
+          },
+          {
+            "value": 2700,
+            "prefix": "$"
+          },
+          {
+            "value": 4200,
+            "prefix": "$"
+          }
+        ],
+        "label": "Returning",
+        "color": "Green"
+      },
+      {
+        "data": [
+          {
+            "value": 600,
+            "prefix": "$"
+          },
+          {
+            "value": 900,
+            "prefix": "$"
+          },
+          {
+            "value": 1100,
+            "prefix": "$"
+          },
+          {
+            "value": 900,
+            "prefix": "$"
+          },
+          {
+            "value": 1300,
+            "prefix": "$"
+          },
+          {
+            "value": 900,
+            "prefix": "$"
+          },
+          {
+            "value": 1500,
+            "prefix": "$"
+          },
+          {
+            "value": 1100,
+            "prefix": "$"
+          },
+          {
+            "value": 1200,
+            "prefix": "$"
+          },
+          {
+            "value": 1400,
+            "prefix": "$"
+          },
+          {
+            "value": 2600,
+            "prefix": "$"
+          }
+        ],
+        "label": "New",
+        "color": "Yellow"
+      }
+    ],
+    "fill": true,
+    "smooth": true
+  }
+}
+```
+
+### Rate with its unit and change
+
+A rate or price whose unit belongs beside it — an exchange rate, a cost per token — with the change over the window in red or green.
+
+```json
+{
+  "title": "Exchange rates",
+  "actions": [
+    {
+      "title": "Convert",
+      "type": "link",
+      "url": "https://example.com/convert"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "1.0907",
+      "subtitle": "in 30D",
+      "badge": {
+        "text": "-1.28%",
+        "icon": "ArrowDown",
+        "color": "Danger"
+      },
+      "unit": "USD"
+    },
+    "labels": [
+      "Jun 3",
+      "Jun 8",
+      "Jun 13",
+      "Jun 18",
+      "Jun 23",
+      "Jun 30"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 1.108,
+            "postfix": " USD"
+          },
+          {
+            "value": 1.112,
+            "postfix": " USD"
+          },
+          {
+            "value": 1.104,
+            "postfix": " USD"
+          },
+          {
+            "value": 1.109,
+            "postfix": " USD"
+          },
+          {
+            "value": 1.098,
+            "postfix": " USD"
+          },
+          {
+            "value": 1.0907,
+            "postfix": " USD"
+          }
+        ],
+        "label": "EUR → USD",
+        "color": "Light"
+      }
+    ],
+    "fill": true,
+    "ticksY": false,
+    "grid": false
+  }
+}
+```
+
+### Usage climbing toward a limit
+
+A cumulative count heading for a hard cap — the limit drawn as a target line so the gap reads at a glance.
+
+```json
+{
+  "title": "Additional Tokens",
+  "actions": [
+    {
+      "title": "Plan",
+      "type": "link",
+      "url": "https://example.com/plan"
+    }
+  ],
+  "data": {
+    "header": {
+      "subtitle": "Avg 296.96K"
+    },
+    "labels": [
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sat",
+      "Sun"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 20000
+          },
+          {
+            "value": 160000
+          },
+          {
+            "value": 300000
+          },
+          {
+            "value": 370000
+          },
+          {
+            "value": 330000
+          },
+          {
+            "value": 320000
+          },
+          {
+            "value": 650000
+          }
+        ],
+        "label": "Tokens",
+        "color": "Light"
+      }
+    ],
+    "fill": false,
+    "ticksY": true,
+    "smooth": true,
+    "target": {
+      "value": 1000000,
+      "label": "Limit"
+    }
+  }
+}
+```
+
+### Trend on a gradient card
+
+The board's hero trend on a glowing card — one series in the card's ink.
+
+```json
+{
+  "title": "Sessions",
+  "actions": [
+    {
+      "title": "Analytics",
+      "type": "link",
+      "url": "https://example.com/sessions"
+    }
+  ],
+  "data": {
+    "header": {
+      "title": "339,170",
+      "subtitle": "vs last month",
+      "badge": {
+        "text": "+8.3%",
+        "icon": "ArrowUp",
+        "color": "Success"
+      }
+    },
+    "labels": [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun"
+    ],
+    "datasets": [
+      {
+        "data": [
+          {
+            "value": 41000
+          },
+          {
+            "value": 52000
+          },
+          {
+            "value": 48000
+          },
+          {
+            "value": 60000
+          },
+          {
+            "value": 58000
+          },
+          {
+            "value": 80170
+          }
+        ],
+        "label": "Sessions",
+        "color": "Light"
+      }
+    ],
+    "fill": true,
+    "ticksY": false,
+    "smooth": true,
+    "grid": false
+  },
+  "color": {
+    "name": "Orange",
+    "style": "Gradient"
+  }
+}
+```
 
 ### Multi-series (filled)
 
@@ -615,731 +1107,21 @@ Comparing two trends on one chart with a filled area beneath each line.
 }
 ```
 
-### Latency trend (unit postfix)
+### More examples
 
-An average/percentile metric over time where each point carries a unit (ms, %, $).
+To see one in full, add `?variant=<id>` to the example request above — it returns that example's complete response.
 
-```json
-{
-  "title": "Avg response time",
-  "actions": [
-    {
-      "title": "View Traces",
-      "type": "link",
-      "url": "https://example.com/traces"
-    }
-  ],
-  "data": {
-    "header": {
-      "title": "182ms",
-      "subtitle": "Last 7 days",
-      "badge": {
-        "text": "+12ms",
-        "icon": "ArrowUp",
-        "color": "Danger"
-      }
-    },
-    "labels": [
-      "Mon",
-      "Tue",
-      "Wed",
-      "Thu",
-      "Fri",
-      "Sat",
-      "Sun"
-    ],
-    "datasets": [
-      {
-        "data": [
-          {
-            "value": 168,
-            "postfix": "ms"
-          },
-          {
-            "value": 172,
-            "postfix": "ms"
-          },
-          {
-            "value": 165,
-            "postfix": "ms"
-          },
-          {
-            "value": 190,
-            "postfix": "ms"
-          },
-          {
-            "value": 201,
-            "postfix": "ms"
-          },
-          {
-            "value": 178,
-            "postfix": "ms"
-          },
-          {
-            "value": 182,
-            "postfix": "ms"
-          }
-        ],
-        "label": "p95 latency"
-      }
-    ]
-  }
-}
-```
-
-### Trend with an info alert
-
-A trend where a spike has a known cause — add an info alert so viewers don't misread it.
-
-```json
-{
-  "title": "Website Traffic",
-  "actions": [
-    {
-      "title": "Analyze Traffic",
-      "type": "link",
-      "url": "https://example.com/traffic-analysis"
-    }
-  ],
-  "data": {
-    "header": {
-      "title": "1480",
-      "subtitle": "Last 7 days",
-      "badge": {
-        "text": "+146%",
-        "icon": "ArrowUp",
-        "color": "Success"
-      }
-    },
-    "labels": [
-      "Mon",
-      "Tue",
-      "Wed",
-      "Thu",
-      "Fri",
-      "Sat",
-      "Sun"
-    ],
-    "datasets": [
-      {
-        "data": [
-          {
-            "value": 100
-          },
-          {
-            "value": 320
-          },
-          {
-            "value": 310
-          },
-          {
-            "value": 280
-          },
-          {
-            "value": 230
-          },
-          {
-            "value": 140
-          },
-          {
-            "value": 100
-          }
-        ],
-        "label": "Page Views"
-      }
-    ]
-  },
-  "alert": {
-    "active": true,
-    "level": "info",
-    "message": "Includes the marketing campaign launched Tue"
-  }
-}
-```
-
-### Trend with a header strip
-
-One endpoint should carry several headline numbers above a single trend — visitors, new visitors, engagement and the running total, instead of four separate KPI widgets.
-
-```json
-{
-  "title": "Audience",
-  "actions": [
-    {
-      "title": "Analyze Traffic",
-      "type": "link",
-      "url": "https://example.com/traffic-analysis"
-    }
-  ],
-  "data": {
-    "header": {
-      "title": "395",
-      "subtitle": "Visitors",
-      "badge": {
-        "text": "+348.9%",
-        "icon": "ArrowUp",
-        "color": "Success"
-      }
-    },
-    "labels": [
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec"
-    ],
-    "datasets": [
-      {
-        "data": [
-          {
-            "value": 20
-          },
-          {
-            "value": 24
-          },
-          {
-            "value": 28
-          },
-          {
-            "value": 26
-          },
-          {
-            "value": 38
-          },
-          {
-            "value": 40
-          },
-          {
-            "value": 42
-          },
-          {
-            "value": 62
-          },
-          {
-            "value": 58
-          },
-          {
-            "value": 64
-          },
-          {
-            "value": 70
-          }
-        ],
-        "label": "Visitors"
-      },
-      {
-        "data": [
-          {
-            "value": 12
-          },
-          {
-            "value": 16
-          },
-          {
-            "value": 18
-          },
-          {
-            "value": 22
-          },
-          {
-            "value": 30
-          },
-          {
-            "value": 32
-          },
-          {
-            "value": 30
-          },
-          {
-            "value": 34
-          },
-          {
-            "value": 36
-          },
-          {
-            "value": 44
-          },
-          {
-            "value": 40
-          }
-        ],
-        "label": "New visitors"
-      }
-    ],
-    "fill": true,
-    "headers": [
-      {
-        "title": "932",
-        "subtitle": "New visitors",
-        "badge": {
-          "text": "+565.7%",
-          "icon": "ArrowUp",
-          "color": "Success"
-        }
-      },
-      {
-        "title": "1m 50s",
-        "subtitle": "Avg. engagement",
-        "badge": {
-          "text": "+250.1%",
-          "icon": "ArrowUp",
-          "color": "Success"
-        }
-      },
-      {
-        "title": "150K",
-        "subtitle": "Total visitors"
-      }
-    ]
-  }
-}
-```
-
-### This period vs the last one
-
-A trend that should be read against the same window before it — this week vs last week, this year vs last year.
-
-```json
-{
-  "title": "Signups",
-  "actions": [
-    {
-      "title": "Open funnel",
-      "type": "link",
-      "url": "https://example.com/signups"
-    }
-  ],
-  "data": {
-    "header": {
-      "title": "1,234",
-      "subtitle": "This week",
-      "badge": {
-        "text": "+18%",
-        "icon": "ArrowUp",
-        "color": "Success"
-      }
-    },
-    "labels": [
-      "Mon",
-      "Tue",
-      "Wed",
-      "Thu",
-      "Fri",
-      "Sat",
-      "Sun"
-    ],
-    "datasets": [
-      {
-        "data": [
-          {
-            "value": 142
-          },
-          {
-            "value": 168
-          },
-          {
-            "value": 181
-          },
-          {
-            "value": 176
-          },
-          {
-            "value": 204
-          },
-          {
-            "value": 186
-          },
-          {
-            "value": 177
-          }
-        ],
-        "label": "This week"
-      },
-      {
-        "data": [
-          {
-            "value": 128
-          },
-          {
-            "value": 139
-          },
-          {
-            "value": 150
-          },
-          {
-            "value": 161
-          },
-          {
-            "value": 158
-          },
-          {
-            "value": 150
-          },
-          {
-            "value": 160
-          }
-        ],
-        "label": "Last week",
-        "style": "Comparison"
-      }
-    ]
-  }
-}
-```
-
-### Trend toward a target
-
-A metric tracked against a goal, quota or budget — MRR toward this quarter's target, spend against a monthly budget.
-
-```json
-{
-  "title": "MRR",
-  "actions": [
-    {
-      "title": "Open billing",
-      "type": "link",
-      "url": "https://example.com/billing"
-    }
-  ],
-  "data": {
-    "header": {
-      "title": "$47,200",
-      "subtitle": "Toward the $50k Q3 goal",
-      "badge": {
-        "text": "+6.1%",
-        "icon": "ArrowUp",
-        "color": "Success"
-      }
-    },
-    "labels": [
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep"
-    ],
-    "datasets": [
-      {
-        "data": [
-          {
-            "value": 36800,
-            "prefix": "$"
-          },
-          {
-            "value": 38900,
-            "prefix": "$"
-          },
-          {
-            "value": 41000,
-            "prefix": "$"
-          },
-          {
-            "value": 42700,
-            "prefix": "$"
-          },
-          {
-            "value": 44500,
-            "prefix": "$"
-          },
-          {
-            "value": 47200,
-            "prefix": "$"
-          }
-        ],
-        "label": "MRR"
-      }
-    ],
-    "target": {
-      "value": 50000,
-      "label": "Q3 goal"
-    }
-  }
-}
-```
-
-### Smooth curve, no gridlines
-
-A longer trend read for its shape rather than its exact values — daily active users over two weeks on a wallboard.
-
-```json
-{
-  "title": "Daily active users",
-  "actions": [
-    {
-      "title": "Open analytics",
-      "type": "link",
-      "url": "https://example.com/analytics"
-    }
-  ],
-  "data": {
-    "header": {
-      "title": "2,543",
-      "subtitle": "Last 14 days",
-      "badge": {
-        "text": "+12%",
-        "icon": "ArrowUp",
-        "color": "Success"
-      }
-    },
-    "labels": [
-      "Sep 23",
-      "Sep 24",
-      "Sep 25",
-      "Sep 26",
-      "Sep 27",
-      "Sep 28",
-      "Sep 29",
-      "Sep 30",
-      "Oct 1",
-      "Oct 2",
-      "Oct 3",
-      "Oct 4",
-      "Oct 5",
-      "Oct 6"
-    ],
-    "datasets": [
-      {
-        "data": [
-          {
-            "value": 2120
-          },
-          {
-            "value": 2260
-          },
-          {
-            "value": 2190
-          },
-          {
-            "value": 2310
-          },
-          {
-            "value": 2180
-          },
-          {
-            "value": 1960
-          },
-          {
-            "value": 2020
-          },
-          {
-            "value": 2280
-          },
-          {
-            "value": 2410
-          },
-          {
-            "value": 2350
-          },
-          {
-            "value": 2470
-          },
-          {
-            "value": 2390
-          },
-          {
-            "value": 2210
-          },
-          {
-            "value": 2543
-          }
-        ],
-        "label": "Active users"
-      }
-    ],
-    "smooth": true,
-    "points": false,
-    "grid": false
-  }
-}
-```
-
-### Chart with a title icon and an explanation
-
-A chart whose metric needs defining for the people reading it (who counts as an active user), with an icon that ties it to the KPI tiles beside it.
-
-```json
-{
-  "title": "Active users",
-  "actions": [
-    {
-      "title": "Open analytics",
-      "type": "link",
-      "url": "https://example.com/analytics"
-    }
-  ],
-  "data": {
-    "header": {
-      "title": "3,412",
-      "subtitle": "This week",
-      "badge": {
-        "text": "+14%",
-        "icon": "ArrowUp",
-        "color": "Success"
-      }
-    },
-    "labels": [
-      "Mon",
-      "Tue",
-      "Wed",
-      "Thu",
-      "Fri",
-      "Sat",
-      "Sun"
-    ],
-    "datasets": [
-      {
-        "data": [
-          {
-            "value": 2980
-          },
-          {
-            "value": 3120
-          },
-          {
-            "value": 3260
-          },
-          {
-            "value": 3190
-          },
-          {
-            "value": 3340
-          },
-          {
-            "value": 3280
-          },
-          {
-            "value": 3412
-          }
-        ],
-        "label": "This week"
-      },
-      {
-        "data": [
-          {
-            "value": 2710
-          },
-          {
-            "value": 2820
-          },
-          {
-            "value": 2900
-          },
-          {
-            "value": 2860
-          },
-          {
-            "value": 2950
-          },
-          {
-            "value": 2890
-          },
-          {
-            "value": 2990
-          }
-        ],
-        "label": "Last week",
-        "style": "Comparison"
-      }
-    ]
-  },
-  "icon": "People",
-  "hint": "People who opened the app at least once that day. Last week is drawn dashed behind it."
-}
-```
-
-### Chart on a coloured card
-
-The trend a board is built around, given the brand colour so it reads as the headline chart rather than one card among many.
-
-```json
-{
-  "title": "Revenue",
-  "actions": [
-    {
-      "title": "Open report",
-      "type": "link",
-      "url": "https://example.com/revenue"
-    }
-  ],
-  "data": {
-    "header": {
-      "title": "$190k",
-      "subtitle": "August",
-      "badge": {
-        "text": "+8.1%",
-        "icon": "ArrowUp",
-        "color": "Success"
-      }
-    },
-    "labels": [
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug"
-    ],
-    "datasets": [
-      {
-        "data": [
-          {
-            "value": 142000
-          },
-          {
-            "value": 161000
-          },
-          {
-            "value": 178000
-          },
-          {
-            "value": 196000
-          },
-          {
-            "value": 184000
-          },
-          {
-            "value": 190000
-          }
-        ],
-        "label": "This year"
-      },
-      {
-        "data": [
-          {
-            "value": 128000
-          },
-          {
-            "value": 139000
-          },
-          {
-            "value": 151000
-          },
-          {
-            "value": 166000
-          },
-          {
-            "value": 171000
-          },
-          {
-            "value": 176000
-          }
-        ],
-        "label": "Last year",
-        "style": "Comparison"
-      }
-    ],
-    "smooth": true
-  },
-  "color": "Blue"
-}
-```
+- `line-week-vs-average` — **This week against the average.** This period's line against a quieter typical one, each total in the header with its unit.
+- `line-campaign-two` — **Visits and bookings over a week.** Two related series over a short window — visited and booked — with each total in the header and the change on the right.
+- `line-contrast` — **Trend on a contrast card.** A single trend that should read first in the room, on a contrast card.
+- `line-ops-latency` — **Latency trend (unit postfix).** An average/percentile metric over time where each point carries a unit (ms, %, $).
+- `line-traffic-alert` — **Trend with an info alert.** A trend where a spike has a known cause — add an info alert so viewers don't misread it.
+- `line-multi-header` — **Trend with a header strip.** One endpoint should carry several headline numbers above a single trend — visitors, new visitors, engagement and the running total, instead of four separate KPI widgets.
+- `line-vs-previous-period` — **This period vs the last one.** A trend that should be read against the same window before it — this week vs last week, this year vs last year.
+- `line-target` — **Trend toward a target.** A metric tracked against a goal, quota or budget — MRR toward this quarter's target, spend against a monthly budget.
+- `line-smooth-clean` — **Smooth curve, no gridlines.** A longer trend read for its shape rather than its exact values — daily active users over two weeks on a wallboard.
+- `line-icon-hint` — **Chart with a title icon and an explanation.** A chart whose metric needs defining for the people reading it (who counts as an active user), with an icon that ties it to the KPI tiles beside it.
+- `line-color` — **Chart on a coloured card.** The trend a board is built around, given the brand colour so it reads as the headline chart rather than one card among many.
 
 ## Validation
 
@@ -1352,7 +1134,7 @@ Styling fields use the enums documented in `SKILL.md`:
 - `WidgetDataColor` — color of badges, datasets, values
 - `WidgetDataAlign` — text alignment
 - `WidgetDataSize` — text/icon size
-- `WidgetDataIcon` — `ArrowUp` / `ArrowDown`
+- `WidgetDataIcon` — `ArrowUp` / `ArrowDown` for a change, `Star` for a rating
 - `WidgetDataFill` — badge fill style
 
 All values are case-sensitive (`"Success"`, not `"success"`).

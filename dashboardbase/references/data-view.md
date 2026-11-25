@@ -57,7 +57,7 @@ A complete **Table** response — whatever type the widget itself is — with `d
 
 Rules:
 
-- Every Table cell works here — `text`, `badge`, `imageUrl`, `link`, `progress`, `trend`, `bar`. See `references/table.md`.
+- Every Table cell works here — `text`, `badge`, `imageUrl`, `icon`, `link`, `progress`, `trend`, `bar`. See `references/table.md`.
 - `rows: []` is allowed on a data-view page (a search that matches nothing); dashboardbase says so. A Table widget on the board still needs at least one row.
 - A small list (a few hundred rows) may be returned whole with no `pagination`: dashboardbase then searches and pages it in the browser. Past 1,000 rows it is cut short, and a paginated page is cut to the `pageSize` dashboardbase asked for. Dashboardbase also keeps the first 20 columns and cuts cell and badge text at 120 characters with "…" — cells do not wrap, so send a short label and put the long text behind a `link`.
 - `title` is optional; without it the widget's own title is used.

@@ -26,7 +26,9 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
       "nullable": true
     },
     "showDate": {
+      "title": "Show date",
       "type": "boolean",
+      "default": false,
       "nullable": true
     },
     "label": {
@@ -40,6 +42,7 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
         "Analog"
       ],
       "type": "string",
+      "title": "Clock face",
       "nullable": true
     }
   },
@@ -71,9 +74,32 @@ curl -X GET 'https://api.dashboardbase.com/example/clock'
 
 
 
+
+
 ## Variations
 
 Other shapes and styling for this widget — pick the one closest to your data:
+
+### Clock on a gradient card
+
+A headquarters clock that anchors a wall board, on a gradient card.
+
+```json
+{
+  "title": "Copenhagen",
+  "data": {
+    "timeZone": "Europe/Copenhagen",
+    "hourCycle": 24,
+    "showDate": true,
+    "label": "HQ",
+    "mode": "Digital"
+  },
+  "color": {
+    "name": "Blue",
+    "style": "Gradient"
+  }
+}
+```
 
 ### Remote-team clock (12h)
 
@@ -125,6 +151,12 @@ A rendered clock face for a lobby or reception display.
 }
 ```
 
+### More examples
+
+To see one in full, add `?variant=<id>` to the example request above — it returns that example's complete response.
+
+- `clock-contrast` — **Clock on a contrast card.** A second office's time lifted out of a row on a contrast card.
+
 ## Validation
 
 The contract enforces the constraints declared in the schema above (required fields, value ranges, enum values). If the response does not satisfy them, dashboardbase renders the widget in an error state. Before declaring done, validate the response. If the `validate_widget_response` tool is available, call it with the full response body — that checks against the live contract. Otherwise validate the response's `data` field against `assets/schemas/clock.json` with any JSON Schema validator (e.g. `ajv`, python `jsonschema`).
@@ -136,7 +168,7 @@ Styling fields use the enums documented in `SKILL.md`:
 - `WidgetDataColor` — color of badges, datasets, values
 - `WidgetDataAlign` — text alignment
 - `WidgetDataSize` — text/icon size
-- `WidgetDataIcon` — `ArrowUp` / `ArrowDown`
+- `WidgetDataIcon` — `ArrowUp` / `ArrowDown` for a change, `Star` for a rating
 - `WidgetDataFill` — badge fill style
 
 All values are case-sensitive (`"Success"`, not `"success"`).
