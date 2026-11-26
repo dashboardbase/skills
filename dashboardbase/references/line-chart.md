@@ -438,10 +438,10 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
   ],
   "data": {
     "header": {
-      "title": "1010",
+      "title": "1,010",
       "subtitle": "Last 7 days",
       "badge": {
-        "text": "+70%",
+        "text": "+12%",
         "icon": "ArrowUp",
         "color": "Success"
       }
@@ -595,7 +595,7 @@ A headline total with its trend as a soft area underneath — no grid, no value 
   ],
   "data": {
     "header": {
-      "title": "$15,231.89",
+      "title": "$15,232",
       "subtitle": "vs last month",
       "badge": {
         "text": "+20.1%",
@@ -894,7 +894,7 @@ A cumulative count heading for a hard cap — the limit drawn as a target line s
   ],
   "data": {
     "header": {
-      "subtitle": "Avg 296.96K"
+      "subtitle": "Avg 307k"
     },
     "labels": [
       "Mon",
@@ -947,7 +947,7 @@ A cumulative count heading for a hard cap — the limit drawn as a target line s
 
 ### Trend on a gradient card
 
-The board's hero trend on a glowing card — one series in the card's ink.
+The board's main trend on a gradient card — one series in the card's ink.
 
 ```json
 {
@@ -1031,10 +1031,10 @@ Comparing two trends on one chart with a filled area beneath each line.
   ],
   "data": {
     "header": {
-      "title": "1010",
+      "title": "1,870",
       "subtitle": "Page views, last 7 days",
       "badge": {
-        "text": "+70%",
+        "text": "+18%",
         "icon": "ArrowUp",
         "color": "Success"
       }
@@ -1052,25 +1052,25 @@ Comparing two trends on one chart with a filled area beneath each line.
       {
         "data": [
           {
-            "value": 100
+            "value": 210
           },
           {
-            "value": 120
+            "value": 240
           },
           {
-            "value": 150
+            "value": 260
           },
           {
-            "value": 130
+            "value": 250
           },
           {
-            "value": 160
+            "value": 290
           },
           {
-            "value": 180
+            "value": 320
           },
           {
-            "value": 170
+            "value": 300
           }
         ],
         "label": "Page Views"
@@ -1078,25 +1078,25 @@ Comparing two trends on one chart with a filled area beneath each line.
       {
         "data": [
           {
-            "value": 40
+            "value": 88
           },
           {
-            "value": 48
+            "value": 96
           },
           {
-            "value": 55
+            "value": 104
           },
           {
-            "value": 50
+            "value": 98
           },
           {
-            "value": 62
+            "value": 115
           },
           {
-            "value": 70
+            "value": 128
           },
           {
-            "value": 66
+            "value": 121
           }
         ],
         "label": "Unique Visitors"

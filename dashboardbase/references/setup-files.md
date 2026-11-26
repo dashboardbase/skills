@@ -534,6 +534,57 @@ A full-width stat strip, a chart under it, then a full-width list — a page abo
 | 2 | `x:0 y:1` | `w:12 h:2` | `Primary` | Image, List, ProgressList, Text |
 | 3 | `x:0 y:3` | `w:12 h:3` | `Secondary` | any `Secondary` widget |
 
+#### Trio, Chart and Table
+
+Three KPIs across the top, a wide chart beside a narrow one, then a table beside a feed.
+
+| Slot | position | size | role | fits |
+| --- | --- | --- | --- | --- |
+| 1 | `x:0 y:0` | `w:4 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 2 | `x:4 y:0` | `w:4 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 3 | `x:8 y:0` | `w:4 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 4 | `x:0 y:1` | `w:8 h:2` | `Primary` | Image, List, ProgressList, Text |
+| 5 | `x:8 y:1` | `w:4 h:2` | `Secondary` | Clock, GaugeChart, Image, List, ProgressList, Text |
+| 6 | `x:0 y:3` | `w:8 h:3` | `Secondary` | any `Secondary` widget |
+| 7 | `x:8 y:3` | `w:4 h:3` | `Secondary` | BarChart, Clock, DonutChart, GaugeChart, Image, List, PieChart, ProgressList, Table, Text |
+
+#### KPI Rail
+
+A wide chart with three KPIs stacked beside it, then a table beside a feed.
+
+| Slot | position | size | role | fits |
+| --- | --- | --- | --- | --- |
+| 1 | `x:0 y:0` | `w:8 h:3` | `Primary` | any `Primary` widget |
+| 2 | `x:8 y:0` | `w:4 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 3 | `x:8 y:1` | `w:4 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 4 | `x:8 y:2` | `w:4 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 5 | `x:0 y:3` | `w:8 h:3` | `Secondary` | any `Secondary` widget |
+| 6 | `x:8 y:3` | `w:4 h:3` | `Secondary` | BarChart, Clock, DonutChart, GaugeChart, Image, List, PieChart, ProgressList, Table, Text |
+
+#### Trio and Rail
+
+A stat strip, a wide chart and two cards under it, with a tall list running down the right.
+
+| Slot | position | size | role | fits |
+| --- | --- | --- | --- | --- |
+| 1 | `x:0 y:0` | `w:8 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 2 | `x:0 y:1` | `w:8 h:3` | `Primary` | any `Primary` widget |
+| 3 | `x:0 y:4` | `w:4 h:2` | `Secondary` | Clock, GaugeChart, Image, List, ProgressList, Text |
+| 4 | `x:4 y:4` | `w:4 h:2` | `Secondary` | Clock, GaugeChart, Image, List, ProgressList, Text |
+| 5 | `x:8 y:0` | `w:4 h:6` | `Secondary` | BarChart, Clock, DonutChart, GaugeChart, Image, List, PieChart, ProgressList, Table, Text |
+
+#### Hero and Rail
+
+A hero chart, a stat strip and a second chart down the left, with two cards stacked on the right.
+
+| Slot | position | size | role | fits |
+| --- | --- | --- | --- | --- |
+| 1 | `x:0 y:0` | `w:8 h:2` | `Primary` | Image, List, ProgressList, Text |
+| 2 | `x:0 y:2` | `w:8 h:1` | `Kpi` | Clock, Countdown, KPI, Status |
+| 3 | `x:0 y:3` | `w:8 h:3` | `Primary` | any `Primary` widget |
+| 4 | `x:8 y:0` | `w:4 h:3` | `Secondary` | BarChart, Clock, DonutChart, GaugeChart, Image, List, PieChart, ProgressList, Table, Text |
+| 5 | `x:8 y:3` | `w:4 h:3` | `Secondary` | BarChart, Clock, DonutChart, GaugeChart, Image, List, PieChart, ProgressList, Table, Text |
+
 ### When no layout fits
 
 The layouts above top out at six `Kpi` slots, one `Primary`, and two `Secondary` slots. When the widget mix is bigger, extend the closest layout instead of inventing a grid from scratch — keep the existing slots as-is and add rows below them:

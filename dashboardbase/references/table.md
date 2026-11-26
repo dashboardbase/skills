@@ -962,10 +962,10 @@ Recent transactions or orders where each row ends in a calm status — Success, 
           "text": "Kenneth Thompson"
         },
         {
-          "text": "ken99@yahoo.com"
+          "text": "kenneth.thompson@example.com"
         },
         {
-          "text": "$316.00"
+          "text": "$316"
         },
         {
           "badge": {
@@ -989,13 +989,13 @@ Recent transactions or orders where each row ends in a calm status — Success, 
       ],
       [
         {
-          "text": "Abraham Lincoln"
+          "text": "Amara Lindqvist"
         },
         {
-          "text": "abe45@gmail.com"
+          "text": "amara.lindqvist@example.com"
         },
         {
-          "text": "$242.00"
+          "text": "$242"
         },
         {
           "badge": {
@@ -1022,10 +1022,10 @@ Recent transactions or orders where each row ends in a calm status — Success, 
           "text": "Monserrat Rodriguez"
         },
         {
-          "text": "monserrat44@gmail.com"
+          "text": "monserrat.rodriguez@example.com"
         },
         {
-          "text": "$837.00"
+          "text": "$837"
         },
         {
           "badge": {
@@ -1052,10 +1052,10 @@ Recent transactions or orders where each row ends in a calm status — Success, 
           "text": "Silas Johnson"
         },
         {
-          "text": "silas22@gmail.com"
+          "text": "silas.johnson@example.com"
         },
         {
-          "text": "$874.00"
+          "text": "$874"
         },
         {
           "badge": {
@@ -1082,10 +1082,10 @@ Recent transactions or orders where each row ends in a calm status — Success, 
           "text": "Carmella DeVito"
         },
         {
-          "text": "carmella@hotmail.com"
+          "text": "carmella.devito@example.com"
         },
         {
-          "text": "$721.00"
+          "text": "$721"
         },
         {
           "badge": {
@@ -1112,10 +1112,10 @@ Recent transactions or orders where each row ends in a calm status — Success, 
           "text": "Maria Garcia"
         },
         {
-          "text": "maria@gmail.com"
+          "text": "maria.garcia@example.com"
         },
         {
-          "text": "$529.00"
+          "text": "$529"
         },
         {
           "badge": {
@@ -1198,7 +1198,7 @@ An order or ticket list where each row names a person and an item — initials t
           }
         },
         {
-          "text": "$300.00"
+          "text": "$300"
         }
       ],
       [
@@ -1220,7 +1220,7 @@ An order or ticket list where each row names a person and an item — initials t
           }
         },
         {
-          "text": "$450.00"
+          "text": "$450"
         }
       ],
       [
@@ -1242,7 +1242,7 @@ An order or ticket list where each row names a person and an item — initials t
           }
         },
         {
-          "text": "$820.00"
+          "text": "$820"
         }
       ],
       [
@@ -1264,7 +1264,7 @@ An order or ticket list where each row names a person and an item — initials t
           }
         },
         {
-          "text": "$129.00"
+          "text": "$129"
         }
       ],
       [
@@ -1286,7 +1286,7 @@ An order or ticket list where each row names a person and an item — initials t
           }
         },
         {
-          "text": "$64.00"
+          "text": "$64"
         }
       ]
     ]
@@ -1334,17 +1334,17 @@ Top products ranked by revenue — the price under the name, units sold as a bar
             "name": "Bag",
             "color": "Red"
           },
-          "subtitle": "$402.00"
+          "subtitle": "$402"
         },
         {
           "progress": {
             "value": 40,
-            "max": 40,
+            "max": 274,
             "label": "40"
           }
         },
         {
-          "text": "$16,080.00"
+          "text": "$16,080"
         }
       ],
       [
@@ -1354,17 +1354,17 @@ Top products ranked by revenue — the price under the name, units sold as a bar
             "name": "Gift",
             "color": "Orange"
           },
-          "subtitle": "$280.00"
+          "subtitle": "$280"
         },
         {
           "progress": {
             "value": 37,
-            "max": 40,
+            "max": 274,
             "label": "37"
           }
         },
         {
-          "text": "$10,360.00"
+          "text": "$10,360"
         }
       ],
       [
@@ -1374,17 +1374,17 @@ Top products ranked by revenue — the price under the name, units sold as a bar
             "name": "Rocket",
             "color": "Blue"
           },
-          "subtitle": "$310.00"
+          "subtitle": "$310"
         },
         {
           "progress": {
             "value": 25,
-            "max": 40,
+            "max": 274,
             "label": "25"
           }
         },
         {
-          "text": "$7,750.00"
+          "text": "$7,750"
         }
       ],
       [
@@ -1393,17 +1393,17 @@ Top products ranked by revenue — the price under the name, units sold as a bar
           "icon": {
             "name": "Bag"
           },
-          "subtitle": "$24.00"
+          "subtitle": "$24"
         },
         {
           "progress": {
             "value": 274,
-            "max": 316,
+            "max": 274,
             "label": "274"
           }
         },
         {
-          "text": "$6,576.00"
+          "text": "$6,576"
         }
       ],
       [
@@ -1413,17 +1413,17 @@ Top products ranked by revenue — the price under the name, units sold as a bar
             "name": "Bag",
             "color": "Blue"
           },
-          "subtitle": "$59.00"
+          "subtitle": "$59"
         },
         {
           "progress": {
             "value": 95,
-            "max": 316,
+            "max": 274,
             "label": "95"
           }
         },
         {
-          "text": "$5,605.00"
+          "text": "$5,605"
         }
       ]
     ]
@@ -1525,7 +1525,7 @@ A full-width list where every row is a thing with its own performance — links,
           "text": "$0.59"
         },
         {
-          "text": "$3,430.50"
+          "text": "$3,431"
         },
         {
           "badge": {
@@ -1584,7 +1584,7 @@ A full-width list where every row is a thing with its own performance — links,
           "text": "$0.60"
         },
         {
-          "text": "$395.07"
+          "text": "$395"
         },
         {
           "badge": {
@@ -1643,7 +1643,7 @@ A full-width list where every row is a thing with its own performance — links,
           "text": "$0.49"
         },
         {
-          "text": "$4,561.71"
+          "text": "$4,562"
         },
         {
           "badge": {
@@ -1702,7 +1702,7 @@ A full-width list where every row is a thing with its own performance — links,
           "text": "$0.40"
         },
         {
-          "text": "$629.56"
+          "text": "$630"
         },
         {
           "badge": {
@@ -1761,7 +1761,7 @@ A full-width list where every row is a thing with its own performance — links,
           "text": "$0.62"
         },
         {
-          "text": "$1,004.26"
+          "text": "$1,004"
         },
         {
           "badge": {
@@ -1820,7 +1820,7 @@ A full-width list where every row is a thing with its own performance — links,
           "text": "$0.93"
         },
         {
-          "text": "$3,555.00"
+          "text": "$3,555"
         },
         {
           "badge": {
@@ -1904,7 +1904,7 @@ Properties, deals or projects where who is involved matters — the address unde
           "text": "House"
         },
         {
-          "text": "$655K"
+          "text": "$655k"
         },
         {
           "avatars": {
@@ -1942,7 +1942,7 @@ Properties, deals or projects where who is involved matters — the address unde
           "text": "House"
         },
         {
-          "text": "$602K"
+          "text": "$602k"
         },
         {
           "avatars": {
@@ -1980,7 +1980,7 @@ Properties, deals or projects where who is involved matters — the address unde
           "text": "Medical"
         },
         {
-          "text": "$842K"
+          "text": "$842k"
         },
         {
           "avatars": {
@@ -2018,7 +2018,7 @@ Properties, deals or projects where who is involved matters — the address unde
           "text": "Office"
         },
         {
-          "text": "$748K"
+          "text": "$748k"
         },
         {
           "avatars": {
@@ -2089,7 +2089,7 @@ A team or customer roster — initials, the email under the name, a role, a depa
           "icon": {
             "initials": "JV"
           },
-          "subtitle": "justinve@gmail.com"
+          "subtitle": "justin.vetrovs@example.com"
         },
         {
           "text": "Project Manager"
@@ -2115,7 +2115,7 @@ A team or customer roster — initials, the email under the name, a role, a depa
           "icon": {
             "initials": "AK"
           },
-          "subtitle": "kenterah@gmail.com"
+          "subtitle": "ahmad.kenter@example.com"
         },
         {
           "text": "Web Designer"
@@ -2141,7 +2141,7 @@ A team or customer roster — initials, the email under the name, a role, a depa
           "icon": {
             "initials": "DH"
           },
-          "subtitle": "davishe@gmail.com"
+          "subtitle": "davis.herwitz@example.com"
         },
         {
           "text": "Marketing Coordinator"
@@ -2167,7 +2167,7 @@ A team or customer roster — initials, the email under the name, a role, a depa
           "icon": {
             "initials": "MG"
           },
-          "subtitle": "marcusg@gmail.com"
+          "subtitle": "marcus.george@example.com"
         },
         {
           "text": "Product Designer"
@@ -2193,7 +2193,7 @@ A team or customer roster — initials, the email under the name, a role, a depa
           "icon": {
             "initials": "LB"
           },
-          "subtitle": "lydiab@gmail.com"
+          "subtitle": "lydia.bergson@example.com"
         },
         {
           "text": "Web Designer"
@@ -2264,7 +2264,7 @@ All values are case-sensitive (`"Success"`, not `"success"`).
 - Putting a URL in `text` instead of `link` — set `link` for clickable cells; `text` is the visible label.
 - Using `imageUrl` for inline icons — it renders as an image; for badges use `badge`, and for an icon, a country flag or a person's initials in the picture's place use `icon` (`{ "name": "People" }`, `{ "country": "DK" }` or `{ "initials": "NA" }`).
 - Setting more than one of `icon.name`, `icon.country` and `icon.initials` — a tile draws one thing. `name` is one of the title icons, `country` a two-letter ISO code, `initials` at most 3 characters.
-- Squeezing two facts into one cell's `text` (`"Toby Belhome · contact@bundui.io"`) — put the second in `subtitle`, drawn as a muted line under the text.
+- Squeezing two facts into one cell's `text` (`"Toby Belhome · toby.belhome@example.com"`) — put the second in `subtitle`, drawn as a muted line under the text.
 - Colouring a status column with Solid badges — for a calm status pill set `badge.fill: "Dot"`: a hairline pill with a coloured dot (`color`) and neutral text, the way `Paid`, `Processing` and `Failed` read in a payments table.
 - Listing people as text (`"Jessica, John +9"`) — send `avatars`: `{ "items": [{ "initials": "JC" }, { "imageUrl": "https://…" }], "more": 9 }` draws up to 4 overlapping round avatars and a "+9".
 - Linking a row's actions from its `text` or a `link` column ("Edit", "Refund") — put them in one cell's `actions`, the same `{ "title", "type": "link", "url" }` list the widget's own menu takes, and the row ends in a ⋮ that opens them (at most 6, one cell per row).

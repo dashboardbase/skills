@@ -372,7 +372,7 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
 
 ```json
 {
-  "title": "Market Share",
+  "title": "Traffic sources",
   "actions": [
     {
       "title": "View Details",
@@ -382,9 +382,9 @@ The `data` field of the response envelope must match this schema (all `$ref`s ar
   ],
   "data": {
     "labels": [
-      "Product A",
-      "Product B",
-      "Product C"
+      "Direct",
+      "Search",
+      "Referral"
     ],
     "datasets": [
       {
@@ -462,7 +462,7 @@ The canonical example omits `color` because the default palette renders well wit
 
 ```json
 {
-  "labels": ["Product A", "Product B", "Product C"],
+  "labels": ["Direct", "Search", "Referral"],
   "datasets": [
     {
       "label": "Share",
@@ -535,7 +535,7 @@ Spend or usage split across a few named things — models, vendors, plans — wi
 
 ### Share on a gradient card
 
-A share-of-total on a glowing card for the one breakdown a board is about.
+A share-of-total on a gradient card for the one breakdown a board is about.
 
 ```json
 {
